@@ -1,0 +1,51 @@
+
+struct server
+{
+	std::vector<listen> 	listens; 		//map perhaps
+	location		default_error_page
+	size_t 			max_http_request 
+	std::string		server_name
+	std::string		main_root
+	std::vector<location>   locations;
+}	
+
+struct listen
+{
+    std::string ip;
+    std::string port;
+};
+
+
+enum method_http
+{
+	GET,
+	POST,
+	DELETE,
+	HEAD
+}
+
+struct location
+{
+	std::string			web_page_name (.html)
+	unsigned int 			code_http
+	bool[4] 			allowed_method
+	location			redirection_http	// ?
+	std::string			root
+	bool 				autoindex
+	std::vector<std::string>	tab_default_file
+	upload				info_upload
+	cgi				info_cgi
+}
+
+struct cgi
+{
+	std::string	extension
+	std::string	cgi_path
+}
+
+struct upload
+{
+	bool 		upload_enable;
+	std::string	upload_path
+}
+
