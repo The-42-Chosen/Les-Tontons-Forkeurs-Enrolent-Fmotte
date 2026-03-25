@@ -8,3 +8,9 @@ https://datatracker.ietf.org/doc/html/rfc9110
 https://datatracker.ietf.org/doc/html/rfc9112
 
 https://datatracker.ietf.org/doc/html/rfc3875
+
+https://beej.us/guide/bgnet/html/#getpeernamewho-are-you
+
+https://nginx.org/en/docs/beginners_guide.html
+
+https://www.plesk.com/blog/various/nginx-configuration-guide/

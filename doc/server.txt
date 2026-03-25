@@ -1,0 +1,38 @@
+
+Question que se pose le serveur quand il recoit une requete ?
+
+Exemple de requete HTTP:
+
+GET /index.html HTTP/1.1	← ligne de requête
+Host: www.exemple.com		← headers
+User-Agent: Mozilla/5.0
+Accept: text/html
+				← ligne vide (IMPORTANT)
+[body éventuel]			← body
+			
+--------------
+
+Le client veut la page /index.html en HTTP/1.1 sur le site www.exemple.com, il utilise Mozilla/5.0 et veut une reponse en html
+
+struct http_request
+{
+	method_http				methode 	(GET)
+	std::string				path		(/index.html)
+	std::string				protocole	(HTTP/1.1)
+	std::string				server_name	(www.exemple.com)
+	std::map<std::string, std::string> 	headers;	(Host, User-Agent, Accept)
+	std::string				body 		()
+}
+
+
+Que fait le serveur quand il doit envoyer une reponse ?
+
+Exemple de reponse HTTP:
+
+
+HTTP/1.1 200 OK			← ligne de requête
+Content-Type: text/html		← headers
+Content-Length: 1234		
+				← ligne vide (IMPORTANT)
+<html>...</html>		← body
+
