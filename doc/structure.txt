@@ -1,20 +1,9 @@
-
-struct server
-{
-	std::vector<listen> 	listens; 		//map perhaps
-	location		default_error_page
-	size_t 			max_http_request 
-	std::string		server_name
-	std::string		main_root
-	std::vector<location>   locations;
-}	
-
+	
 struct listen
 {
     std::string ip;
     std::string port;
 };
-
 
 enum method_http
 {
@@ -24,28 +13,34 @@ enum method_http
 	HEAD
 }
 
-struct location
+struct request
 {
-	std::string			web_page_name (.html)
-	unsigned int 			code_http
-	bool[4] 			allowed_method
-	location			redirection_http	// ?
-	std::string			root
-	bool 				autoindex
-	std::vector<std::string>	tab_default_file
-	upload				info_upload
-	cgi				info_cgi
+	unsigned int method; (method_http)
+	std::string url;
+	std::string protocol
+	std::string header
+	std::string body
 }
 
-struct cgi
+struct reponse
 {
-	std::string	extension
-	std::string	cgi_path
+	std::string protocol
+	unsigned int status_code;
+	std::string reason-phrase;
+	std::string header
+	std::string body
 }
 
-struct upload
-{
-	bool 		upload_enable;
-	std::string	upload_path
-}
 
+Après analyse, il a toutes les infos :
+	Quelle action ? → méthode
+	Quelle ressource ? → URL
+	Qui fait la requête ? → auth / cookies
+	Quel format ? → headers
+	Quelles données ? → body
+
+
+👉 Il peut maintenant décider :
+	autoriser ou refuser
+	chercher des données
+	exécuter du code

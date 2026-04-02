@@ -1,38 +1,67 @@
+🌐 Que fait un serveur web lorsqu’il reçoit une requête HTTP ?
 
-Question que se pose le serveur quand il recoit une requete ?
-
-Exemple de requete HTTP:
-
-GET /index.html HTTP/1.1	← ligne de requête
-Host: www.exemple.com		← headers
-User-Agent: Mozilla/5.0
-Accept: text/html
-				← ligne vide (IMPORTANT)
-[body éventuel]			← body
-			
---------------
-
-Le client veut la page /index.html en HTTP/1.1 sur le site www.exemple.com, il utilise Mozilla/5.0 et veut une reponse en html
-
-struct http_request
-{
-	method_http				methode 	(GET)
-	std::string				path		(/index.html)
-	std::string				protocole	(HTTP/1.1)
-	std::string				server_name	(www.exemple.com)
-	std::map<std::string, std::string> 	headers;	(Host, User-Agent, Accept)
-	std::string				body 		()
-}
+Lorsqu’un serveur web reçoit une requête HTTP, il suit plusieurs étapes :
 
 
-Que fait le serveur quand il doit envoyer une reponse ?
+1. 📡 Réception de la requête
+Le serveur :
+	écoute sur un port (souvent 80 pour HTTP, 443 pour HTTPS)
+	reçoit la requête envoyée par le client (navigateur)
 
-Exemple de reponse HTTP:
+
+2. 🔍 Analyse de la requête
+Le serveur lit les éléments de la requête :
+	méthode (GET, POST, etc.)
+	URL (ressource demandée)
+	headers
+	body (si présent)
+
+👉 Cela lui permet de comprendre ce que veut le client
 
 
-HTTP/1.1 200 OK			← ligne de requête
-Content-Type: text/html		← headers
-Content-Length: 1234		
-				← ligne vide (IMPORTANT)
-<html>...</html>		← body
+3. 🧭 Routage de la requête
+Le serveur décide quoi faire en fonction de l’URL :
+	/index.html → fichier statique
+	/api/users → appel à une API
+	/login → traitement d’un formulaire
 
+👉 Cette étape s’appelle souvent le routing
+
+
+4. ⚙️ Traitement
+Selon la requête, le serveur peut :
+	🔹 Servir un fichier statique
+	HTML, CSS, image…
+	🔹 Exécuter du code
+	PHP, Node.js, Python, etc.
+	🔹 Accéder à une base de données
+	récupérer ou stocker des informations
+	
+	
+5. 🧠 Génération de la réponse
+Le serveur construit une réponse HTTP :
+	code de statut (ex : 200, 404, 500)
+	headers (type de contenu, cache…)
+	body (HTML, JSON, etc.)
+
+
+6. 📤 Envoi de la réponse
+Le serveur renvoie la réponse au client.
+
+👉 Le navigateur :
+	reçoit les données
+	les interprète
+	affiche le résultat
+
+
+7. 🔚 Fin de la connexion
+En HTTP/1.0 → connexion fermée
+En HTTP/1.1 → souvent gardée ouverte (keep-alive)
+
+🔁 Résumé simple
+👉 Cycle complet :
+	Le client envoie une requête
+	Le serveur analyse
+	Il traite la demande
+	Il renvoie une réponse
+	Le client affiche

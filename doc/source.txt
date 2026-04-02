@@ -14,3 +14,7 @@ https://beej.us/guide/bgnet/html/#getpeernamewho-are-you
 https://nginx.org/en/docs/beginners_guide.html
 
 https://www.plesk.com/blog/various/nginx-configuration-guide/
+
+https://developer.mozilla.org/fr/docs/Web/HTTP/Guides/Overview
+
+https://developer.mozilla.org/fr/docs/Web/HTTP/Guides/Messages
