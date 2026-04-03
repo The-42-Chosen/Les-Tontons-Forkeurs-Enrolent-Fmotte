@@ -18,3 +18,5 @@ https://www.plesk.com/blog/various/nginx-configuration-guide/
 https://developer.mozilla.org/fr/docs/Web/HTTP/Guides/Overview
 
 https://developer.mozilla.org/fr/docs/Web/HTTP/Guides/Messages
+
+https://codeka.io/2023/05/25/anatomie-requete-http/

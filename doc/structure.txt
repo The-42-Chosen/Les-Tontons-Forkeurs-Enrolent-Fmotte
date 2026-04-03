@@ -1,8 +1,48 @@
+
+
+class c_server
+{
+	std::vector<s_listen>		listens
+
+	std::vector<std::string>	name_servers
+
+	std::vector<s_location>		locations
+
+	std::string					root
+
+	std::vector<std::string> 	indexs
+
+	bool						auto_index
+
+	s_return					error_page
+
+	unsigned int 				client_max_body_size
+
+	s_return					ret
+
+}	
+
+strcut s_location
+{	
+	std::string 						name;
+
+	std::set<method_http> 				allowed_methods;
+
+	std::string							root;
 	
-struct listen
+	std::vector<std::string> 			indexs;
+	
+	bool								auto_index;
+
+	s_return							error_page;
+
+	s_return							ret;
+};
+
+struct s_listen
 {
     std::string ip;
-    std::string port;
+    unsigned int port;
 };
 
 enum method_http
@@ -11,25 +51,31 @@ enum method_http
 	POST,
 	DELETE,
 	HEAD
-}
+};
 
-struct request
+struct s_return
 {
-	unsigned int method; (method_http)
-	std::string url;
-	std::string protocol
-	std::string header
-	std::string body
-}
+    int code;
+    std::string value; // URL ou message
+};
 
-struct reponse
+struct s_request
 {
-	std::string protocol
-	unsigned int status_code;
-	std::string reason-phrase;
-	std::string header
-	std::string body
-}
+	method_http 						method;
+	std::string 						uri;
+	std::string 						protocol
+	std::map<std::string, std::string> 	headers;
+	std::string 						body
+};
+
+struct s_reponse
+{
+	std::string 						protocol
+	unsigned int 						status_code;
+	std::string 						reason-phrase;
+	std::map<std::string, std::string> 	headers;
+	std::string 						body
+};
 
 
 Après analyse, il a toutes les infos :
@@ -44,3 +90,19 @@ Après analyse, il a toutes les infos :
 	autoriser ou refuser
 	chercher des données
 	exécuter du code
+
+Mise en place de commentaire dans le fichier de config ?
+
+Match prefix (longest prefix match )
+
+
+🔥 3. Pipeline réel
+request
+→ find server
+→ find location
+→ apply return (si existe)
+→ check method
+→ resolve path
+→ check file
+→ error_page si besoin
+→ build response
