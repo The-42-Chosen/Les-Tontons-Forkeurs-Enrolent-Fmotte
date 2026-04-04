@@ -1,14 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.hpp                                        :+:      :+:    :+:   */
+/*   struct.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/03 17:58:55 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/03 18:30:38 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/04 15:43:02 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#pragma once
 
 # include <iostream>
 # include <string>
@@ -47,18 +49,4 @@ struct s_location
 	bool								auto_index;
 	s_return							error_page;
 	s_return							ret;
-};
-
-struct s_server
-{
-    std::vector<s_listen> listens;
-    std::vector<std::string> name_servers;
-    std::vector<s_location> locations;
-    std::string root;
-    std::vector<std::string> index_files;
-
-    bool auto_index;
-    s_return error_page;
-    unsigned int client_max_body_size;
-    s_return ret;
 };

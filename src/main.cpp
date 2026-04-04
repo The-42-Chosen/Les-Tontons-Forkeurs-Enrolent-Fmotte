@@ -6,11 +6,12 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/03 15:24:58 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/03 18:43:50 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/04 20:03:55 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "webserv.hpp"
+# include "struct.hpp"
+# include "server.hpp"
 
 int parse_config_file(char *filename, std::string &content_file)
 {
@@ -34,20 +35,6 @@ int parse_config_file(char *filename, std::string &content_file)
     
     f.close();
     return (0);
-}
-
-unsigned int get_nb_occurence(const std::string &string, const char occ)
-{
-    unsigned int nb_occ = 0;
-    unsigned int i = 0;
-
-    while (string[i] != '\0')
-    {
-        if (string[i] == occ)
-            ++nb_occ;
-        ++i;
-    }
-    return nb_occ;
 }
 
 std::vector <std::string> tokenize_string(std::string &content_file)
@@ -94,29 +81,6 @@ std::vector <std::string> tokenize_string(std::string &content_file)
     return tokens;
 }
 
-void init_serveur(std::vector <std::string> tokens)
-{
-    s_server server;
-    size_t i = 0;
-    
-    while (i < tokens.size())
-    {
-        std::cout << tokens[i] << '\n';
-
-        if (tokens[i] == "server_name")
-        {
-            while (*(tokens[i].end() -1)!= ';')
-            {
-                ++i;
-                server.name_servers.push_back(tokens[i]);   
-            }
-        }
-        ++i;
-    }
-    for(size_t i = 0; i < server.name_servers.size(); ++i)
-        std::cout << "Server Name: " << server.name_servers[i] << "\n";
-}
-
 int main(int argc, char **argv)
 {
     if(argc != 2)
@@ -126,12 +90,14 @@ int main(int argc, char **argv)
     }
 
     std::string content_file;
-    parse_config_file(argv[1], content_file);
+    if (parse_config_file(argv[1], content_file))
+        return (1);
     
     std::vector <std::string> tokens;
     tokens = tokenize_string(content_file);
     
-    init_serveur(tokens);
+    Server server;  
+    server.initialisation_server(tokens);
         
     return (0);
 }
