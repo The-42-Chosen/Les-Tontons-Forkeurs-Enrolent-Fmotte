@@ -1,6 +1,7 @@
 server {
     listen 127.0.0.1:8080;
     listen 8081;
+    listen 42.42.42.42;
 
     server_name localhost mysite.com;
 
