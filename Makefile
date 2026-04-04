@@ -6,7 +6,7 @@
 #    By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/11 16:36:16 by fmotte            #+#    #+#              #
-#    Updated: 2026/04/03 18:39:42 by fmotte           ###   ########.fr        #
+#    Updated: 2026/04/04 15:41:55 by fmotte           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,9 +26,9 @@ CXXFLAGS = -Wall -Wextra -Werror -MMD -MP -std=c++98 -g
 # =======================================
 FILE_NAMES =	main
 
-CLASS_FILE =	
+CLASS_FILE =	server
 
-ABSTR_FILE = webserv
+ABSTR_FILE = 	struct
 
 TEMPL_FILE =
 
