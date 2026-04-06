@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:50:27 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/04 20:23:51 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/06 20:21:23 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,12 @@ Server::Server():
     _auto_index(false),
     _error_page(0),
     _client_max_body_size(0),
-    _ret(NULL)
+    _ret(s_return())
     {}
     
-Server::~Server(){}
+Server::~Server() {}
 
-Server::Server(const Server &other){*this = other;}
+Server::Server(const Server &other) {*this = other;}
 
 Server& Server::operator= (const Server &other)
 {
@@ -74,19 +74,29 @@ s_listen* Server::get_listen(size_t i)
         return &_listens[i];
 }
 
-//INDEX
-void Server::add_index(std::string index) {_index_files.push_back(index);}
-std::string Server::get_index(size_t i)
+//LOCATION
+void Server::add_location(Location &location) {_locations.push_back(location);}
+Location* Server::get_location(size_t i)
 {
-    if (i >= _index_files.size())
-        return "";
+    if (i <_locations.size())
+       return &_locations[i];
     else
-        return _index_files[i];
+        return NULL;
 }
         
 //ROOT
 void Server::set_root(std::string root) {_root = root;}
 std::string Server::get_root(void) {return _root;}
+
+//INDEX
+void Server::add_index(std::string index) {_index_files.push_back(index);}
+std::string Server::get_index(size_t i)
+{
+    if (i <_index_files.size())
+       return _index_files[i];
+    else
+        return "";
+}
 
 //AUTO-INDEX
 void Server::set_auto_index(bool auto_index) {_auto_index = auto_index;}
@@ -97,46 +107,63 @@ void Server::add_error_page(s_return error_page) {_error_page.push_back(error_pa
 
 s_return* Server::get_error_page(size_t i)
 {
-    if (i >= _error_page.size())
-        return NULL;
-    else
+    if (i < _error_page.size())
         return &_error_page[i];
+    else
+        return NULL;
 }
 
 //CLIENT-MAX-BODY-SIZE
 void Server::set_client_max_body_size(unsigned int client_max_body_size) {_client_max_body_size = client_max_body_size;}
 unsigned int Server::get_client_max_body_size(void) {return _client_max_body_size;}
-        
+
+//RETURN
+void Server::set_return(s_return ret) {_ret = ret;}
+s_return* Server::get_return(void) {return &_ret;}
+
 // =====================
 // ==     Method      ==
 // =====================
 
-void Server::initialisation_server(std::vector <std::string> tokens)
+void Server::initialisation_webserv(std::vector <std::string> &tokens)
 {
-    size_t i = 0;
+    while (!tokens.empty())
+        initialisation_server(tokens);
+}
+
+void Server::initialisation_server(std::vector <std::string> &tokens)
+{
+    tokens.erase(tokens.begin());
+    tokens.erase(tokens.begin());
     
     //Big try encompasses the loop
-    while (i < tokens.size())
+    while (tokens[0] != "}")
     {
-        std::cout << tokens[i] << '\n';
-        initialisation_listens(tokens, i);
-        initialisation_name_servers(tokens, i);
-        initialisation_index_files(tokens, i);
-        initialisation_root(tokens, i);
+        initialisation_listens(tokens);
+        initialisation_name_servers(tokens);
+        initialisation_location(tokens);
+        initialisation_root(tokens);
+        initialisation_index_files(tokens);
+        initialisation_auto_index(tokens);
+        initialisation_error_page(tokens);
+        initialisation_client_max_body_size(tokens);
+        initialisation_return(tokens);
         
-        initialisation_auto_index(tokens, i);
-        initialisation_error_page(tokens, i);
-        initialisation_client_max_body_size(tokens, i);
-        ++i;
+        //Add security to avoid inifite loop
     }
+    
+    tokens.erase(tokens.begin());
     
     //Execpt
         //Clean Exit
     
-    i = 0;
+    size_t i = 0;
     std::string string;
     s_listen *listen;
     s_return *error_page;
+    Location *loc;
+    
+    std::cout << "\nNEW SERVER:\n";
     while ((string = get_name_server(i)) != "")
     {
         std::cout << "Server name: " << string << "\n";
@@ -162,35 +189,75 @@ void Server::initialisation_server(std::vector <std::string> tokens)
     }
 
     i = 0;
+    while ((loc = get_location(i)) != NULL)
+    {
+        std::cout << "\nLocation\n";
+        std::cout << "Name " <<loc->get_name() << "\n";
+        
+        if (! loc->get_methode_http().empty())
+            std::cout << "Method " << *loc->get_methode_http().begin() << "\n";
+        else
+            std::cout << "Method  NULL\n";
+            
+        std::cout << "ROOT " << loc->get_root() << "\n";
+        std::cout << "Index " << loc->get_index() << "\n";
+        std::cout << "Auto " << loc->get_auto_index() << "\n";
+        
+        if (loc->get_error_page() != NULL)
+        {
+            std::cout << "EROR code " << loc->get_error_page()->code << "\n";
+            std::cout << "EROR value " << loc->get_error_page()->value << "\n";
+        }
+        
+        std::cout << "CLIENT " << loc->get_client_max_body_size() << "\n";
+            
+        if (loc->get_return() != NULL)
+        {
+            std::cout << "RETURN code " << loc->get_return()->code << "\n";
+            std::cout << "RETURN value " << loc->get_return()->value << "\n";
+        }
+        i++;
+    }
+    
+    i = 0;
     while ((error_page = get_error_page(i)) != NULL)
     {
-        std::cout << "\n";
+        std::cout << "\nError Page\n";
         std::cout << "Code: " << error_page->code << "\n";
         std::cout << "Value: " << error_page->value << "\n";
         i++;
     }
-    std::cout << "\n";
     
+    std::cout << "\n";
     std::cout << "Root: " << get_root() << "\n";
     std::cout << "Autoindex: " << get_auto_index() << "\n";
     std::cout << "Client_max_body_size: " << get_client_max_body_size() << "\n";
-}
-
-void Server::initialisation_name_servers(std::vector <std::string> &tokens, size_t &i)
-{
-    if (tokens[i] == "server_name")
+    
+    
+    if (get_return() != NULL)
     {
-        tokens.erase(tokens.begin() + i);
-        while (*(tokens[i].end() - 1) != ';')
-        {
-            add_name_server(tokens[i]);
-            tokens.erase(tokens.begin() + i);
-        }
-        add_name_server(tokens[i]);
-        tokens.erase(tokens.begin() + i);
+        std::cout << "\nReturn\n";
+        std::cout << "Code: " << get_return()->code << "\n";
+        std::cout << "Value: " << get_return()->value << "\n";  
     }
 }
 
+void Server::initialisation_name_servers(std::vector <std::string> &tokens)
+{
+    if (tokens[0] == "server_name")
+    {
+        tokens.erase(tokens.begin());
+
+        while (tokens[0] != ";")
+        {
+            add_name_server(tokens[0]);
+            tokens.erase(tokens.begin());
+        }
+        tokens.erase(tokens.begin());
+    }
+}
+
+//Move to utils.cpp
 unsigned int get_nb_occurence(const std::string &string, const char occ)
 {
     unsigned int nb_occ = 0;
@@ -205,7 +272,7 @@ unsigned int get_nb_occurence(const std::string &string, const char occ)
     return nb_occ;
 }
 
-bool Server::initialisation_listens(std::vector <std::string> &tokens, size_t &i)
+bool Server::initialisation_listens(std::vector <std::string> &tokens)
 {
     char sep = ':';
     
@@ -215,11 +282,13 @@ bool Server::initialisation_listens(std::vector <std::string> &tokens, size_t &i
     listen.ip = "0.0.0.0";  //Put a macro for the default port
     listen.port = 0;        //Same for the port
     
-    if (tokens[i] == "listen")
+    if (tokens[0] == "listen")
     {
-        tokens.erase(tokens.begin() + i);
-        std::stringstream iss(tokens[i]);
+        tokens.erase(tokens.begin());
         
+        std::stringstream iss(tokens[0]);
+        tokens.erase(tokens.begin());
+                
         //remove semi colon at the end if
         while (getline(iss, sub_string, sep))
         {
@@ -237,52 +306,78 @@ bool Server::initialisation_listens(std::vector <std::string> &tokens, size_t &i
                 }
             }
         }
+
+        //If different than semi colon raise execption
+        tokens.erase(tokens.begin());    
         add_listen(listen);
     }
     return (false);
 }
 
-void Server::initialisation_index_files(std::vector <std::string> &tokens, size_t &i)
-{
-    if (tokens[i] == "index")
+void Server::initialisation_location(std::vector <std::string> &tokens)
+{   
+    if (tokens[0] == "location")
     {
-        tokens.erase(tokens.begin() + i);
-        while (*(tokens[i].end() - 1) != ';')
+        tokens.erase(tokens.begin());
+        
+        Location location;
+        location.init_location(tokens);
+        add_location(location);
+    }
+}
+
+void Server::initialisation_index_files(std::vector <std::string> &tokens)
+{
+    if (tokens[0] == "index")
+    {
+        tokens.erase(tokens.begin());
+        while (tokens[0] != ";")
         {
-            add_index(tokens[i]);
-            tokens.erase(tokens.begin() + i);
+            add_index(tokens[0]);
+            tokens.erase(tokens.begin());
         }
-        add_index(tokens[i]);
-        tokens.erase(tokens.begin() + i);
+        //If different than semi colon raise execption
+        tokens.erase(tokens.begin());
     }
 }
 
-void Server::initialisation_root(std::vector <std::string> &tokens, size_t &i)
+void Server::initialisation_root(std::vector <std::string> &tokens)
 {
-    if (tokens[i] == "root")
+    if (tokens[0] == "root")
     {
-        tokens.erase(tokens.begin() + i);
-        set_root(tokens[i]);
-        tokens.erase(tokens.begin() + i);
+        tokens.erase(tokens.begin());
+        set_root(tokens[0]);
+        tokens.erase(tokens.begin());
+
+        //If different than semi colon raise execption
+        tokens.erase(tokens.begin());
     }
 }
 
-bool Server::initialisation_auto_index(std::vector <std::string> &tokens, size_t &i)
+bool Server::initialisation_auto_index(std::vector <std::string> &tokens)
 {
-    if (tokens[i] == "autoindex")
+    if (tokens[0] == "autoindex")
     {
-        tokens.erase(tokens.begin() + i);
-        if (tokens[i] == "on;" || tokens[i] == "true;")
+        tokens.erase(tokens.begin());
+        if (tokens[0] == "on" || tokens[0] == "true")
         {
-            tokens.erase(tokens.begin() + i);
+
+            tokens.erase(tokens.begin());
             set_auto_index(true);
+            
+            //If different than semi colon raise execption
+            tokens.erase(tokens.begin());
             return false;
         }
             
-        else if (tokens[i] == "off;" || tokens[i] == "false;")
+        else if (tokens[0] == "off" || tokens[0] == "false")
         {
-            tokens.erase(tokens.begin() + i);
+
+            tokens.erase(tokens.begin());
             set_auto_index(false);
+            
+            //If different than semi colon raise execption
+            tokens.erase(tokens.begin());
             return false;
         }
         else
@@ -294,52 +389,84 @@ bool Server::initialisation_auto_index(std::vector <std::string> &tokens, size_t
     return false;
 }
 
-bool Server::initialisation_error_page(std::vector <std::string> &tokens, size_t &i)
+bool Server::initialisation_error_page(std::vector <std::string> &tokens)
 {   
-    s_return error_page;
-    
-    if (tokens[i] == "error_page")
+    if (tokens[0] == "error_page")
     {
-        tokens.erase(tokens.begin() + i);
+        s_return error_page;
+        tokens.erase(tokens.begin());
         
-        std::istringstream convert(tokens[i]);
+        std::istringstream convert(tokens[0]);
         convert >> error_page.code;
-        tokens.erase(tokens.begin() + i);
+        tokens.erase(tokens.begin());
          
         if (convert.fail())
         {
-            std::cerr << "Error: Can't convert (" << tokens[i] << ") to unsigned int\n";
+            std::cerr << "Error: Can't convert (" << tokens[0] << ") to unsigned int\n";
             return (true);
         }
 
-        error_page.value = tokens[i];
-        tokens.erase(tokens.begin() + i);
-        
+        error_page.value = tokens[0];
         add_error_page(error_page);
+        tokens.erase(tokens.begin());
+
+        //If different than semi colon raise execption
+        tokens.erase(tokens.begin());
         return false;
     }
     return false;
 }
 
-bool Server::initialisation_client_max_body_size(std::vector <std::string> &tokens, size_t &i)
+bool Server::initialisation_client_max_body_size(std::vector <std::string> &tokens)
 {   
     unsigned int client_max_body_size;
     
-    if (tokens[i] == "client_max_body_size")
+    if (tokens[0] == "client_max_body_size")
     {
-        tokens.erase(tokens.begin() + i);
+        tokens.erase(tokens.begin());
         
-        std::istringstream convert(tokens[i]);
+        std::istringstream convert(tokens[0]);
         convert >> client_max_body_size;
         
         if (convert.fail())
         {
-            std::cerr << "Error: Can't convert (" << tokens[i] << ") to unsigned int\n";
+            std::cerr << "Error: Can't convert (" << tokens[0] << ") to unsigned int\n";
             return (true);
         }
         
         set_client_max_body_size(client_max_body_size);
-        tokens.erase(tokens.begin() + i);
+        tokens.erase(tokens.begin());
+
+        //If different than semi colon raise execption
+        tokens.erase(tokens.begin());
+    }
+    return false;
+}
+
+bool Server::initialisation_return(std::vector <std::string> &tokens)
+{
+    if (tokens[0] == "return")
+    {
+        s_return ret;
+        tokens.erase(tokens.begin());
+        
+        std::istringstream convert(tokens[0]);
+        convert >> ret.code;
+        tokens.erase(tokens.begin());
+         
+        if (convert.fail())
+        {
+            std::cerr << "Error: Can't convert (" << tokens[0] << ") to unsigned int\n";
+            return (true);
+        }
+
+        ret.value = tokens[0];
+        set_return(ret);
+        tokens.erase(tokens.begin());
+
+        //If different than semi colon raise execption
+        tokens.erase(tokens.begin());
+        return false;
     }
     return false;
 }

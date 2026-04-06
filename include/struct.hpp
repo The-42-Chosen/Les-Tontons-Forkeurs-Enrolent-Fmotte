@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/03 17:58:55 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/04 15:43:02 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/06 15:56:41 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,15 +38,4 @@ struct s_return
 {
     int code;
     std::string value; // URL ou message
-};
-
-struct s_location
-{	
-	std::string 						name;
-	std::set<method_http> 				allowed_methods;
-	std::string							root;
-	std::vector<std::string> 			indexs;
-	bool								auto_index;
-	s_return							error_page;
-	s_return							ret;
 };

@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/03 15:24:58 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/04 20:03:55 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/06 20:12:13 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,17 @@ std::vector <std::string> tokenize_string(std::string &content_file)
                 tokens.erase(tokens.begin() + i + 1);
             }  
         }
+        if (*(tokens[i].end() - 1) == ';')
+        {
+            tokens[i] = tokens[i].substr(0, tokens[i].size()-1);;
+            tokens.insert(tokens.begin() + i + 1, ";");
+            i++;
+        }
     }
+    
+    // for(size_t i = 0; i < tokens.size(); ++i)
+    //     std::cout << tokens[i] << "\n";
+        
     return tokens;
 }
 
@@ -97,7 +107,7 @@ int main(int argc, char **argv)
     tokens = tokenize_string(content_file);
     
     Server server;  
-    server.initialisation_server(tokens);
+    server.initialisation_webserv(tokens);
         
     return (0);
 }
