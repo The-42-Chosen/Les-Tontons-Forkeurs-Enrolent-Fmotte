@@ -6,11 +6,13 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 15:45:46 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/06 20:28:28 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/08 15:22:31 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "location.hpp"
+# include "execption.hpp"
+# include "utils.hpp"
 
 // =====================
 // == Canonical Form  ==
@@ -90,10 +92,14 @@ s_return* Location::get_return(void) {return &_ret;}
 void Location::init_location(std::vector <std::string> &tokens)
 {   
     set_name(tokens[0]);
+    tokens.erase(tokens.begin());
+
+    if (tokens[0] != "{")
+        throw ExecptionMissBrace();
     
-    //If miss bracket raise execption
     tokens.erase(tokens.begin());
-    tokens.erase(tokens.begin());
+    size_t tokens_size = tokens.size();
+    size_t new_tokens_size;
     while (tokens[0] != "}")
     {
         init_location_allowed_methods(tokens);
@@ -103,8 +109,12 @@ void Location::init_location(std::vector <std::string> &tokens)
         init_location_client_max_body_size(tokens);
         init_locatoin_error_page(tokens);
         init_location_return(tokens);
-
-        //Add security to avoid inifite loop
+        
+        //Security to avoid inifite loop
+        new_tokens_size = tokens.size();
+        if (tokens_size == new_tokens_size)
+            throw ExecptionWrongArgument(tokens[0]);
+        tokens_size = new_tokens_size;
     }
     tokens.erase(tokens.begin());
 }
@@ -122,170 +132,69 @@ void Location::init_location_allowed_methods(std::vector <std::string> &tokens)
             else if (tokens[0] == "POST") add_methode_http(POST);
             else if (tokens[0] == "DELETE") add_methode_http(DELETE);
             else if (tokens[0] == "HEAD") add_methode_http(HEAD);
-            else
-            {
-                // raise erro
-            }
-    
+            else throw ExecptionIllegalMethod(tokens[0]);
+            
             tokens.erase(tokens.begin());
         }
-
         tokens.erase(tokens.begin());
     }
 }
 
 void Location::init_location_root(std::vector <std::string> &tokens)
 {
-    if (tokens[0] == "root")
-    {
-
-        tokens.erase(tokens.begin());
-        set_root(tokens[0]);
-
-        tokens.erase(tokens.begin());
-
-        tokens.erase(tokens.begin());
-    }
+    std::string root = return_root(tokens);
+    if (root != "")
+        set_root(root);
 }
 
 void Location::init_location_index(std::vector <std::string> &tokens)
 {
     if (tokens[0] == "index")
     {
-
         tokens.erase(tokens.begin());
         set_index(tokens[0]);
 
         tokens.erase(tokens.begin());
         
-        //If different than semi colon raise execption
-
+        if (tokens[0] != ";")
+            throw ExecptionMissSemiColon();
+            
         tokens.erase(tokens.begin());
     }
 }
 
-bool Location::init_location_auto_index(std::vector <std::string> &tokens)
+void Location::init_location_auto_index(std::vector <std::string> &tokens)
 {   
-    if (tokens[0] == "autoindex")
-    {
-
-        tokens.erase(tokens.begin());
-        if (tokens[0] == "on" || tokens[0] == "true")
-        {
-
+    int auto_index = return_auto_index(tokens);
     
-            tokens.erase(tokens.begin());
-            set_auto_index(true);
-            
-            //If different than semi colon raise execption
-    
-            tokens.erase(tokens.begin());
-            return false;
-        }  
-        else if (tokens[0] == "off" || tokens[0] == "false")
-        {
-            
-    
-            tokens.erase(tokens.begin());
-            set_auto_index(false);
-            
-            //If different than semi colon raise execption
-    
-            tokens.erase(tokens.begin());
-            return false;
-        }
-        else
-        {
-            std::cerr << "Error: Wrong argument for auto_index\n";
-            return true;
-        }
-    }
-    return false;
+    if (auto_index == 0)
+        set_auto_index(false);
+    else if (auto_index == 1)
+        set_auto_index(true);
 }
 
-bool Location::init_location_client_max_body_size(std::vector <std::string> &tokens)
+void Location::init_location_client_max_body_size(std::vector <std::string> &tokens)
 {
-    unsigned int client_max_body_size;
-    
-    if (tokens[0] == "client_max_body_size")
-    {
-        tokens.erase(tokens.begin());
-        
-        std::istringstream convert(tokens[0]);
-        convert >> client_max_body_size;
-        
-        if (convert.fail())
-        {
-            std::cerr << "Error: Can't convert (" << tokens[0] << ") to unsigned int\n";
-            return (true);
-        }
-        
+    unsigned int client_max_body_size = return_client_max_body_size(tokens);
+
+    if (client_max_body_size != 0)
         set_client_max_body_size(client_max_body_size);
-        tokens.erase(tokens.begin());
-
-        //If different than semi colon raise execption
-        tokens.erase(tokens.begin());
-    }
-    return false;
 }
 
-bool Location::init_locatoin_error_page(std::vector <std::string> &tokens)
+void Location::init_locatoin_error_page(std::vector <std::string> &tokens)
 {
-    if (tokens[0] == "error_page")
-    {
-        s_return error_page;
-
-        tokens.erase(tokens.begin());
-        
-        std::istringstream convert(tokens[0]);
-        convert >> error_page.code;
-
-        tokens.erase(tokens.begin());
-         
-        if (convert.fail())
-        {
-            std::cerr << "Error: Can't convert (" << tokens[0] << ") to unsigned int\n";
-            return (true);
-        }
-
-        error_page.value = tokens[0];
+    bool is_init = false;
+    s_return error_page = return_error_page(tokens, is_init);
+    
+    if (is_init)
         set_error_page(error_page);
-        tokens.erase(tokens.begin());
-
-        //If different than semi colon raise execptiom
-        tokens.erase(tokens.begin());
-        return false;
-    }
-    return false;
 }
 
-bool Location::init_location_return(std::vector <std::string> &tokens)
+void Location::init_location_return(std::vector <std::string> &tokens)
 {
-    if (tokens[0] == "return")
-    {
-        s_return ret;
-
-        tokens.erase(tokens.begin());
-        
-        std::istringstream convert(tokens[0]);
-        convert >> ret.code;
-
-        tokens.erase(tokens.begin());
-         
-        if (convert.fail())
-        {
-            std::cerr << "Error: Can't convert (" << tokens[0] << ") to unsigned int\n";
-            return (true);
-        }
-
-        ret.value = tokens[0];
+    bool is_init = false;
+    s_return ret = return_return(tokens, is_init);
+    
+    if (is_init)
         set_return(ret);
-
-        tokens.erase(tokens.begin());
-        //If different than semi colon raise execption
-
-        tokens.erase(tokens.begin());
-        return false;
-    }
-    return false;
 }

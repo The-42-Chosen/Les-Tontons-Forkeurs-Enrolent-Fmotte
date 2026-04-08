@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:43:21 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/06 20:06:58 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/08 15:07:48 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,9 @@
 
 # include "struct.hpp"
 # include "location.hpp"
+
+#define DEFAULT_IP "0.0.0.0"
+#define DEFAULT_PORT 0
 
 class Server
 {
@@ -89,20 +92,17 @@ class Server
         void initialisation_server(std::vector <std::string> &tokens);
         //default init
 
-        bool initialisation_listens(std::vector <std::string> &tokens);
+        void initialisation_listens(std::vector <std::string> &tokens);
         void initialisation_name_servers(std::vector <std::string> &tokens);
         void initialisation_location(std::vector <std::string> &tokens);
                 
         void initialisation_root(std::vector <std::string> &tokens);
         
         void initialisation_index_files(std::vector <std::string> &tokens);
-        bool initialisation_auto_index(std::vector <std::string> &tokens);
+        void initialisation_auto_index(std::vector <std::string> &tokens);
         
-        bool initialisation_error_page(std::vector <std::string> &tokens);
-        bool initialisation_client_max_body_size(std::vector <std::string> &tokens);
-        bool initialisation_return(std::vector <std::string> &tokens);
+        void initialisation_error_page(std::vector <std::string> &tokens);
+        void initialisation_client_max_body_size(std::vector <std::string> &tokens);
+        void initialisation_return(std::vector <std::string> &tokens);
    
 };  
-
-
-unsigned int get_nb_occurence(const std::string &string, const char occ);

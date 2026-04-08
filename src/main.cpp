@@ -6,12 +6,13 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/03 15:24:58 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/06 20:12:13 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/08 13:46:56 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "struct.hpp"
 # include "server.hpp"
+# include "utils.hpp"
 
 int parse_config_file(char *filename, std::string &content_file)
 {
@@ -77,9 +78,9 @@ std::vector <std::string> tokenize_string(std::string &content_file)
                 tokens.erase(tokens.begin() + i + 1);
             }  
         }
-        if (*(tokens[i].end() - 1) == ';')
+        if (*(tokens[i].end() - 1) == ';' && tokens[i].size() != 1)
         {
-            tokens[i] = tokens[i].substr(0, tokens[i].size()-1);;
+            tokens[i] = tokens[i].substr(0, tokens[i].size()-1);
             tokens.insert(tokens.begin() + i + 1, ";");
             i++;
         }

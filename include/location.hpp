@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 15:45:26 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/06 20:26:04 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/08 15:22:25 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,11 +85,11 @@ class Location
         void init_location_root(std::vector <std::string> &tokens);
         
         void init_location_index(std::vector <std::string> &tokens);
-        bool init_location_auto_index(std::vector <std::string> &tokens);
+        void init_location_auto_index(std::vector <std::string> &tokens);
         
-        bool init_location_client_max_body_size(std::vector <std::string> &tokens);
-        bool init_locatoin_error_page(std::vector <std::string> &tokens);
-        bool init_location_return(std::vector <std::string> &tokens);
+        void init_location_client_max_body_size(std::vector <std::string> &tokens);
+        void init_locatoin_error_page(std::vector <std::string> &tokens);
+        void init_location_return(std::vector <std::string> &tokens);
 };
 
 
