@@ -1,5 +1,5 @@
 server {
-    listen 127.0.0.1:8080;
+    listen 127.0.0.1:8080; 
     listen 8081;
     listen 42.42.42.42;
 
@@ -32,7 +32,7 @@ server {
 
     }
 
-    location /uploadb
+    location /upload
     {
         allowed_methods GET POST;
         client_max_body_size 5000000;
@@ -65,7 +65,7 @@ server {
     location / {
         allowed_methods GET;
     }
-
+    
     location /delete {
         allowed_methods DELETE;
         return 200 "Delete OK";
