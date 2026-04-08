@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:50:27 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/08 15:22:38 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/08 16:32:54 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ Server::Server():
     _index_files(0),
     _auto_index(false),
     _error_page(0),
-    _client_max_body_size(0),
+    _client_max_body_size(DEFAULT_CLIENT_MAX_BODY_SIZE),
     _ret(s_return())
     {}
     
@@ -132,6 +132,7 @@ void Server::initialisation_webserv(std::vector <std::string> &tokens)
     {
         while (!tokens.empty())
             initialisation_server(tokens);
+        initialisation_check();
     }
     catch(const std::exception& e)
     {
@@ -253,6 +254,18 @@ void Server::initialisation_server(std::vector <std::string> &tokens)
         std::cout << "Code: " << get_return()->code << "\n";
         std::cout << "Value: " << get_return()->value << "\n";  
     }
+}
+
+void Server::initialisation_check()
+{
+    if (_listens.size() == 0)
+        throw ExecptionMissElement("listen");
+    
+    if (_name_servers.size() == 0)
+        throw ExecptionMissElement("server_name");
+        
+    if (_root == "")
+        throw ExecptionMissElement("root");
 }
 
 void Server::initialisation_name_servers(std::vector <std::string> &tokens)

@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/08 13:08:20 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/08 15:20:17 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/08 16:28:15 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,5 +46,14 @@ class ExecptionFailConvertion: public std::exception
     public:
         ExecptionFailConvertion(const std::string& argument);
         ~ExecptionFailConvertion() throw();
+        const char* what() const throw();
+};
+
+class ExecptionMissElement: public std::exception 
+{
+    private: std::string _message;
+    public:
+        ExecptionMissElement(const std::string& argument);
+        ~ExecptionMissElement() throw();
         const char* what() const throw();
 };

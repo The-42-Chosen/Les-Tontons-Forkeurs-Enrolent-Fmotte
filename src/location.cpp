@@ -6,10 +6,11 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 15:45:46 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/08 15:22:31 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/08 16:27:52 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+# include "server.hpp"
 # include "location.hpp"
 # include "execption.hpp"
 # include "utils.hpp"
@@ -25,7 +26,7 @@ Location::Location():
     _index(""),
     _auto_index(false),
     _error_page(s_return()),
-    _client_max_body_size(0),
+    _client_max_body_size(DEFAULT_CLIENT_MAX_BODY_SIZE),
     _ret(s_return())
     {}
 

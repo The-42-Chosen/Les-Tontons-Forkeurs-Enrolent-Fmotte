@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:43:21 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/08 15:07:48 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/08 16:18:04 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 
 #define DEFAULT_IP "0.0.0.0"
 #define DEFAULT_PORT 0
+#define DEFAULT_CLIENT_MAX_BODY_SIZE  5000
 
 class Server
 {
@@ -24,13 +25,13 @@ class Server
         
         std::vector<s_listen>       _listens;
         std::vector<std::string>    _name_servers;
-        std::vector<Location>      _locations;
+        std::vector<Location>       _locations;
         std::string                 _root;
         std::vector<std::string>    _index_files;
 
         bool _auto_index;
         std::vector<s_return>     _error_page;
-        unsigned int               _client_max_body_size;
+        unsigned int              _client_max_body_size;
         s_return                  _ret;
     
     public:
@@ -90,7 +91,7 @@ class Server
         
         void initialisation_webserv(std::vector <std::string> &tokens);
         void initialisation_server(std::vector <std::string> &tokens);
-        //default init
+        void initialisation_check();
 
         void initialisation_listens(std::vector <std::string> &tokens);
         void initialisation_name_servers(std::vector <std::string> &tokens);
@@ -104,5 +105,5 @@ class Server
         void initialisation_error_page(std::vector <std::string> &tokens);
         void initialisation_client_max_body_size(std::vector <std::string> &tokens);
         void initialisation_return(std::vector <std::string> &tokens);
-   
+
 };  
