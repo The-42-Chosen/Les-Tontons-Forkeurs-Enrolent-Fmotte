@@ -81,6 +81,7 @@ std::vector <std::string> tokenize_string(std::string &content_file)
             i++;
         }
     }
+    
     // for(size_t i = 0; i < tokens.size(); ++i)
     //     std::cout << tokens[i] << "\n";
         
