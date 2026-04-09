@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:50:27 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/09 16:47:49 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/09 17:51:38 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ Server& Server::operator= (const Server &other)
     this->_locations = other._locations;
     this->_root = other._root;
     this->_index_files = other._index_files;
+    this->_servers = other._servers;
     this->_auto_index = other._auto_index;
     this->_error_page = other._error_page;
     this->_client_max_body_size = other._client_max_body_size;
@@ -128,17 +129,28 @@ s_return* Server::get_return(void) {return &_ret;}
 
 bool Server::initialisation_webserv(std::vector <std::string> &tokens)
 {
+    return split_servers(tokens);
+}
+
+bool Server::split_servers(std::vector <std::string> &tokens)
+{
+    _servers.clear();
+
     try
     {
         while (!tokens.empty())
-            initialisation_server(tokens);
-        initialisation_check();
-		return (true);
+        {
+            Server server;
+            server.initialisation_server(tokens);
+            server.initialisation_check();
+            _servers.push_back(server);
+        }
+        return (true);
     }
     catch(const std::exception& e)
     {
         std::cerr << e.what() << '\n';
-		return (false);
+        return (false);
     }
 }
 

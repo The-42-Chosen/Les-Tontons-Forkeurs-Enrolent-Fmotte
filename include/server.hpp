@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:43:21 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/09 14:25:48 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/09 17:37:38 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ class Server
         std::vector<Location>       _locations;
         std::string                 _root;
         std::vector<std::string>    _index_files;
+		std::vector<Server>			_servers;
 
         bool _auto_index;
         std::vector<s_return>     _error_page;
@@ -92,6 +93,7 @@ class Server
         bool initialisation_webserv(std::vector <std::string> &tokens);
         void initialisation_server(std::vector <std::string> &tokens);
         void initialisation_check();
+		bool split_servers(std::vector <std::string> &tokens);
 
         void initialisation_listens(std::vector <std::string> &tokens);
         void initialisation_name_servers(std::vector <std::string> &tokens);
