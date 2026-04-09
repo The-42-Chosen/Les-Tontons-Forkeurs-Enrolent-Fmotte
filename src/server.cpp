@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:50:27 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/09 15:13:07 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/09 16:47:49 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -310,6 +310,12 @@ void Server::initialisation_listens(std::vector <std::string> &tokens)
     {
         tokens.erase(tokens.begin());
         
+		if (tokens[0] == ";")
+		{
+			tokens.erase(tokens.begin());    
+        	add_listen(listen);
+			return ;
+		}
         std::stringstream iss(tokens[0]);
         tokens.erase(tokens.begin());
                 
