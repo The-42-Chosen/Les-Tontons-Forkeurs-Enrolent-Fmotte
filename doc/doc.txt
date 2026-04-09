@@ -1,9 +1,0 @@
-
-Pour chaque serveur on a besion de:
-- une adresse IPV4  (au moins 1)
-- un port           (au moins 1)
-
-- un nom    (unique)
-
-- root      (unique)    Chemin d'acces vers la page HTML
-- inde
