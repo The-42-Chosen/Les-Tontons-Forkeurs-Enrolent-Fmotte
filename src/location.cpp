@@ -92,8 +92,14 @@ s_return* Location::get_return(void) {return &_ret;}
 
 void Location::init_location(std::vector <std::string> &tokens)
 {   
+    if (tokens.empty())
+        throw ExecptionMissBrace();
+
     set_name(tokens[0]);
     tokens.erase(tokens.begin());
+
+    if (tokens.empty())
+        throw ExecptionMissBrace();
 
     if (tokens[0] != "{")
         throw ExecptionMissBrace();
@@ -101,8 +107,13 @@ void Location::init_location(std::vector <std::string> &tokens)
     tokens.erase(tokens.begin());
     size_t tokens_size = tokens.size();
     size_t new_tokens_size;
-    while (tokens[0] != "}")
+    while (true)
     {
+        if (tokens.empty())
+            throw ExecptionMissBrace();
+        if (tokens[0] == "}")
+            break;
+
         init_location_allowed_methods(tokens);
         init_location_root(tokens);
         init_location_index(tokens);

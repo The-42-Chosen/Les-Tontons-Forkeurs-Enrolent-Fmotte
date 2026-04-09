@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:50:27 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/09 14:26:09 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/09 15:13:07 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,7 +144,13 @@ bool Server::initialisation_webserv(std::vector <std::string> &tokens)
 
 void Server::initialisation_server(std::vector <std::string> &tokens)
 {
+    if (tokens.empty())
+        throw ExecptionMissBrace();
+
     tokens.erase(tokens.begin());
+
+    if (tokens.empty())
+        throw ExecptionMissBrace();
 
     if (tokens[0] != "{")
         throw ExecptionMissBrace();
@@ -152,8 +158,13 @@ void Server::initialisation_server(std::vector <std::string> &tokens)
     tokens.erase(tokens.begin());
     size_t tokens_size = tokens.size();
     size_t new_tokens_size;
-    while (tokens[0] != "}")
+    while (true)
     {
+        if (tokens.empty())
+            throw ExecptionMissBrace();
+        if (tokens[0] == "}")
+            break;
+
         initialisation_listens(tokens);
         initialisation_name_servers(tokens);
         initialisation_location(tokens);
