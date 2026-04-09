@@ -1,0 +1,178 @@
+Webserv - Rapport des tests de parsing qui echouent
+Date: 2026-04-09
+Binaire teste: ./Webserv
+
+Total tests executes: 20
+Nombre de tests en echec: 16
+
+1. invalid_unknown_directive_server
+   fichier: doc/parsing_tests/invalid_unknown_directive_server.conf
+   attendu: exit non-zero
+   observe: exit 0
+   pourquoi ca foire: config invalide acceptee (exit 0)
+   commentaire technique: Boucle server sans fallback: aucun parseur ne consomme le token inconnu, la boucle while reste bloquee.
+   extrait sortie:
+      Error: Cannont interprete this argument: foobar
+
+2. invalid_unknown_directive_location
+   fichier: doc/parsing_tests/invalid_unknown_directive_location.conf
+   attendu: exit non-zero
+   observe: exit 0
+   pourquoi ca foire: config invalide acceptee (exit 0)
+   commentaire technique: Boucle location sans fallback: token inconnu jamais consomme, boucle infinie.
+   extrait sortie:
+      Error: Cannont interprete this argument: mystery
+
+3. invalid_missing_semicolon_root
+   fichier: doc/parsing_tests/invalid_missing_semicolon_root.conf
+   attendu: exit non-zero
+   observe: exit 0
+   pourquoi ca foire: config invalide acceptee (exit 0)
+   commentaire technique: Le parseur efface des tokens en supposant la presence de ;, ce qui desynchronise le flux et casse la suite.
+   extrait sortie:
+      Error: Miss semi-colon in the config file
+
+4. invalid_missing_closing_brace_server
+   fichier: doc/parsing_tests/invalid_missing_closing_brace_server.conf
+   attendu: exit non-zero
+   observe: exit 0
+   pourquoi ca foire: config invalide acceptee (exit 0)
+   commentaire technique: Acces a tokens[0] sans verifier la fin du vecteur: comportement indefini (souvent crash/segfault).
+   extrait sortie:
+      Error: Cannont interprete this argument: ;
+
+5. invalid_bad_autoindex_server
+   fichier: doc/parsing_tests/invalid_bad_autoindex_server.conf
+   attendu: exit non-zero
+   observe: exit 0
+   pourquoi ca foire: config invalide acceptee (exit 0)
+   commentaire technique: La fonction signale une erreur mais le code de retour est ignore dans la boucle principale.
+   extrait sortie:
+      Error: Cannont interprete this argument: maybe
+
+6. invalid_bad_autoindex_location
+   fichier: doc/parsing_tests/invalid_bad_autoindex_location.conf
+   attendu: exit non-zero
+   observe: exit 0
+   pourquoi ca foire: config invalide acceptee (exit 0)
+   commentaire technique: Meme probleme: erreur detectee mais non propagee, parsing continue et retourne 0.
+   extrait sortie:
+      Error: Cannont interprete this argument: maybe
+
+7. invalid_non_numeric_port
+   fichier: doc/parsing_tests/invalid_non_numeric_port.conf
+   attendu: exit non-zero
+   observe: exit 0
+   pourquoi ca foire: config invalide acceptee (exit 0)
+   commentaire technique: Erreur detectee localement mais non propagee jusqu au main, le programme finit en succes.
+   extrait sortie:
+      Error: Can't convert (abc) to unsigned int
+
+8. invalid_non_numeric_client_size
+   fichier: doc/parsing_tests/invalid_non_numeric_client_size.conf
+   attendu: exit non-zero
+   observe: exit 0
+   pourquoi ca foire: config invalide acceptee (exit 0)
+   commentaire technique: Erreur de conversion detectee mais non propagee en code de sortie.
+   extrait sortie:
+      Error: Can't convert (ten) to unsigned int
+
+9. invalid_error_page_missing_value
+   fichier: doc/parsing_tests/invalid_error_page_missing_value.conf
+   attendu: exit non-zero
+   observe: exit 0
+   pourquoi ca foire: config invalide acceptee (exit 0)
+   commentaire technique: Aucune verification d arite (nombre d arguments): le ; est pris comme valeur valide.
+   extrait sortie:
+      Error: Miss semi-colon in the config file
+
+10. invalid_return_missing_value
+   fichier: doc/parsing_tests/invalid_return_missing_value.conf
+   attendu: exit non-zero
+   observe: exit 0
+   pourquoi ca foire: config invalide acceptee (exit 0)
+   commentaire technique: Aucune verification d arite: ; devient valeur de return au lieu de lever une erreur.
+   extrait sortie:
+      Error: Miss semi-colon in the config file
+
+11. invalid_listen_extra_colon
+   fichier: doc/parsing_tests/invalid_listen_extra_colon.conf
+   attendu: exit non-zero
+   observe: exit 0
+   pourquoi ca foire: config invalide acceptee (exit 0)
+   commentaire technique: Format listen trop permissif: dernier segment numerique ecrase port precedent sans rejet.
+   extrait sortie:
+      NEW SERVER:
+      Server name: x
+      
+      Index: index.html
+      
+      
+      IP: 127.0.0.1
+      Port: 9090
+      
+      Root: /var/www/html
+
+12. invalid_server_name_no_value
+   fichier: doc/parsing_tests/invalid_server_name_no_value.conf
+   attendu: exit non-zero
+   observe: exit 0
+   pourquoi ca foire: config invalide acceptee (exit 0)
+   commentaire technique: Aucune contrainte sur server_name vide, le parser accepte server_name ;.
+   extrait sortie:
+      NEW SERVER:
+      
+      Index: index.html
+      
+      
+      IP: 0.0.0.0
+      Port: 8080
+      
+      Root: /var/www/html
+      Autoindex: 0
+
+13. invalid_location_no_path
+   fichier: doc/parsing_tests/invalid_location_no_path.conf
+   attendu: exit non-zero
+   observe: exit 0
+   pourquoi ca foire: config invalide acceptee (exit 0)
+   commentaire technique: Syntaxe location non valide acceptee: { est pris comme nom de location.
+   extrait sortie:
+      Error: Miss curly brace in the config file
+
+14. invalid_allowed_methods_unknown
+   fichier: doc/parsing_tests/invalid_allowed_methods_unknown.conf
+   attendu: exit non-zero
+   observe: exit 0
+   pourquoi ca foire: config invalide acceptee (exit 0)
+   commentaire technique: Branche else vide dans allowed_methods: methode inconnue ignoree sans erreur.
+   extrait sortie:
+      Error: Illegal method http: PATCH
+
+15. invalid_unclosed_quote_return
+   fichier: doc/parsing_tests/invalid_unclosed_quote_return.conf
+   attendu: exit non-zero
+   observe: exit 0
+   pourquoi ca foire: config invalide acceptee (exit 0)
+   commentaire technique: Gestion des guillemets incomplete (fusion 2 tokens max), pas de validation de fermeture de quote.
+   extrait sortie:
+      NEW SERVER:
+      Server name: x
+      
+      
+      
+      IP: 0.0.0.0
+      Port: 8080
+      
+      Root: 
+      Autoindex: 0
+
+16. invalid_empty
+   fichier: doc/parsing_tests/invalid_empty.conf
+   attendu: exit non-zero
+   observe: exit 0
+   pourquoi ca foire: config invalide acceptee (exit 0)
+   commentaire technique: Aucun garde-fou sur tokens vide avant acces tokens[0], provoque comportement indefini/crash.
+   extrait sortie:
+      Error: Miss this mandatory part in the config file: listen
+
