@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:43:21 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/08 16:18:04 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/09 14:25:48 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ class Server
         // ==     Method      ==
         // =====================
         
-        void initialisation_webserv(std::vector <std::string> &tokens);
+        bool initialisation_webserv(std::vector <std::string> &tokens);
         void initialisation_server(std::vector <std::string> &tokens);
         void initialisation_check();
 

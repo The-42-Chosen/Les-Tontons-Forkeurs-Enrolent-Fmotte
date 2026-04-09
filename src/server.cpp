@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:50:27 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/08 16:32:54 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/09 14:26:09 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,17 +126,19 @@ s_return* Server::get_return(void) {return &_ret;}
 // ==     Method      ==
 // =====================
 
-void Server::initialisation_webserv(std::vector <std::string> &tokens)
+bool Server::initialisation_webserv(std::vector <std::string> &tokens)
 {
     try
     {
         while (!tokens.empty())
             initialisation_server(tokens);
         initialisation_check();
+		return (true);
     }
     catch(const std::exception& e)
     {
         std::cerr << e.what() << '\n';
+		return (false);
     }
 }
 
@@ -219,8 +221,8 @@ void Server::initialisation_server(std::vector <std::string> &tokens)
         
         if (loc->get_error_page() != NULL)
         {
-            std::cout << "EROR code " << loc->get_error_page()->code << "\n";
-            std::cout << "EROR value " << loc->get_error_page()->value << "\n";
+            std::cout << "ERROR code " << loc->get_error_page()->code << "\n";
+            std::cout << "ERROR value " << loc->get_error_page()->value << "\n";
         }
         
         std::cout << "CLIENT " << loc->get_client_max_body_size() << "\n";
