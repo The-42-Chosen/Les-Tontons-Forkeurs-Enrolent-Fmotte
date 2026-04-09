@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/08 12:58:24 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/09 13:23:12 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/09 16:34:29 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,7 @@ int parse_config_file(char *filename, std::string &content_file)
     std::string line;
     while (std::getline(f, line))
     {
-        if (!f.eof())
-            line.append("\n");
-        else
-            break;
+        line.append("\n");
         content_file.append(line);
     }
     
@@ -84,7 +81,6 @@ std::vector <std::string> tokenize_string(std::string &content_file)
             i++;
         }
     }
-    
     // for(size_t i = 0; i < tokens.size(); ++i)
     //     std::cout << tokens[i] << "\n";
         
