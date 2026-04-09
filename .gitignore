@@ -1,0 +1,8 @@
+# Executables
+Webserv
+
+# Object files
+*.o
+
+# Dependency files
+*.d
