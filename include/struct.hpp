@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/03 17:58:55 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/08 15:22:40 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/11 14:56:31 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,15 @@
 # include <set>
 # include <sstream>
 # include <algorithm>
+
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <arpa/inet.h>
+# include <sys/epoll.h>
+# include <fcntl.h>
+
+# include <unistd.h>
+# include <signal.h>
 
 enum method_http
 {

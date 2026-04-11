@@ -1,0 +1,188 @@
+
+=======
+socket
+=======
+
+La fonction socket() sert à créer une socket, c’est-à-dire un point de communication entre deux machines sur un réseau.
+C’est la première étape pour faire du réseau (serveur ou client).
+
+Les paramètres
+
+    1. domain (ou famille d’adresses)
+        Définit le type de réseau :
+            AF_INET → IPv4 (le plus utilisé)
+            AF_INET6 → IPv6
+            AF_UNIX → communication locale (sur la même machine)
+
+    2. type
+        Définit le type de communication :
+            SOCK_STREAM → TCP (fiable, connecté)
+            SOCK_DGRAM → UDP (rapide, sans connexion)
+
+    3. protocol
+        Souvent mis à 0 (le système choisit automatiquement le bon protocole).
+
+Valeur de retour
+- Si tout va bien → retourne un descripteur de socket (un entier)
+- Si erreur → retourne -1
+
+
+
+=======
+bind
+=======
+
+La fonction bind sert à associer une socket à une adresse IP et un port.\
+Elle dit au système : “cette socket va écouter sur telle IP et tel port”
+
+Paramètres :
+    sockfd → descripteur de la socket (créée avec socket())
+    addr → adresse (IP + port)
+    addrlen → taille de la structure
+
+Valeur de retour
+- Si tout va bien → 0
+- Si erreur → retourne -1
+
+
+
+=======
+listen
+=======
+
+La fonction listen sert à mettre une socket en mode écoute pour accepter des connexions entrantes.
+Elle transforme une socket “normale” en socket serveur prête à recevoir des clients.
+
+Paramètres :
+    sockfd → socket déjà créée et bindée
+    backlog → nombre maximum de connexions en attente
+
+Valeur de retour
+    - Si tout va bien → 0
+    - Si erreur → retourne -1
+
+
+
+=======
+accept
+=======
+
+La fonction accept sert à accepter une connexion entrante sur une socket en écoute.
+Elle récupère un client qui attend dans la file (créée par listen) et crée une nouvelle socket dédiée à ce client.
+
+Paramètres :
+    sockfd → socket serveur (celle utilisée avec bind + listen)
+    addr → infos sur le client (IP, port)
+    addrlen → taille de la structure
+
+Valeur de retour
+    - Si tout va bien → un descripteur de fichier pour le socket accepté (un entier non négatif)
+    - Si erreur → retourne -1
+
+
+
+=======
+read
+=======
+
+La fonction read sert à lire des données depuis un descripteur de fichier.
+read permet de recevoir des données envoyées par un client (ou un serveur).
+
+Paramètres :
+    fd → descripteur (socket, fichier, etc.)
+    buf → buffer où stocker les données
+    count → nombre max d’octets à lire
+
+Valeur de retour
+    - Si > 0 → nombre d’octets lus
+    - Si 0 → connexion fermée (EOF)
+    - Si < 0 erreur
+
+
+
+=======
+send
+=======
+
+La fonction send sert à envoyer des données à travers une socket.
+Elle permet d’envoyer un message à un client (ou à un serveur).
+
+Paramètres :
+    sockfd → socket (souvent celle retournée par accept)
+    buf → données à envoyer
+    len → taille des données
+    flags → options (souvent 0)
+
+Valeur de retour
+    - Si > 0 → nombre d’octets lus
+    - Si < 0 erreur
+
+
+============
+epoll_create
+===========
+
+La fonction epoll_create sert à créer une instance de epoll, c’est-à-dire un mécanisme permettant de surveiller plusieurs sockets efficacement.
+Elle initialise un outil qui permet de savoir quelles sockets sont prêtes à être lues ou écrites, sans bloquer.
+
+Paramètre :
+    size → ignoré aujourd’hui (historique, mets une valeur > 0)
+
+Ce que fait epoll_create:
+    - Crée un descripteur epoll (epoll_fd)
+    - Ce descripteur va servir à :
+        - enregistrer des sockets à surveiller
+        - attendre des événements (lecture, écriture…)
+
+Valeur de retour
+    - Si tout va bien → retourne un descripteur (un entier)
+    - Si erreur → retourne -1
+
+
+============
+epoll_ctl
+===========
+
+La fonction epoll_ctl sert à ajouter, modifier ou supprimer des descripteurs de fichiers (comme des sockets) dans une instance epoll.
+C’est elle qui dit à epoll quelles sockets surveiller et quels événements nous intéressent.
+
+Paramètres:
+    Paramètre	Description
+    epfd	    descripteur de l’instance epoll (epoll_create)
+    op          opération : EPOLL_CTL_ADD, EPOLL_CTL_MOD, EPOLL_CTL_DEL
+    fd	        socket ou descripteur à surveiller
+    event	    structure epoll_event indiquant les événements à surveiller
+
+Ce que fait epoll_ctl:
+    - EPOLL_CTL_ADD → ajouter une socket à la surveillance
+    - EPOLL_CTL_MOD → modifier les événements d’une socket déjà ajoutée
+    - EPOLL_CTL_DEL → retirer une socket de la surveillance
+
+Valeur de retour
+    - Si tout va bien → 0
+    - Si erreur → retourne -1
+
+
+============
+epoll_wait
+===========
+
+La fonction epoll_wait sert à attendre qu’un ou plusieurs événements se produisent sur les sockets surveillées par epoll.
+C’est elle qui bloque le programme jusqu’à ce qu’une socket soit prête à être lue ou écrite.
+
+Paramètres
+    Paramètre	Description
+    epfd	    descripteur de l’instance epoll (epoll_create)
+    events	    tableau où epoll_wait va écrire les événements survenus
+    maxevents	taille du tableau events
+    timeout	    temps max en ms à attendre (-1 = bloquant indéfiniment)
+
+Ce que fait epoll_wait:
+    - Attend que des sockets soient prêtes pour les opérations demandées (EPOLLIN, EPOLLOUT, etc.)
+    - Remplit le tableau events avec les sockets prêtes
+    - Retourne le nombre d’événements survenus
+
+Valeur de retour
+    - Si tout va bien → le nombre de descripteurs de fichiers prêts pour l'opération d'E/S demandé (int)
+    - Si auncun fichier → 0
+    - Si erreur → retourne -1

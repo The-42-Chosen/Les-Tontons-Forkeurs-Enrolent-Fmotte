@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/03 15:24:58 by fmotte            #+#    #+#             */
 /*   Updated: 2026/04/10 14:47:14 by erpascua         ###   ########.fr       */
@@ -15,7 +15,7 @@
 # include "utils.hpp"
 # include "colors.hpp"
 
-
+int stop_webserv = 0;
 
 int main(int argc, char **argv)
 {
