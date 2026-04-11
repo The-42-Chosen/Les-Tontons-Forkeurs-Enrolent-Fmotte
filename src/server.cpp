@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:50:27 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/10 17:49:44 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/11 16:01:32 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "server.hpp"
 # include "utils.hpp"
 # include "execption.hpp"
+# include "utils_connection.hpp"
 
 // =====================
 // == Canonical Form  ==
@@ -445,4 +446,9 @@ void Server::initialisation_return(std::vector <std::string> &tokens)
     
     if (is_init)
         set_return(ret);
+}
+
+void initialisation_connection(std::vector <std::string> &tokens)
+{
+    
 }
