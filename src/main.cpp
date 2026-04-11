@@ -6,13 +6,13 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/03 15:24:58 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/11 16:02:19 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/11 18:20:57 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "struct.hpp"
-# include "server.hpp"
-# include "utils.hpp"
+# include "webserv.hpp"
+# include "utils_parsing.hpp"
 # include "colors.hpp"
 
 int stop_webserv = 0;
@@ -32,20 +32,13 @@ int main(int argc, char **argv)
     std::vector <std::string> tokens;
     tokens = tokenize_string(content_file);
     
-    Server server;  
-    if (!server.initialisation_webserv(tokens))
+    
+    Webserv webser;  
+    if (webser.initialisation_webserv(tokens))
 		return (1);
     
-    // TEST PRINT SERVERS
-    std::cout << RED << "\n=== RÉSUMÉ DES SERVEURS PARSÉS ===\n"  << RESET;
-    for (size_t i = 0; i < server.get_servers_count(); i++)
-    {
-        Server* srv = server.get_server(i);
-        if (srv != NULL)
-            std::cout << "Serveur " << (i + 1) << " ajouté au vector\n";
-    }
-    std::cout << "Total: " << server.get_servers_count() << " serveur(s)\n";
-    std::cout << "==================================\n\n";
+    if (webser.initialisation_connection())
+        return (2);
         
     return (0);
 }
