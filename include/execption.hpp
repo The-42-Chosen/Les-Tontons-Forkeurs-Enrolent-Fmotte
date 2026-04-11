@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execption.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/08 13:08:20 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/10 14:43:41 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/11 17:52:59 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,5 +67,16 @@ class ExecptionMissElement : public std::exception
   public:
     ExecptionMissElement(const std::string &argument);
     ~ExecptionMissElement() throw();
+    const char *what() const throw();
+};
+
+class ExecptionErrorFunction : public std::exception
+{
+  private:
+    std::string _message;
+
+  public:
+    ExecptionErrorFunction(const std::string &argument);
+    ~ExecptionErrorFunction() throw();
     const char *what() const throw();
 };
