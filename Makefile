@@ -6,7 +6,7 @@
 #    By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/11 16:36:16 by fmotte            #+#    #+#              #
-#    Updated: 2026/04/08 13:16:58 by fmotte           ###   ########.fr        #
+#    Updated: 2026/04/11 17:23:35 by fmotte           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,8 +28,11 @@ FILE_NAMES =	main
 
 CLASS_FILE =	server \
 				location \
-				utils \
-				execption
+				utils_connection \
+				utils_duplicate \
+				utils_parsing \
+				execption \
+				webserv 
 
 ABSTR_FILE = 	struct
 
