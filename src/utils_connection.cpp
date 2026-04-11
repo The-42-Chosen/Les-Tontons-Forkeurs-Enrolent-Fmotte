@@ -6,13 +6,14 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 14:55:37 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/11 14:57:40 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/11 18:44:35 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "utils_connection.hpp"
+# include "execption.hpp"
 
-void handle_sigint(int sig){stop_webserv = 1;}
+void handle_sigint(int sig){ (void)sig; stop_webserv = 1;}
 
 void init_signal(struct sigaction &sa)
 {
@@ -31,35 +32,50 @@ int set_nonblocking(int fd)
 sockaddr_in create_socket_adrress(std::string ip_address, unsigned int port_number)
 {
     sockaddr_in serverAddress;
+    
     serverAddress.sin_family = AF_INET;        // AF_INET : IPv4 protocol
     serverAddress.sin_port = htons(port_number);
     serverAddress.sin_addr.s_addr = inet_addr(ip_address.c_str());;
     return serverAddress;
 }
 
-void add_socket_to_event(struct epoll_event &ev, int epoll_fd, int socket_fd)
+void add_socket_to_event(int epoll_fd, int socket_fd)
 {
+    struct epoll_event ev;
     ev.events = EPOLLIN;
     ev.data.fd = socket_fd;
-    epoll_ctl(epoll_fd, EPOLL_CTL_ADD, socket_fd, &ev); //return  -1 if error
+    epoll_ctl(epoll_fd, EPOLL_CTL_ADD, socket_fd, &ev);
+    // if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, socket_fd, &ev) == -1)
+    //     throw ExecptionErrorFunction("epoll_ctl");
 }
 
-void get_new_client(struct epoll_event &ev, int epoll_fd, int server_fd)
+int get_new_client(int epoll_fd, int server_fd)
 {
-    int clientSocket = accept(server_fd, nullptr, nullptr); //return  -1 if error
+    int clientSocket;
+    if ((clientSocket = accept(server_fd, NULL, NULL)) == -1)
+        throw ExecptionErrorFunction("accept");
+        
     set_nonblocking(clientSocket);
-    add_socket_to_event(ev, epoll_fd, clientSocket);
-    std::cout << "Nouveau client connecté: fd="<< clientSocket << "\n";
+    add_socket_to_event(epoll_fd, clientSocket);
+    std::cout << "Nouveau client connecté: fd=" << clientSocket << "\n";
+    return clientSocket;
 }
 
 int get_message_from_client(int clientSocket, unsigned int size_buffer)
 {
+    int bytes;
     char buffer[size_buffer];
-    int bytes = recv(clientSocket, buffer, sizeof(buffer), 0); //return  -1 if error
+    
+    if ((bytes = recv(clientSocket, buffer, sizeof(buffer), 0)) == -1)
+        throw ExecptionErrorFunction("recv");
+    
     buffer[bytes] = '\0';
     
-    if (bytes <= 0)
+    if (bytes == 0)
+    {
         close(clientSocket); // Client déconnecté
+        std::cout << "Client is disconnected\n";
+    }
     else
         std::cout << "Message from client: " << buffer << "\n";
         
@@ -69,7 +85,11 @@ int get_message_from_client(int clientSocket, unsigned int size_buffer)
 void create_server_socket(std::string ip_address, unsigned int port_number, int serverSocket, unsigned int max_client)
 {
     sockaddr_in serverAddress = create_socket_adrress(ip_address, port_number);
-    bind(serverSocket, (struct sockaddr*) &serverAddress, sizeof(serverAddress)); //return  -1 if error
-    listen(serverSocket, max_client); //return  -1 if error
-    std::cout << "Serveur en attente..." << std::endl;
+
+    bind(serverSocket, (struct sockaddr*) &serverAddress, sizeof(serverAddress));
+    // if (bind(serverSocket, (struct sockaddr*) &serverAddress, sizeof(serverAddress)) == -1)
+    //     throw ExecptionErrorFunction("bind");
+        
+    if (listen(serverSocket, max_client) == -1)
+        throw ExecptionErrorFunction("listen");
 }
