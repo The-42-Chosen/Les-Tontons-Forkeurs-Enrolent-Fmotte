@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:43:21 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/11 16:01:25 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/11 17:17:24 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,20 +88,14 @@ class Server
         void set_return(s_return ret);
         s_return* get_return(void);
         
-        //SERVERS
-        Server* get_server(size_t i);
-        size_t get_servers_count(void);
-        std::vector<Server>* get_all_servers(void);
+
         
         // =====================
         // ==     Method      ==
         // =====================
         
-        bool initialisation_webserv(std::vector <std::string> &tokens);
         void initialisation_server(std::vector <std::string> &tokens);
         void initialisation_check();
-		bool splitServers(std::vector <std::string> &tokens);
-		bool printServer(void);
 
         void initialisation_listens(std::vector <std::string> &tokens);
         void initialisation_name_servers(std::vector <std::string> &tokens);
@@ -115,7 +109,4 @@ class Server
         void initialisation_error_page(std::vector <std::string> &tokens);
         void initialisation_client_max_body_size(std::vector <std::string> &tokens);
         void initialisation_return(std::vector <std::string> &tokens);
-
-        void initialisation_connection(std::vector <std::string> &tokens);
-
 };  

@@ -6,14 +6,14 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:50:27 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/11 16:01:32 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/11 17:25:32 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "server.hpp"
-# include "utils.hpp"
+# include "utils_duplicate.hpp"
+# include "utils_parsing.hpp"
 # include "execption.hpp"
-# include "utils_connection.hpp"
 
 // =====================
 // == Canonical Form  ==
@@ -124,57 +124,11 @@ unsigned int Server::get_client_max_body_size(void) {return _client_max_body_siz
 void Server::set_return(s_return ret) {_ret = ret;}
 s_return* Server::get_return(void) {return &_ret;}
 
-//SERVERS
-Server* Server::get_server(size_t i)
-{
-    if (i < _servers.size())
-        return &_servers[i];
-    else
-        return NULL;
-}
-
-size_t Server::get_servers_count(void)
-{
-    return _servers.size();
-}
-
-std::vector<Server>* Server::get_all_servers(void)
-{
-    return &_servers;
-}
-
 // =====================
 // ==     Method      ==
 // =====================
 
 // bool Server::initialisatio
-
-bool Server::initialisation_webserv(std::vector <std::string> &tokens)
-{
-    return splitServers(tokens);
-}
-
-bool Server::splitServers(std::vector <std::string> &tokens)
-{
-    _servers.clear();
-
-    try
-    {
-        while (!tokens.empty())
-        {
-            Server server;
-            server.initialisation_server(tokens);
-            server.initialisation_check();
-            _servers.push_back(server);
-        }
-        return (true);
-    }
-    catch(const std::exception& e)
-    {
-        std::cerr << e.what() << '\n';
-        return (false);
-    }
-}
 
 void Server::initialisation_server(std::vector <std::string> &tokens)
 {
@@ -217,90 +171,6 @@ void Server::initialisation_server(std::vector <std::string> &tokens)
     }
     
     tokens.erase(tokens.begin());
-    
-    // size_t i = 0;
-    // std::string string;
-    // s_listen *listen;
-    // s_return *error_page;
-    // Location *loc;
-    
-    // std::cout << "\nNEW SERVER:\n";
-    // while ((string = get_name_server(i)) != "")
-    // {
-    //     std::cout << "Server name: " << string << "\n";
-    //     i++;
-    // }
-    // std::cout << "\n";
-    
-    // i = 0;
-    // while ((string = get_index(i)) != "")
-    // {
-    //     std::cout << "Index: " << string << "\n";
-    //     i++;
-    // }
-    // std::cout << "\n";
-    
-    // i = 0;
-    // while ((listen = get_listen(i)) != NULL)
-    // {
-    //     std::cout << "\n";
-    //     std::cout << "IP: " << listen->ip << "\n";
-    //     std::cout << "Port: " << listen->port << "\n";
-    //     i++;
-    // }
-
-    // i = 0;
-    // while ((loc = get_location(i)) != NULL)
-    // {
-    //     std::cout << "\nLocation\n";
-    //     std::cout << "Name " <<loc->get_name() << "\n";
-        
-    //     if (! loc->get_methode_http().empty())
-    //         std::cout << "Method " << *loc->get_methode_http().begin() << "\n";
-    //     else
-    //         std::cout << "Method  NULL\n";
-            
-    //     std::cout << "ROOT " << loc->get_root() << "\n";
-    //     std::cout << "Index " << loc->get_index() << "\n";
-    //     std::cout << "Auto " << loc->get_auto_index() << "\n";
-        
-    //     if (loc->get_error_page() != NULL)
-    //     {
-    //         std::cout << "ERROR code " << loc->get_error_page()->code << "\n";
-    //         std::cout << "ERROR value " << loc->get_error_page()->value << "\n";
-    //     }
-        
-    //     std::cout << "CLIENT " << loc->get_client_max_body_size() << "\n";
-            
-    //     if (loc->get_return() != NULL)
-    //     {
-    //         std::cout << "RETURN code " << loc->get_return()->code << "\n";
-    //         std::cout << "RETURN value " << loc->get_return()->value << "\n";
-    //     }
-    //     i++;
-    // }
-    
-    // i = 0;
-    // while ((error_page = get_error_page(i)) != NULL)
-    // {
-    //     std::cout << "\nError Page\n";
-    //     std::cout << "Code: " << error_page->code << "\n";
-    //     std::cout << "Value: " << error_page->value << "\n";
-    //     i++;
-    // }
-    
-    // std::cout << "\n";
-    // std::cout << "Root: " << get_root() << "\n";
-    // std::cout << "Autoindex: " << get_auto_index() << "\n";
-    // std::cout << "Client_max_body_size: " << get_client_max_body_size() << "\n";
-    
-    
-    // if (get_return() != NULL)
-    // {
-    //     std::cout << "\nReturn\n";
-    //     std::cout << "Code: " << get_return()->code << "\n";
-    //     std::cout << "Value: " << get_return()->value << "\n";  
-    // }
 }
 
 void Server::initialisation_check()
@@ -446,9 +316,4 @@ void Server::initialisation_return(std::vector <std::string> &tokens)
     
     if (is_init)
         set_return(ret);
-}
-
-void initialisation_connection(std::vector <std::string> &tokens)
-{
-    
 }
