@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/08 13:08:22 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/08 16:28:53 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/11 17:53:56 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,3 +32,7 @@ const char* ExecptionFailConvertion::what() const throw() {return _message.c_str
 ExecptionMissElement::ExecptionMissElement(const std::string& argument): _message("Error: Miss this mandatory part in the config file: " + argument) {}
 ExecptionMissElement::~ExecptionMissElement() throw() {}
 const char* ExecptionMissElement::what() const throw() {return _message.c_str();}
+
+ExecptionErrorFunction::ExecptionErrorFunction(const std::string& argument): _message("Error: This function has failed: " + argument) {}
+ExecptionErrorFunction::~ExecptionErrorFunction() throw() {}
+const char* ExecptionErrorFunction::what() const throw() {return _message.c_str();}
