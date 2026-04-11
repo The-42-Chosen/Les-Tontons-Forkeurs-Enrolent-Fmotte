@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/03 15:24:58 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/09 14:26:50 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/11 14:57:53 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 # include "server.hpp"
 # include "utils.hpp"
 
-
+int stop_webserv = 0;
 
 int main(int argc, char **argv)
 {

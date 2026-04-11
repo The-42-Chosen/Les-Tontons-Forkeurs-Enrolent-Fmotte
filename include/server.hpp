@@ -3,14 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:43:21 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/09 14:25:48 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/09 15:34:14 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
+
+#include <sys/epoll.h>
 
 # include "struct.hpp"
 # include "location.hpp"
@@ -105,5 +107,7 @@ class Server
         void initialisation_error_page(std::vector <std::string> &tokens);
         void initialisation_client_max_body_size(std::vector <std::string> &tokens);
         void initialisation_return(std::vector <std::string> &tokens);
+
+        void initialisation_connection(std::vector <std::string> &tokens);
 
 };  
