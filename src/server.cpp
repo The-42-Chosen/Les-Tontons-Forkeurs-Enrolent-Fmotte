@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:50:27 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/11 14:59:36 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/10 17:49:44 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ Server& Server::operator= (const Server &other)
     this->_locations = other._locations;
     this->_root = other._root;
     this->_index_files = other._index_files;
+    this->_servers = other._servers;
     this->_auto_index = other._auto_index;
     this->_error_page = other._error_page;
     this->_client_max_body_size = other._client_max_body_size;
@@ -123,29 +124,67 @@ unsigned int Server::get_client_max_body_size(void) {return _client_max_body_siz
 void Server::set_return(s_return ret) {_ret = ret;}
 s_return* Server::get_return(void) {return &_ret;}
 
+//SERVERS
+Server* Server::get_server(size_t i)
+{
+    if (i < _servers.size())
+        return &_servers[i];
+    else
+        return NULL;
+}
+
+size_t Server::get_servers_count(void)
+{
+    return _servers.size();
+}
+
+std::vector<Server>* Server::get_all_servers(void)
+{
+    return &_servers;
+}
+
 // =====================
 // ==     Method      ==
 // =====================
 
+// bool Server::initialisatio
+
 bool Server::initialisation_webserv(std::vector <std::string> &tokens)
 {
+    return splitServers(tokens);
+}
+
+bool Server::splitServers(std::vector <std::string> &tokens)
+{
+    _servers.clear();
+
     try
     {
         while (!tokens.empty())
-            initialisation_server(tokens);
-        initialisation_check();
-		return (true);
+        {
+            Server server;
+            server.initialisation_server(tokens);
+            server.initialisation_check();
+            _servers.push_back(server);
+        }
+        return (true);
     }
     catch(const std::exception& e)
     {
         std::cerr << e.what() << '\n';
-		return (false);
+        return (false);
     }
 }
 
 void Server::initialisation_server(std::vector <std::string> &tokens)
 {
+    if (tokens.empty())
+        throw ExecptionMissBrace();
+
     tokens.erase(tokens.begin());
+
+    if (tokens.empty())
+        throw ExecptionMissBrace();
 
     if (tokens[0] != "{")
         throw ExecptionMissBrace();
@@ -153,8 +192,13 @@ void Server::initialisation_server(std::vector <std::string> &tokens)
     tokens.erase(tokens.begin());
     size_t tokens_size = tokens.size();
     size_t new_tokens_size;
-    while (tokens[0] != "}")
+    while (true)
     {
+        if (tokens.empty())
+            throw ExecptionMissBrace();
+        if (tokens[0] == "}")
+            break;
+
         initialisation_listens(tokens);
         initialisation_name_servers(tokens);
         initialisation_location(tokens);
@@ -174,89 +218,89 @@ void Server::initialisation_server(std::vector <std::string> &tokens)
     
     tokens.erase(tokens.begin());
     
-    size_t i = 0;
-    std::string string;
-    s_listen *listen;
-    s_return *error_page;
-    Location *loc;
+    // size_t i = 0;
+    // std::string string;
+    // s_listen *listen;
+    // s_return *error_page;
+    // Location *loc;
     
-    std::cout << "\nNEW SERVER:\n";
-    while ((string = get_name_server(i)) != "")
-    {
-        std::cout << "Server name: " << string << "\n";
-        i++;
-    }
-    std::cout << "\n";
+    // std::cout << "\nNEW SERVER:\n";
+    // while ((string = get_name_server(i)) != "")
+    // {
+    //     std::cout << "Server name: " << string << "\n";
+    //     i++;
+    // }
+    // std::cout << "\n";
     
-    i = 0;
-    while ((string = get_index(i)) != "")
-    {
-        std::cout << "Index: " << string << "\n";
-        i++;
-    }
-    std::cout << "\n";
+    // i = 0;
+    // while ((string = get_index(i)) != "")
+    // {
+    //     std::cout << "Index: " << string << "\n";
+    //     i++;
+    // }
+    // std::cout << "\n";
     
-    i = 0;
-    while ((listen = get_listen(i)) != NULL)
-    {
-        std::cout << "\n";
-        std::cout << "IP: " << listen->ip << "\n";
-        std::cout << "Port: " << listen->port << "\n";
-        i++;
-    }
+    // i = 0;
+    // while ((listen = get_listen(i)) != NULL)
+    // {
+    //     std::cout << "\n";
+    //     std::cout << "IP: " << listen->ip << "\n";
+    //     std::cout << "Port: " << listen->port << "\n";
+    //     i++;
+    // }
 
-    i = 0;
-    while ((loc = get_location(i)) != NULL)
-    {
-        std::cout << "\nLocation\n";
-        std::cout << "Name " <<loc->get_name() << "\n";
+    // i = 0;
+    // while ((loc = get_location(i)) != NULL)
+    // {
+    //     std::cout << "\nLocation\n";
+    //     std::cout << "Name " <<loc->get_name() << "\n";
         
-        if (! loc->get_methode_http().empty())
-            std::cout << "Method " << *loc->get_methode_http().begin() << "\n";
-        else
-            std::cout << "Method  NULL\n";
+    //     if (! loc->get_methode_http().empty())
+    //         std::cout << "Method " << *loc->get_methode_http().begin() << "\n";
+    //     else
+    //         std::cout << "Method  NULL\n";
             
-        std::cout << "ROOT " << loc->get_root() << "\n";
-        std::cout << "Index " << loc->get_index() << "\n";
-        std::cout << "Auto " << loc->get_auto_index() << "\n";
+    //     std::cout << "ROOT " << loc->get_root() << "\n";
+    //     std::cout << "Index " << loc->get_index() << "\n";
+    //     std::cout << "Auto " << loc->get_auto_index() << "\n";
         
-        if (loc->get_error_page() != NULL)
-        {
-            std::cout << "ERROR code " << loc->get_error_page()->code << "\n";
-            std::cout << "ERROR value " << loc->get_error_page()->value << "\n";
-        }
+    //     if (loc->get_error_page() != NULL)
+    //     {
+    //         std::cout << "ERROR code " << loc->get_error_page()->code << "\n";
+    //         std::cout << "ERROR value " << loc->get_error_page()->value << "\n";
+    //     }
         
-        std::cout << "CLIENT " << loc->get_client_max_body_size() << "\n";
+    //     std::cout << "CLIENT " << loc->get_client_max_body_size() << "\n";
             
-        if (loc->get_return() != NULL)
-        {
-            std::cout << "RETURN code " << loc->get_return()->code << "\n";
-            std::cout << "RETURN value " << loc->get_return()->value << "\n";
-        }
-        i++;
-    }
+    //     if (loc->get_return() != NULL)
+    //     {
+    //         std::cout << "RETURN code " << loc->get_return()->code << "\n";
+    //         std::cout << "RETURN value " << loc->get_return()->value << "\n";
+    //     }
+    //     i++;
+    // }
     
-    i = 0;
-    while ((error_page = get_error_page(i)) != NULL)
-    {
-        std::cout << "\nError Page\n";
-        std::cout << "Code: " << error_page->code << "\n";
-        std::cout << "Value: " << error_page->value << "\n";
-        i++;
-    }
+    // i = 0;
+    // while ((error_page = get_error_page(i)) != NULL)
+    // {
+    //     std::cout << "\nError Page\n";
+    //     std::cout << "Code: " << error_page->code << "\n";
+    //     std::cout << "Value: " << error_page->value << "\n";
+    //     i++;
+    // }
     
-    std::cout << "\n";
-    std::cout << "Root: " << get_root() << "\n";
-    std::cout << "Autoindex: " << get_auto_index() << "\n";
-    std::cout << "Client_max_body_size: " << get_client_max_body_size() << "\n";
+    // std::cout << "\n";
+    // std::cout << "Root: " << get_root() << "\n";
+    // std::cout << "Autoindex: " << get_auto_index() << "\n";
+    // std::cout << "Client_max_body_size: " << get_client_max_body_size() << "\n";
     
     
-    if (get_return() != NULL)
-    {
-        std::cout << "\nReturn\n";
-        std::cout << "Code: " << get_return()->code << "\n";
-        std::cout << "Value: " << get_return()->value << "\n";  
-    }
+    // if (get_return() != NULL)
+    // {
+    //     std::cout << "\nReturn\n";
+    //     std::cout << "Code: " << get_return()->code << "\n";
+    //     std::cout << "Value: " << get_return()->value << "\n";  
+    // }
 }
 
 void Server::initialisation_check()
@@ -300,6 +344,12 @@ void Server::initialisation_listens(std::vector <std::string> &tokens)
     {
         tokens.erase(tokens.begin());
         
+		if (tokens[0] == ";")
+		{
+			tokens.erase(tokens.begin());    
+        	add_listen(listen);
+			return ;
+		}
         std::stringstream iss(tokens[0]);
         tokens.erase(tokens.begin());
                 

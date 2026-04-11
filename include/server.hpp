@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:43:21 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/09 15:34:14 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/10 14:58:01 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ class Server
         std::vector<Location>       _locations;
         std::string                 _root;
         std::vector<std::string>    _index_files;
+		std::vector<Server>			_servers;
 
         bool _auto_index;
         std::vector<s_return>     _error_page;
@@ -87,6 +88,11 @@ class Server
         void set_return(s_return ret);
         s_return* get_return(void);
         
+        //SERVERS
+        Server* get_server(size_t i);
+        size_t get_servers_count(void);
+        std::vector<Server>* get_all_servers(void);
+        
         // =====================
         // ==     Method      ==
         // =====================
@@ -94,6 +100,8 @@ class Server
         bool initialisation_webserv(std::vector <std::string> &tokens);
         void initialisation_server(std::vector <std::string> &tokens);
         void initialisation_check();
+		bool splitServers(std::vector <std::string> &tokens);
+		bool printServer(void);
 
         void initialisation_listens(std::vector <std::string> &tokens);
         void initialisation_name_servers(std::vector <std::string> &tokens);
