@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+         #
+#    By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/11 16:36:16 by fmotte            #+#    #+#              #
-#    Updated: 2026/04/11 17:23:35 by fmotte           ###   ########.fr        #
+#    Updated: 2026/04/12 16:57:43 by erpascua         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -56,7 +56,7 @@ NAME =  Webserv
 # =======================================
 #              RULES
 # =======================================
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re git-setup
 
 all : $(NAME)
 
@@ -81,5 +81,9 @@ fclean : clean
 
 re : fclean all
 
+git-setup:
+	@sh doc/scripts/setup-git-ignore-42-header.sh
+	@sh doc/scripts/setup-git-hooks.sh
+	
 # Automatic inclusion of .d files if they exist
 -include $(DEP_FILES)
