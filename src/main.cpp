@@ -10,10 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "Webserv.hpp"
 #include "colors.hpp"
 #include "struct.hpp"
 #include "utils_parsing.hpp"
-#include "Webserv.hpp"
 
 int stop_webserv = 0;
 
