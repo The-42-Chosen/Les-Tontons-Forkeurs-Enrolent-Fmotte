@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 15:45:46 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/11 17:25:49 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/12 18:04:42 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "location.hpp"
+#include "Location.hpp"
 #include "execption.hpp"
-#include "server.hpp"
+#include "Server.hpp"
 #include "utils_duplicate.hpp"
 
 // =====================

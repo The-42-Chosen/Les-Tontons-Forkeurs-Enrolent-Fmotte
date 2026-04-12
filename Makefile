@@ -6,7 +6,7 @@
 #    By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/11 16:36:16 by fmotte            #+#    #+#              #
-#    Updated: 2026/04/12 17:50:46 by erpascua         ###   ########.fr        #
+#    Updated: 2026/04/12 18:08:41 by erpascua         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,13 +26,13 @@ CXXFLAGS = -Wall -Wextra -Werror -MMD -MP -std=c++98 -g
 # =======================================
 FILE_NAMES =	main
 
-CLASS_FILE =	server \
-				location \
+CLASS_FILE =	Webserv \
+				Server \ 
+				Location \
 				utils_connection \
 				utils_duplicate \
 				utils_parsing \
 				execption \
-				webserv 
 
 ABSTR_FILE = 	struct
 
