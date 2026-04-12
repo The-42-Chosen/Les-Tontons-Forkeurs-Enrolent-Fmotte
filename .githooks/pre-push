@@ -31,13 +31,17 @@ while IFS= read -r file; do
     "$CLANG_FORMAT" -i --style=microsoft "$file"
 done < "$TMP_LIST"
 
-if git diff --quiet -- '*.hpp' '*.cpp' '*.h' '*.c'; then
-    exit 0
-fi
+CHANGED=0
+while IFS= read -r file; do
+    if git diff --quiet -- "$file"; then
+        continue
+    fi
 
-git add -- '*.hpp' '*.cpp' '*.h' '*.c'
+    git add -- "$file"
+    CHANGED=1
+done < "$TMP_LIST"
 
-if git diff --cached --quiet -- '*.hpp' '*.cpp' '*.h' '*.c'; then
+if [ "$CHANGED" -eq 0 ]; then
     exit 0
 fi
 
