@@ -14,7 +14,7 @@
 
 #include <sys/epoll.h>
 
-#include "location.hpp"
+#include "Location.hpp"
 #include "struct.hpp"
 
 #define DEFAULT_IP "0.0.0.0"

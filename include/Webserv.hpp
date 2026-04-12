@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "server.hpp"
+#include "Server.hpp"
 #include "struct.hpp"
 
 #define MAX_CLIENT 10
