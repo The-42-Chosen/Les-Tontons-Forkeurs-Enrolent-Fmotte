@@ -1,0 +1,36 @@
+#!/bin/sh
+
+set -eu
+
+if command -v clang-format-12 >/dev/null 2>&1; then
+    CLANG_FORMAT="clang-format-12"
+elif command -v clang-format >/dev/null 2>&1; then
+    CLANG_FORMAT="clang-format"
+else
+    echo "pre-push: clang-format-12 (or clang-format) not found." >&2
+    exit 1
+fi
+
+TMP_LIST="$(mktemp)"
+cleanup() {
+    rm -f "$TMP_LIST"
+}
+trap cleanup EXIT INT TERM
+
+git ls-files -- '*.hpp' '*.cpp' '*.h' '*.c' > "$TMP_LIST"
+if [ ! -s "$TMP_LIST" ]; then
+    exit 0
+fi
+
+while IFS= read -r file; do
+    "$CLANG_FORMAT" -i --style=microsoft "$file"
+done < "$TMP_LIST"
+
+if ! git diff --quiet -- '*.hpp' '*.cpp' '*.h' '*.c'; then
+    echo "pre-push: clang-format modified files." >&2
+    echo "Review and commit these changes, then push again:" >&2
+    git status --short -- '*.hpp' '*.cpp' '*.h' '*.c' >&2
+    exit 1
+fi
+
+exit 0
