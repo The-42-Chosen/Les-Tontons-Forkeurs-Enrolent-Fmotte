@@ -1,0 +1,5 @@
+*.c merge=ignore42header
+*.h merge=ignore42header
+*.cpp merge=ignore42header
+*.hpp merge=ignore42header
+Makefile merge=ignore42header
