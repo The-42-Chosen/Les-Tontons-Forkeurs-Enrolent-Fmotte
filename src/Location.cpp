@@ -11,8 +11,8 @@
 /* ************************************************************************** */
 
 #include "Location.hpp"
-#include "execption.hpp"
 #include "Server.hpp"
+#include "execption.hpp"
 #include "utils_duplicate.hpp"
 
 // =====================
