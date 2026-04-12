@@ -10,33 +10,33 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "utils_parsing.hpp"
-# include "execption.hpp"
+#include "utils_parsing.hpp"
+#include "execption.hpp"
 
 int parse_config_file(char *filename, std::string &content_file)
 {
-    //Reading
+    // Reading
     std::ifstream f(filename);
     if (!f.is_open())
     {
         std::cout << "Error: can't open " << filename << std::endl;
         return (1);
     }
-    
+
     std::string line;
     while (std::getline(f, line))
     {
         line.append("\n");
         content_file.append(line);
     }
-    
+
     f.close();
     return (0);
 }
 
-std::vector <std::string> tokenize_string(std::string &content_file)
-{   
-    std::vector <std::string> tokens;
+std::vector<std::string> tokenize_string(std::string &content_file)
+{
+    std::vector<std::string> tokens;
     std::string delimiters = " \t\n\0";
     std::string tmp;
     size_t startPos = 0;
@@ -46,7 +46,7 @@ std::vector <std::string> tokenize_string(std::string &content_file)
     {
         if (endPos != startPos)
         {
-            //Skip comment
+            // Skip comment
             if (content_file[startPos] == '#')
             {
                 while (content_file[endPos] != '\n')
@@ -55,35 +55,34 @@ std::vector <std::string> tokenize_string(std::string &content_file)
             else
                 tokens.push_back(content_file.substr(startPos, endPos - startPos));
         }
-         
-        startPos = endPos + 1; 
+
+        startPos = endPos + 1;
     }
 
     if (startPos != content_file.length())
         tokens.push_back(content_file.substr(startPos));
 
-    
-    for(size_t i = 0; i < tokens.size(); ++i)
+    for (size_t i = 0; i < tokens.size(); ++i)
     {
         if (get_nb_occurence(tokens[i], '"') == 1)
         {
             if (i + 1 < tokens.size())
             {
                 tokens[i].append(" ");
-                tokens[i].append(tokens[i+ 1]);
+                tokens[i].append(tokens[i + 1]);
                 tokens.erase(tokens.begin() + i + 1);
-            }  
+            }
         }
         if (*(tokens[i].end() - 1) == ';' && tokens[i].size() != 1)
         {
-            tokens[i] = tokens[i].substr(0, tokens[i].size()-1);
+            tokens[i] = tokens[i].substr(0, tokens[i].size() - 1);
             tokens.insert(tokens.begin() + i + 1, ";");
             i++;
         }
     }
     // for(size_t i = 0; i < tokens.size(); ++i)
     //     std::cout << tokens[i] << "\n";
-        
+
     return tokens;
 }
 

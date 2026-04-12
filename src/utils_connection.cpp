@@ -10,10 +10,14 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "utils_connection.hpp"
-# include "execption.hpp"
+#include "utils_connection.hpp"
+#include "execption.hpp"
 
-void handle_sigint(int sig){ (void)sig; stop_webserv = 1;}
+void handle_sigint(int sig)
+{
+    (void)sig;
+    stop_webserv = 1;
+}
 
 void init_signal(struct sigaction &sa)
 {
@@ -25,17 +29,19 @@ void init_signal(struct sigaction &sa)
 int set_nonblocking(int fd)
 {
     int flags = fcntl(fd, F_GETFL, 0);
-    if (flags == -1) return -1;
+    if (flags == -1)
+        return -1;
     return fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 }
 
 sockaddr_in create_socket_adrress(std::string ip_address, unsigned int port_number)
 {
     sockaddr_in serverAddress;
-    
-    serverAddress.sin_family = AF_INET;        // AF_INET : IPv4 protocol
+
+    serverAddress.sin_family = AF_INET; // AF_INET : IPv4 protocol
     serverAddress.sin_port = htons(port_number);
-    serverAddress.sin_addr.s_addr = inet_addr(ip_address.c_str());;
+    serverAddress.sin_addr.s_addr = inet_addr(ip_address.c_str());
+    ;
     return serverAddress;
 }
 
@@ -54,7 +60,7 @@ int get_new_client(int epoll_fd, int server_fd)
     int clientSocket;
     if ((clientSocket = accept(server_fd, NULL, NULL)) == -1)
         throw ExecptionErrorFunction("accept");
-        
+
     set_nonblocking(clientSocket);
     add_socket_to_event(epoll_fd, clientSocket);
     std::cout << "Nouveau client connecté: fd=" << clientSocket << "\n";
@@ -65,12 +71,12 @@ int get_message_from_client(int clientSocket, unsigned int size_buffer)
 {
     int bytes;
     char buffer[size_buffer];
-    
+
     if ((bytes = recv(clientSocket, buffer, sizeof(buffer), 0)) == -1)
         throw ExecptionErrorFunction("recv");
-    
+
     buffer[bytes] = '\0';
-    
+
     if (bytes == 0)
     {
         close(clientSocket); // Client déconnecté
@@ -78,7 +84,7 @@ int get_message_from_client(int clientSocket, unsigned int size_buffer)
     }
     else
         std::cout << "Message from client: " << buffer << "\n";
-        
+
     return bytes;
 }
 
@@ -86,10 +92,10 @@ void create_server_socket(std::string ip_address, unsigned int port_number, int 
 {
     sockaddr_in serverAddress = create_socket_adrress(ip_address, port_number);
 
-    bind(serverSocket, (struct sockaddr*) &serverAddress, sizeof(serverAddress));
+    bind(serverSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress));
     // if (bind(serverSocket, (struct sockaddr*) &serverAddress, sizeof(serverAddress)) == -1)
     //     throw ExecptionErrorFunction("bind");
-        
+
     if (listen(serverSocket, max_client) == -1)
         throw ExecptionErrorFunction("listen");
 }

@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# pragma once
+#pragma once
 
-# include "struct.hpp"
+#include "struct.hpp"
 
 extern int stop_webserv;
 

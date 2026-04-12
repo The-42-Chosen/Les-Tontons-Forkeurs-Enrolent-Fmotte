@@ -12,29 +12,29 @@
 
 #pragma once
 
-# include <iostream>
-# include <string>
-# include <fstream>
-# include <vector>
-# include <set>
-# include <sstream>
-# include <algorithm>
+#include <algorithm>
+#include <fstream>
+#include <iostream>
+#include <set>
+#include <sstream>
+#include <string>
+#include <vector>
 
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <arpa/inet.h>
-# include <sys/epoll.h>
-# include <fcntl.h>
+#include <arpa/inet.h>
+#include <fcntl.h>
+#include <netinet/in.h>
+#include <sys/epoll.h>
+#include <sys/socket.h>
 
-# include <unistd.h>
-# include <signal.h>
+#include <signal.h>
+#include <unistd.h>
 
 enum method_http
 {
-	GET,
-	POST,
-	DELETE,
-	HEAD
+    GET,
+    POST,
+    DELETE,
+    HEAD
 };
 
 struct s_listen
