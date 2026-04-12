@@ -12,51 +12,48 @@
 
 #pragma once
 
-# include "struct.hpp"
-# include "server.hpp"
+#include "server.hpp"
+#include "struct.hpp"
 
-# define MAX_CLIENT 10
-# define MAX_EVENTS 10
-# define SIZE_BUFFER 1024
+#define MAX_CLIENT 10
+#define MAX_EVENTS 10
+#define SIZE_BUFFER 1024
 
 class Webserv
 {
-    private:
-        std::vector<Server> _vector_server;
-        std::vector<int> _vector_client_fd;
-        
-    public:
+  private:
+    std::vector<Server> _vector_server;
+    std::vector<int> _vector_client_fd;
 
-        // =====================
-        // == Canonical Form  ==
-        // =====================
-        
-        Webserv();
-        ~Webserv();
-        Webserv(const Webserv &other);
-        Webserv& operator= (const Webserv &other);
+  public:
+    // =====================
+    // == Canonical Form  ==
+    // =====================
 
+    Webserv();
+    ~Webserv();
+    Webserv(const Webserv &other);
+    Webserv &operator=(const Webserv &other);
 
-        // =====================
-        // == Getter & Setter ==
-        // =====================
-        
-        //SERVERS
-        Server* get_server(size_t i);
-        size_t get_servers_count(void);
-        std::vector<Server>* get_all_servers(void);
-        
-        
-        // =====================
-        // ==     Method      ==
-        // =====================
-        
-        bool initialisation_webserv(std::vector <std::string> &tokens);
-        bool splitServers(std::vector <std::string> &tokens);
+    // =====================
+    // == Getter & Setter ==
+    // =====================
 
-        bool initialisation_connection();
-        void initialisation_socket(int epoll_fd, int serverSocket);
-        void webserv_listen(int epoll_fd, int serverSocket);
-        void manage_connection(int epoll_fd, int serverSocket, int event_fd);
-        void close_connection(int serverSocket, int epoll_fd);
+    // SERVERS
+    Server *get_server(size_t i);
+    size_t get_servers_count(void);
+    std::vector<Server> *get_all_servers(void);
+
+    // =====================
+    // ==     Method      ==
+    // =====================
+
+    bool initialisation_webserv(std::vector<std::string> &tokens);
+    bool splitServers(std::vector<std::string> &tokens);
+
+    bool initialisation_connection();
+    void initialisation_socket(int epoll_fd, int serverSocket);
+    void webserv_listen(int epoll_fd, int serverSocket);
+    void manage_connection(int epoll_fd, int serverSocket, int event_fd);
+    void close_connection(int serverSocket, int epoll_fd);
 };
