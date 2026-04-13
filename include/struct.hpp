@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/03 17:58:55 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/13 16:52:27 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/13 18:34:34 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,4 +49,10 @@ struct s_return
 {
     int code;
     std::string value; // URL ou message
+};
+
+struct s_client
+{
+    int fd;
+    std::string request;
 };
