@@ -12,40 +12,40 @@
 
 #pragma once
 
-# include <string>
-# include <map>
-# include <vector>
-# include "struct.hpp"
+#include "struct.hpp"
+#include <map>
+#include <string>
+#include <vector>
 
 class HttpRequest
 {
-	private:
-	// Attributs
-		HttpRequest();
-		method_http _method;
-		std::string _uri;
-		std::string _protocol;
-		std::map<std::string, std::string> _headers;
-		std::vector<__uint8_t> _body;
-		bool _keepAlive;
-		size_t _contentLength;
+  private:
+    // Attributs
+    HttpRequest();
+    method_http _method;
+    std::string _uri;
+    std::string _protocol;
+    std::map<std::string, std::string> _headers;
+    std::vector<__uint8_t> _body;
+    bool _keepAlive;
+    size_t _contentLength;
 
-	public:
-	// OCF
-		HttpRequest(std::string requestRawContent);
-		HttpRequest(const HttpRequest& cpy);
-		HttpRequest& operator=(const HttpRequest& cpy);
-		~HttpRequest();
+  public:
+    // OCF
+    HttpRequest(std::string requestRawContent);
+    HttpRequest(const HttpRequest &cpy);
+    HttpRequest &operator=(const HttpRequest &cpy);
+    ~HttpRequest();
 
-	// Member Functions
-		HttpRequest& parseHeaderMethod(const std::string& headerContent);
-		HttpRequest& parseHeader(const std::string& headerContent);
+    // Member Functions
+    HttpRequest &parseHeaderMethod(const std::string &headerContent);
+    HttpRequest &parseHeader(const std::string &headerContent);
 
-	// Getter
-		method_http getMethod() const;
-		const std::string& getUri() const;
-		const std::string& getProtocol() const;
+    // Getter
+    method_http getMethod() const;
+    const std::string &getUri() const;
+    const std::string &getProtocol() const;
 
-	// Helper
-		static const char* methodToString(method_http method);
+    // Helper
+    static const char *methodToString(method_http method);
 };
