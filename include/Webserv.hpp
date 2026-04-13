@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.hpp                                        :+:      :+:    :+:   */
+/*   Webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:20 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/11 18:14:55 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/13 17:17:05 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ class Webserv
   private:
     std::vector<Server> _vector_server;
     std::vector<int> _vector_client_fd;
-
+    std::vector<int> _vector_server_fd;
+    
   public:
     // =====================
     // == Canonical Form  ==
@@ -52,8 +53,10 @@ class Webserv
     bool splitServers(std::vector<std::string> &tokens);
 
     bool initialisation_connection();
-    void initialisation_socket(int epoll_fd, int serverSocket);
-    void webserv_listen(int epoll_fd, int serverSocket);
-    void manage_connection(int epoll_fd, int serverSocket, int event_fd);
-    void close_connection(int serverSocket, int epoll_fd);
+    void initialisation_socket(int epoll_fd);
+    void webserv_listen(int epoll_fd);
+    void manage_connection(int epoll_fd, int event_fd);
+    void get_new_client(int epoll_fd, int server_fd);
+    void get_message_from_client(int clientSocket, unsigned int size_buffer);
+    void close_connection(int epoll_fd);
 };

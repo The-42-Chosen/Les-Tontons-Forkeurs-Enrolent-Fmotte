@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/03 17:58:55 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/11 14:56:31 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/13 16:52:27 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@ struct s_listen
 {
     std::string ip;
     unsigned int port;
+    
+    bool operator<(const s_listen& other) const;
 };
 
 struct s_return

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.cpp                                        :+:      :+:    :+:   */
+/*   Webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/12 18:04:42 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/13 17:19:32 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "utils_connection.hpp"
 #include <cstring>
 #include <errno.h>
+#include <set>
 
 // =====================
 // == Canonical Form  ==
@@ -73,13 +74,12 @@ bool Webserv::initialisation_webserv(std::vector<std::string> &tokens)
 bool Webserv::splitServers(std::vector<std::string> &tokens)
 {
     _vector_server.clear();
-    Server server;
 
     try
     {
         while (!tokens.empty())
         {
-
+            Server server;
             server.initialisation_server(tokens);
             server.initialisation_check();
             _vector_server.push_back(server);
@@ -93,52 +93,79 @@ bool Webserv::splitServers(std::vector<std::string> &tokens)
     return (false);
 }
 
-void Webserv::initialisation_socket(int epoll_fd, int serverSocket)
+void Webserv::initialisation_socket(int epoll_fd)
 {
+    int serverSocket;
+    
     s_listen *listen;
-    Server *srv;
-    size_t j;
 
+    _vector_server_fd.clear();
+    std::set<s_listen> set;
+    
     for (size_t i = 0; i < get_servers_count(); i++)
     {
-        srv = get_server(i);
-        j = 0;
-        while ((listen = srv->get_listen(j)) != NULL)
-        {
-            create_server_socket(listen->ip, listen->port, serverSocket, MAX_CLIENT);
-            set_nonblocking(serverSocket);
-            add_socket_to_event(epoll_fd, serverSocket);
-            ++j;
-        }
+        for (size_t j = 0; (listen =  get_server(i)->get_listen(j)) != NULL; ++j)
+            set.insert(*listen);
     }
+    
+    for (std::set<s_listen>::iterator it = set.begin();it != set.end(); ++it)
+    {
+        serverSocket = create_server_socket((*it).ip, (*it).port, MAX_CLIENT);
+        add_socket_to_event(epoll_fd, serverSocket);
+        _vector_server_fd.push_back(serverSocket);
+    } 
+    set.clear();
 }
 
-void Webserv::manage_connection(int epoll_fd, int serverSocket, int event_fd)
+void Webserv::get_new_client(int epoll_fd, int server_fd)
+{
+    int clientSocket;
+    
+    if ((clientSocket = accept(server_fd, NULL, NULL)) == -1)
+        throw ExecptionErrorFunction("accept");
+
+    add_socket_to_event(epoll_fd, clientSocket);
+    _vector_client_fd.push_back(clientSocket);
+
+    std::cout << "Nouveau client connecté: fd=" << clientSocket << "\n";
+}
+
+void Webserv::get_message_from_client(int clientSocket, unsigned int size_buffer)
 {
     int bytes;
-    int clientSocket;
+    char buffer[size_buffer];
     std::string reply = "Message received\n";
 
-    std::vector<int> &v = _vector_client_fd;
-    // New Client
-    if (event_fd == serverSocket)
+    if ((bytes = recv(clientSocket, buffer, sizeof(buffer), 0)) == -1)
+        throw ExecptionErrorFunction("recv");
+
+    buffer[bytes] = '\0';
+
+    if (bytes == 0)
     {
-        clientSocket = get_new_client(epoll_fd, serverSocket);
-        v.push_back(clientSocket);
+        close(clientSocket);
+        _vector_client_fd.erase(find(_vector_client_fd.begin(), _vector_client_fd.end(), clientSocket));
+        std::cout << "Client is disconnected\n";
     }
     else
     {
-        // Perhaps do a function for the message reciced
-        clientSocket = event_fd;
-        bytes = get_message_from_client(clientSocket, SIZE_BUFFER);
-
-        if (bytes)
-            send(clientSocket, reply.c_str(), reply.size(), 0);
-        else
-            v.erase(find(v.begin(), v.end(), clientSocket));
+        std::cout << "Message from client: " << buffer << "\n";
+        send(clientSocket, reply.c_str(), reply.size(), 0);
     }
 }
-void Webserv::webserv_listen(int epoll_fd, int serverSocket)
+
+void Webserv::manage_connection(int epoll_fd, int event_fd)
+{
+    std::string reply = "Message received\n";
+    
+    if (event_fd < static_cast<int>(_vector_server_fd.size() + 4))
+        get_new_client(epoll_fd, event_fd);
+        
+    else
+        get_message_from_client(event_fd, SIZE_BUFFER);
+}
+
+void Webserv::webserv_listen(int epoll_fd)
 {
     int nfds;
     struct epoll_event events[MAX_EVENTS];
@@ -155,14 +182,13 @@ void Webserv::webserv_listen(int epoll_fd, int serverSocket)
             return;
 
         for (int i = 0; i < nfds; ++i)
-            manage_connection(epoll_fd, serverSocket, events[i].data.fd);
+            manage_connection(epoll_fd, events[i].data.fd);
     }
 }
 
 bool Webserv::initialisation_connection()
 {
     int epoll_fd;
-    int serverSocket;
     bool res = false;
 
     struct sigaction sa;
@@ -174,31 +200,31 @@ bool Webserv::initialisation_connection()
         if ((epoll_fd = epoll_create(1)) == -1)
             throw ExecptionErrorFunction("epoll_create");
 
-        if ((serverSocket = socket(AF_INET, SOCK_STREAM, 0)) == -1)
-            throw ExecptionErrorFunction("socket");
-
-        initialisation_socket(epoll_fd, serverSocket);
-        webserv_listen(epoll_fd, serverSocket);
+        initialisation_socket(epoll_fd);
+        webserv_listen(epoll_fd);
     }
     catch (const std::exception &e)
     {
-        std::cerr << e.what() << '\n';
-        std::cout << "More info: " << strerror(errno) << "\n";
-        res = true;
+        if (! stop_webserv)
+        {
+            std::cerr << e.what() << '\n';
+            std::cout << "More info: " << strerror(errno) << "\n";
+            res = true;
+        }   
     }
-    close_connection(epoll_fd, serverSocket);
+    close_connection(epoll_fd);
     return res;
 }
 
-void Webserv::close_connection(int serverSocket, int epoll_fd)
+void Webserv::close_connection(int epoll_fd)
 {
-    if (_vector_client_fd.empty())
-        return;
-
     for (size_t i = 0; i < _vector_client_fd.size(); i++)
         close(_vector_client_fd[i]);
     _vector_client_fd.clear();
 
-    close(serverSocket);
+    for (size_t i = 0; i < _vector_server_fd.size(); i++)
+        close(_vector_server_fd[i]);
+    _vector_server_fd.clear();
+    
     close(epoll_fd);
 }

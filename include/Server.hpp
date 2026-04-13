@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.hpp                                         :+:      :+:    :+:   */
+/*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:43:21 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/11 17:17:24 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/13 15:52:53 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include "struct.hpp"
 
 #define DEFAULT_IP "0.0.0.0"
-#define DEFAULT_PORT 0
+#define DEFAULT_PORT 8080
 #define DEFAULT_CLIENT_MAX_BODY_SIZE 5000
 
 class Server
