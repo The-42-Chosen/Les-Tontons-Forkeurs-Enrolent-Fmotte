@@ -6,3 +6,5 @@ Webserv
 
 # Dependency files
 *.d
+
+.vscode
