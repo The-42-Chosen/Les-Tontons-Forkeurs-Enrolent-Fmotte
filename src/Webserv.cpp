@@ -96,31 +96,31 @@ bool Webserv::splitServers(std::vector<std::string> &tokens)
 void Webserv::initialisation_socket(int epoll_fd)
 {
     int serverSocket;
-    
+
     s_listen *listen;
 
     _vector_server_fd.clear();
     std::set<s_listen> set;
-    
+
     for (size_t i = 0; i < get_servers_count(); i++)
     {
-        for (size_t j = 0; (listen =  get_server(i)->get_listen(j)) != NULL; ++j)
+        for (size_t j = 0; (listen = get_server(i)->get_listen(j)) != NULL; ++j)
             set.insert(*listen);
     }
-    
-    for (std::set<s_listen>::iterator it = set.begin();it != set.end(); ++it)
+
+    for (std::set<s_listen>::iterator it = set.begin(); it != set.end(); ++it)
     {
         serverSocket = create_server_socket((*it).ip, (*it).port, MAX_CLIENT);
         add_socket_to_event(epoll_fd, serverSocket);
         _vector_server_fd.push_back(serverSocket);
-    } 
+    }
     set.clear();
 }
 
 void Webserv::get_new_client(int epoll_fd, int server_fd)
 {
     int clientSocket;
-    
+
     if ((clientSocket = accept(server_fd, NULL, NULL)) == -1)
         throw ExecptionErrorFunction("accept");
 
@@ -157,10 +157,10 @@ void Webserv::get_message_from_client(int clientSocket, unsigned int size_buffer
 void Webserv::manage_connection(int epoll_fd, int event_fd)
 {
     std::string reply = "Message received\n";
-    
+
     if (event_fd < static_cast<int>(_vector_server_fd.size() + 4))
         get_new_client(epoll_fd, event_fd);
-        
+
     else
         get_message_from_client(event_fd, SIZE_BUFFER);
 }
@@ -205,12 +205,12 @@ bool Webserv::initialisation_connection()
     }
     catch (const std::exception &e)
     {
-        if (! stop_webserv)
+        if (!stop_webserv)
         {
             std::cerr << e.what() << '\n';
             std::cout << "More info: " << strerror(errno) << "\n";
             res = true;
-        }   
+        }
     }
     close_connection(epoll_fd);
     return res;
@@ -225,6 +225,6 @@ void Webserv::close_connection(int epoll_fd)
     for (size_t i = 0; i < _vector_server_fd.size(); i++)
         close(_vector_server_fd[i]);
     _vector_server_fd.clear();
-    
+
     close(epoll_fd);
 }

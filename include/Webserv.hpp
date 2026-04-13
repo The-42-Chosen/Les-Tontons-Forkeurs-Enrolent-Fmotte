@@ -25,7 +25,7 @@ class Webserv
     std::vector<Server> _vector_server;
     std::vector<int> _vector_client_fd;
     std::vector<int> _vector_server_fd;
-    
+
   public:
     // =====================
     // == Canonical Form  ==

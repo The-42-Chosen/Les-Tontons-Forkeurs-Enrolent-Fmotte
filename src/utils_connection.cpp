@@ -31,7 +31,7 @@ int set_nonblocking(int fd)
     int flags;
     if ((flags = fcntl(fd, F_GETFL, 0)) == -1)
         throw ExecptionErrorFunction("fcntl");
-        
+
     return fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 }
 
@@ -48,26 +48,26 @@ sockaddr_in create_socket_adrress(std::string ip_address, unsigned int port_numb
 void add_socket_to_event(int epoll_fd, int socket_fd)
 {
     set_nonblocking(socket_fd);
-    
+
     struct epoll_event ev;
     ev.events = EPOLLIN;
     ev.data.fd = socket_fd;
-    
+
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, socket_fd, &ev) == -1)
-         throw ExecptionErrorFunction("epoll_ctl");
+        throw ExecptionErrorFunction("epoll_ctl");
 }
 
 int create_server_socket(std::string ip_address, unsigned int port_number, unsigned int max_client)
 {
     int serverSocket;
-    
+
     if ((serverSocket = socket(AF_INET, SOCK_STREAM, 0)) == -1)
         throw ExecptionErrorFunction("socket");
-            
+
     sockaddr_in serverAddress = create_socket_adrress(ip_address, port_number);
 
-    if (bind(serverSocket, (struct sockaddr*) &serverAddress, sizeof(serverAddress)) == -1)
-         throw ExecptionErrorFunction("bind");
+    if (bind(serverSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) == -1)
+        throw ExecptionErrorFunction("bind");
 
     if (listen(serverSocket, max_client) == -1)
         throw ExecptionErrorFunction("listen");
