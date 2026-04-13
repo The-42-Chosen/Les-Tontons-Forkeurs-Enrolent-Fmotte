@@ -172,7 +172,7 @@ void Webserv::get_message_from_client(int clientSocket)
 
         std::string reply = "Message received\n";
         send(clientSocket, reply.c_str(), reply.size(), 0);
-		HttpRequest(it->request);
+        HttpRequest(it->request);
     }
 }
 
