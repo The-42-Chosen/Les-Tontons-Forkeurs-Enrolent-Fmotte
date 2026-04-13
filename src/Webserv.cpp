@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/13 18:51:39 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/13 19:39:59 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Webserv.hpp"
+#include "HttpRequest.hpp"
 #include "execption.hpp"
 #include "utils_connection.hpp"
 #include <cstring>
@@ -171,6 +172,7 @@ void Webserv::get_message_from_client(int clientSocket)
 
         std::string reply = "Message received\n";
         send(clientSocket, reply.c_str(), reply.size(), 0);
+		HttpRequest(it->request);
     }
 }
 

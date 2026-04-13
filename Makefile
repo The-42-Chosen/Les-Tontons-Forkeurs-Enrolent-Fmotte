@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+         #
+#    By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/11 16:36:16 by fmotte            #+#    #+#              #
-#    Updated: 2026/04/13 16:52:31 by fmotte           ###   ########.fr        #
+#    Updated: 2026/04/13 19:30:36 by erpascua         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,6 +29,7 @@ FILE_NAMES =	main
 CLASS_FILE =	Webserv \
 				Server \
 				Location \
+				HttpRequest \
 				utils_connection \
 				utils_duplicate \
 				utils_parsing \
