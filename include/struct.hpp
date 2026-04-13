@@ -41,8 +41,8 @@ struct s_listen
 {
     std::string ip;
     unsigned int port;
-    
-    bool operator<(const s_listen& other) const;
+
+    bool operator<(const s_listen &other) const;
 };
 
 struct s_return

@@ -12,8 +12,7 @@
 
 #include "struct.hpp"
 
-
-bool s_listen::operator<(const s_listen& other) const
+bool s_listen::operator<(const s_listen &other) const
 {
     if (ip != other.ip)
         return ip < other.ip;
