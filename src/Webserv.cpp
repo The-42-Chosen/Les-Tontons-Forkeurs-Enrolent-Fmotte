@@ -121,7 +121,7 @@ void Webserv::get_new_client(int epoll_fd, int server_fd)
 {
     int clientSocket;
     s_client client;
-    
+
     if ((clientSocket = accept(server_fd, NULL, NULL)) == -1)
         throw ExecptionErrorFunction("accept");
 
@@ -137,21 +137,21 @@ void Webserv::get_message_from_client(int clientSocket)
 {
     int bytes;
     char buffer[SIZE_BUFFER];
-    
+
     if ((bytes = recv(clientSocket, buffer, sizeof(buffer), 0)) == -1)
         throw ExecptionErrorFunction("recv");
-    
+
     buffer[bytes] = '\0';
 
-    //Think to find a better way to find the correct client
-    //Perhaps replace vector by a set ?
+    // Think to find a better way to find the correct client
+    // Perhaps replace vector by a set ?
     std::vector<s_client>::iterator it = _vector_client.begin();
     for (; it != _vector_client.end(); ++it)
     {
         if (it->fd == clientSocket)
             break;
     }
-        
+
     if (bytes == 0)
     {
         close(clientSocket);
@@ -159,16 +159,16 @@ void Webserv::get_message_from_client(int clientSocket)
             _vector_client.erase(it);
         std::cout << "Client is disconnected\n";
     }
-    
-    else if(bytes == SIZE_BUFFER)
+
+    else if (bytes == SIZE_BUFFER)
         it->request.append(buffer);
-        
+
     else
     {
-        
+
         std::cout << "Message from client: " << it->request << "\n";
         it->request.clear();
-        
+
         std::string reply = "Message received\n";
         send(clientSocket, reply.c_str(), reply.size(), 0);
     }
