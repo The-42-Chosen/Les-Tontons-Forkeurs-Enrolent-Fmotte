@@ -12,15 +12,15 @@
 
 #pragma once
 
-# include "struct.hpp"
-# include "Client.hpp"
-# include "Server.hpp"
-# include <map>
-# include "execption.hpp"
-# include "utils_connection.hpp"
-# include <cstring>
-# include <errno.h>
-# include <set>
+#include "Client.hpp"
+#include "Server.hpp"
+#include "execption.hpp"
+#include "struct.hpp"
+#include "utils_connection.hpp"
+#include <cstring>
+#include <errno.h>
+#include <map>
+#include <set>
 
 #define MAX_CLIENT 10
 #define MAX_EVENTS 10
@@ -31,8 +31,8 @@ class Webserv
   private:
     std::vector<Server> _vector_server;
     std::vector<Client> _vector_client;
-    std::map<int, std::set<Server*> > _map_fd_to_serv; 
-    
+    std::map<int, std::set<Server *>> _map_fd_to_serv;
+
   public:
     // =====================
     // == Canonical Form  ==

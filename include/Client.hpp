@@ -10,25 +10,24 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "struct.hpp"
 #include "Server.hpp"
+#include "struct.hpp"
 class Client
 {
   private:
     int _client_fd;
     int _server_fd;
-    Server* _server;
+    Server *_server;
     std::string _request;
 
-    public:
-    
+  public:
     // =====================
     // == Canonical Form  ==
     // =====================
     Client();
     ~Client();
     Client(const Client &other);
-    Client& operator=(const Client &other);
+    Client &operator=(const Client &other);
 
     // =====================
     // == Getter & Setter ==
@@ -45,9 +44,9 @@ class Client
     // SERVER-PTR
     Server *get_server_ptr(void);
     void set_server_ptr(Server *server);
-    
+
     // REQUEST
-    std::string& get_request(void);
-    void set_request(std::string& request);
-    void append_request(std::string& request);
+    std::string &get_request(void);
+    void set_request(std::string &request);
+    void append_request(std::string &request);
 };
