@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/15 20:14:45 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/15 20:18:09 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 // == Canonical Form  ==
 // =====================
 
-Webserv::Webserv() : _vector_server(0), _vector_client(0)
+Webserv::Webserv() : _vector_server(0)
 {
 }
 
@@ -97,8 +97,10 @@ void Webserv::initialisation_socket(int epoll_fd)
     std::map<s_listen, int> map_socket_fd;
     std::map<s_listen, int>::iterator it;
 
-    for (size_t i = 0; i < get_servers_count(); ++i)
+    // For each server
+    for (size_t i = 0; i < get_servers_count(); i++)
     {
+        // For each listen
         server = get_server(i);
 
         for (size_t j = 0;; ++j)
@@ -254,6 +256,6 @@ void Webserv::close_connection(int epoll_fd)
     for (; it != _map_fd_to_serv.end(); ++it)
         close((*it).first);
     _map_fd_to_serv.clear();
-    
+
     close(epoll_fd);
 }
