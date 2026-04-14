@@ -153,7 +153,7 @@ HttpRequest &HttpRequest::parseHeaderMethod(const std::string &headerContent)
                 value.clear();
 
             _headers[key] = value;
-			// _contentLength
+            // _contentLength
             if (key == "Content-Length")
             {
                 std::stringstream ssLength(value);
@@ -165,7 +165,7 @@ HttpRequest &HttpRequest::parseHeaderMethod(const std::string &headerContent)
         }
         current = next + 2;
     }
-	
+
     // _body
     std::string::size_type bodyStart = headerContent.find("\r\n\r\n");
     if (bodyStart != std::string::npos)
