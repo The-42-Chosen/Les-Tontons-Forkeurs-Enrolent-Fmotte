@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/15 20:03:53 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/15 20:09:09 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,8 +172,12 @@ void Webserv::get_message_from_client(Client *client)
 
     if (bytes == SIZE_BUFFER)
         return;
-
-    std::cout << "Final Message from client: " << client->get_request() << "\n";
+    
+	if (client->get_request().find("\r\n\r\n") == std::string::npos)
+        return;
+    
+	std::cout << "Final Message from client: " << client->get_request() << "\n";
+    HttpRequest request(client->get_request());
     client->clear_request();
 
     std::string reply = "Message received\n";
