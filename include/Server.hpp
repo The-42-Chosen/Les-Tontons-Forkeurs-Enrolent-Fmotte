@@ -40,7 +40,7 @@ class Server
     // =====================
     // == Canonical Form  ==
     // =====================
-    
+
     Server();
     ~Server();
     Server(const Server &other);

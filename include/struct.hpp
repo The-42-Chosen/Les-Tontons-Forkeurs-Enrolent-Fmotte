@@ -12,22 +12,22 @@
 
 #pragma once
 
-# include <algorithm>
-# include <fstream>
-# include <iostream>
-# include <set>
-# include <sstream>
-# include <string>
-# include <vector>
+#include <algorithm>
+#include <fstream>
+#include <iostream>
+#include <set>
+#include <sstream>
+#include <string>
+#include <vector>
 
-# include <arpa/inet.h>
-# include <fcntl.h>
-# include <netinet/in.h>
-# include <sys/epoll.h>
-# include <sys/socket.h>
+#include <arpa/inet.h>
+#include <fcntl.h>
+#include <netinet/in.h>
+#include <sys/epoll.h>
+#include <sys/socket.h>
 
-# include <signal.h>
-# include <unistd.h>
+#include <signal.h>
+#include <unistd.h>
 
 enum method_http
 {

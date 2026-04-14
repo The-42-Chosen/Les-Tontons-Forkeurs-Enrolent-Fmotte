@@ -10,27 +10,26 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "Client.hpp"
+#include "Client.hpp"
 
 // =====================
 // == Canonical Form  ==
 // =====================
 
-Client::Client():
-    _client_fd(-1),
-    _server_fd(-1),
-    _server(0),
-    _request("") 
-    {}
-    
-Client::~Client() {}
+Client::Client() : _client_fd(-1), _server_fd(-1), _server(0), _request("")
+{
+}
+
+Client::~Client()
+{
+}
 
 Client::Client(const Client &other)
 {
     *this = other;
 }
 
-Client& Client::operator=(const Client &other)
+Client &Client::operator=(const Client &other)
 {
     this->_client_fd = other._client_fd;
     this->_server = other._server;
@@ -44,18 +43,46 @@ Client& Client::operator=(const Client &other)
 // =====================
 
 // CLIENT-FD
-int Client::get_client_fd(void) {return _client_fd;}
-void Client::set_client_fd(int client_fd) {_client_fd = client_fd;}
+int Client::get_client_fd(void)
+{
+    return _client_fd;
+}
+void Client::set_client_fd(int client_fd)
+{
+    _client_fd = client_fd;
+}
 
 // SERVER-FD
-int Client::get_server_fd(void) {return _server_fd;}
-void Client::set_server_fd(int server_fd) {_server_fd = server_fd;}
-    
+int Client::get_server_fd(void)
+{
+    return _server_fd;
+}
+void Client::set_server_fd(int server_fd)
+{
+    _server_fd = server_fd;
+}
+
 // SERVER-PTR
-Server *Client::get_server_ptr(void) {return _server;}
-void Client::set_server_ptr(Server *server) {_server = server;}
-    
+Server *Client::get_server_ptr(void)
+{
+    return _server;
+}
+void Client::set_server_ptr(Server *server)
+{
+    _server = server;
+}
+
 // REQUEST
-std::string& Client::get_request(void) {return _request;}
-void Client::set_request(std::string& request) {(void)request; _request.clear();}
-void Client::append_request(std::string& request) {_request.append(request);}
+std::string &Client::get_request(void)
+{
+    return _request;
+}
+void Client::set_request(std::string &request)
+{
+    (void)request;
+    _request.clear();
+}
+void Client::append_request(std::string &request)
+{
+    _request.append(request);
+}
