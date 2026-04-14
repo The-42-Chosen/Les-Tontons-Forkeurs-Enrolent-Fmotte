@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/13 21:10:05 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/14 18:18:21 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,6 +153,7 @@ HttpRequest &HttpRequest::parseHeaderMethod(const std::string &headerContent)
                 value.clear();
 
             _headers[key] = value;
+			// _contentLength
             if (key == "Content-Length")
             {
                 std::stringstream ssLength(value);
@@ -160,20 +161,22 @@ HttpRequest &HttpRequest::parseHeaderMethod(const std::string &headerContent)
                     throw std::runtime_error("Invalid Content-Length header");
             }
             else if (key == "Connection" && value == "keep-alive")
-                _keepAlive = true;
+                _keepAlive = true; // _keepAlive
         }
         current = next + 2;
     }
-
-    // TODO: Verif parsing _headers + faire parsing _body;
-
-    // Body
-    // requestLine = headerContent.substr(current, next - current)
-
-    // if (!requestLine.empty())
-    // {
-    // 	_body = requestLine.substr()
-    // }
+	
+    // _body
+    std::string::size_type bodyStart = headerContent.find("\r\n\r\n");
+    if (bodyStart != std::string::npos)
+    {
+        bodyStart += 4;
+        std::string bodyContent = headerContent.substr(bodyStart);
+        for (std::string::size_type i = 0; i < bodyContent.size(); ++i)
+        {
+            _body.push_back(static_cast<__uint8_t>(bodyContent[i]));
+        }
+    }
 
     return (*this);
 }
