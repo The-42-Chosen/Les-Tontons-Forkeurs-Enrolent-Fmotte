@@ -31,6 +31,7 @@ CLASS_FILE =	Webserv \
 				Location \
 				Client \
 				HttpRequest \
+				Client \
 				utils_connection \
 				utils_duplicate \
 				utils_parsing \
