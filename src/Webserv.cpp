@@ -6,22 +6,18 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/13 18:51:39 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/14 18:46:23 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Webserv.hpp"
-#include "execption.hpp"
-#include "utils_connection.hpp"
-#include <cstring>
-#include <errno.h>
-#include <set>
+
 
 // =====================
 // == Canonical Form  ==
 // =====================
 
-Webserv::Webserv() : _vector_server(0)
+Webserv::Webserv() : _vector_server(0), _vector_client(0)
 {
 }
 
@@ -98,36 +94,54 @@ void Webserv::initialisation_socket(int epoll_fd)
     int serverSocket;
 
     s_listen *listen;
-
-    _vector_server_fd.clear();
-    std::set<s_listen> set;
-
+    Server *server;
+    std::map<s_listen, int> map_socket_fd;
+    std::map<s_listen, int>::iterator it;
+    
+    //For each server
     for (size_t i = 0; i < get_servers_count(); i++)
     {
-        for (size_t j = 0; (listen = get_server(i)->get_listen(j)) != NULL; ++j)
-            set.insert(*listen);
-    }
+        //For each listen
+        server = get_server(i);
+        for (size_t j = 0; (listen = server->get_listen(j)) != NULL; ++j)
+        {
+            it = map_socket_fd.find(*listen);
+            
+            //If new fd 
+            if (it == map_socket_fd.end())
+            {
+                serverSocket = create_server_socket(listen->ip, listen->port, MAX_CLIENT);
+                add_socket_to_event(epoll_fd, serverSocket);
+                
+                map_socket_fd.insert(std::make_pair(*listen, serverSocket));            //Syntaxe for cpp98++
+                std::set<Server*> set_server;
+                _map_fd_to_serv.insert(std::make_pair(serverSocket, set_server));        //Syntaxe for cpp98++
+                _map_fd_to_serv[serverSocket].insert(server);
+            }
+            else
+            {
+                serverSocket = (*it).second;
+                std::set<Server*> set_server = _map_fd_to_serv[serverSocket];
 
-    for (std::set<s_listen>::iterator it = set.begin(); it != set.end(); ++it)
-    {
-        serverSocket = create_server_socket((*it).ip, (*it).port, MAX_CLIENT);
-        add_socket_to_event(epoll_fd, serverSocket);
-        _vector_server_fd.push_back(serverSocket);
+                //Avoid doublons
+                if (std::find(set_server.begin(), set_server.end(), server) == set_server.end())
+                    _map_fd_to_serv[serverSocket].insert(server);
+            }
+        }
     }
-    set.clear();
 }
 
 void Webserv::get_new_client(int epoll_fd, int server_fd)
 {
     int clientSocket;
-    s_client client;
+    Client client;
 
     if ((clientSocket = accept(server_fd, NULL, NULL)) == -1)
         throw ExecptionErrorFunction("accept");
 
     add_socket_to_event(epoll_fd, clientSocket);
-    client.fd = clientSocket;
-    client.request = "";
+    client.set_client_fd(clientSocket);
+    client.set_server_fd(server_fd);
     _vector_client.push_back(client);
 
     std::cout << "Nouveau client connecté: fd=" << clientSocket << "\n";
@@ -137,48 +151,50 @@ void Webserv::get_message_from_client(int clientSocket)
 {
     int bytes;
     char buffer[SIZE_BUFFER];
-
+    std::string s;
+    
     if ((bytes = recv(clientSocket, buffer, sizeof(buffer), 0)) == -1)
         throw ExecptionErrorFunction("recv");
 
     buffer[bytes] = '\0';
-
+    s = buffer;
+    
     // Think to find a better way to find the correct client
     // Perhaps replace vector by a set ?
-    std::vector<s_client>::iterator it = _vector_client.begin();
+    std::vector<Client>::iterator it = _vector_client.begin();
     for (; it != _vector_client.end(); ++it)
     {
-        if (it->fd == clientSocket)
+        if (it->get_client_fd() == clientSocket)
             break;
     }
-
+    
     if (bytes == 0)
     {
         close(clientSocket);
         if (it != _vector_client.end())
             _vector_client.erase(it);
         std::cout << "Client is disconnected\n";
+        return;
     }
 
-    else if (bytes == SIZE_BUFFER)
-        it->request.append(buffer);
+    it->append_request(s);
+        
+    if (bytes == SIZE_BUFFER)
+        return;
+        
+    std::cout << "Message from client: " << it->get_request() << "\n";
+    s = "";
+    it->set_request(s);
 
-    else
-    {
-
-        std::cout << "Message from client: " << it->request << "\n";
-        it->request.clear();
-
-        std::string reply = "Message received\n";
-        send(clientSocket, reply.c_str(), reply.size(), 0);
-    }
+    std::string reply = "Message received\n";
+    send(clientSocket, reply.c_str(), reply.size(), 0);
 }
 
 void Webserv::manage_connection(int epoll_fd, int event_fd)
 {
     std::string reply = "Message received\n";
 
-    if (event_fd < static_cast<int>(_vector_server_fd.size() + 4))
+    if (event_fd < static_cast<int>(_map_fd_to_serv.size() + 4))
         get_new_client(epoll_fd, event_fd);
 
     else
@@ -239,12 +255,14 @@ bool Webserv::initialisation_connection()
 void Webserv::close_connection(int epoll_fd)
 {
     for (size_t i = 0; i < _vector_client.size(); i++)
-        close(_vector_client[i].fd);
+        close(_vector_client[i].get_client_fd());
     _vector_client.clear();
 
-    for (size_t i = 0; i < _vector_server_fd.size(); i++)
-        close(_vector_server_fd[i]);
-    _vector_server_fd.clear();
 
+    std::map<int, std::set<Server*> >::iterator it = _map_fd_to_serv.begin();
+    for (; it != _map_fd_to_serv.end(); ++it)
+        close((*it).first);
+    _map_fd_to_serv.clear();
+    
     close(epoll_fd);
 }
