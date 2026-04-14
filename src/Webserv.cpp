@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/13 19:39:59 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/14 13:15:25 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,8 +142,6 @@ void Webserv::get_message_from_client(int clientSocket)
     if ((bytes = recv(clientSocket, buffer, sizeof(buffer), 0)) == -1)
         throw ExecptionErrorFunction("recv");
 
-    buffer[bytes] = '\0';
-
     // Think to find a better way to find the correct client
     // Perhaps replace vector by a set ?
     std::vector<s_client>::iterator it = _vector_client.begin();
@@ -161,18 +159,23 @@ void Webserv::get_message_from_client(int clientSocket)
         std::cout << "Client is disconnected\n";
     }
 
-    else if (bytes == SIZE_BUFFER)
-        it->request.append(buffer);
-
     else
     {
+        if (it == _vector_client.end())
+            return;
+
+        it->request.append(buffer, bytes);
+
+        if (it->request.find("\r\n\r\n") == std::string::npos)
+            return;
 
         std::cout << "Message from client: " << it->request << "\n";
+        HttpRequest request(it->request);
+        (void)request;
         it->request.clear();
 
         std::string reply = "Message received\n";
         send(clientSocket, reply.c_str(), reply.size(), 0);
-        HttpRequest(it->request);
     }
 }
 
