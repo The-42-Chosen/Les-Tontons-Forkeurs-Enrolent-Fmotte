@@ -6,26 +6,33 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:20 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/13 18:41:59 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/14 18:40:22 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "Server.hpp"
-#include "struct.hpp"
+# include "struct.hpp"
+# include "Client.hpp"
+# include "Server.hpp"
+# include <map>
+# include "execption.hpp"
+# include "utils_connection.hpp"
+# include <cstring>
+# include <errno.h>
+# include <set>
 
 #define MAX_CLIENT 10
 #define MAX_EVENTS 10
-#define SIZE_BUFFER 16
+#define SIZE_BUFFER 1024
 
 class Webserv
 {
   private:
     std::vector<Server> _vector_server;
-    std::vector<s_client> _vector_client;
-    std::vector<int> _vector_server_fd;
-
+    std::vector<Client> _vector_client;
+    std::map<int, std::set<Server*> > _map_fd_to_serv; 
+    
   public:
     // =====================
     // == Canonical Form  ==

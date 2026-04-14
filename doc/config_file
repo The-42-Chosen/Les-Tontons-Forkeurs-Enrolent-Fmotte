@@ -73,6 +73,7 @@ server {
 }
 
 server {
+    listen 8081;
     listen 8082;
     server_name x;
 	root /var/www/test;
