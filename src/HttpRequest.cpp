@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/15 16:20:42 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/15 21:07:46 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,15 +74,18 @@ const std::string &HttpRequest::getProtocol() const
 
 const char *HttpRequest::methodToString(method_http method)
 {
-    if (method == GET)
-        return ("GET");
-    if (method == POST)
-        return ("POST");
-    if (method == DELETE)
-        return ("DELETE");
-    if (method == HEAD)
-        return ("HEAD");
-    return ("UNKNOWN");
+	switch (method)
+	{
+		case 0:
+			return ("GET");
+		case 1:
+			return ("POST");
+		case 2:
+			return ("DELETE");
+		case 3:
+			return ("HEAD");
+		}
+	return ("UNKNOWN");
 }
 
 // =====================

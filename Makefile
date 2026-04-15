@@ -6,7 +6,7 @@
 #    By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/11 16:36:16 by fmotte            #+#    #+#              #
-#    Updated: 2026/04/15 20:03:25 by erpascua         ###   ########.fr        #
+#    Updated: 2026/04/15 20:52:38 by erpascua         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,7 +31,6 @@ CLASS_FILE =	Webserv \
 				Location \
 				Client \
 				HttpRequest \
-				Client \
 				utils_connection \
 				utils_duplicate \
 				utils_parsing \
