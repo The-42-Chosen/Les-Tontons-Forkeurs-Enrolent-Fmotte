@@ -6,12 +6,15 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 14:43:11 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/14 18:32:11 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/15 15:53:33 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
-#include "struct.hpp"
+# pragma once
+ 
+# include "Server.hpp"
+# include "struct.hpp"
+
 class Client
 {
   private:
@@ -47,6 +50,6 @@ class Client
 
     // REQUEST
     std::string &get_request(void);
-    void set_request(std::string &request);
+    void clear_request(void);
     void append_request(std::string &request);
 };
