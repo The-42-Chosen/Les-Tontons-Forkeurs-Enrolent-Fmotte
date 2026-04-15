@@ -30,7 +30,7 @@ class Webserv
 {
   private:
     std::vector<Server> _vector_server;
-    std::map<int, std::set<Server *> > _map_fd_to_serv;
+    std::map<int, std::set<Server *>> _map_fd_to_serv;
 
   public:
     // =====================
@@ -61,7 +61,7 @@ class Webserv
     bool initialisation_connection();
     void initialisation_socket(int epoll_fd);
     void webserv_listen(int epoll_fd);
-    void manage_connection(int epoll_fd, struct epoll_event& events);
+    void manage_connection(int epoll_fd, struct epoll_event &events);
     void get_new_client(int epoll_fd, int server_fd);
     void get_message_from_client(Client *client);
     void close_connection(int epoll_fd);

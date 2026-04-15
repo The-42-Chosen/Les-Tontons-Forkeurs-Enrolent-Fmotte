@@ -101,7 +101,7 @@ void Webserv::initialisation_socket(int epoll_fd)
     {
         server = get_server(i);
 
-        for (size_t j = 0; ; ++j)
+        for (size_t j = 0;; ++j)
         {
             listen = server->get_listen(j);
             if (!listen)
@@ -124,7 +124,7 @@ void Webserv::initialisation_socket(int epoll_fd)
             {
                 serverSocket = it->second;
                 std::set<Server *> &set_server = _map_fd_to_serv[serverSocket];
-                
+
                 if (set_server.find(server) == set_server.end())
                     set_server.insert(server);
             }
@@ -154,7 +154,7 @@ void Webserv::get_message_from_client(Client *client)
 {
     int bytes;
     char buffer[SIZE_BUFFER];
- 
+
     if ((bytes = recv(client->get_client_fd(), buffer, sizeof(buffer), 0)) == -1)
         throw ExecptionErrorFunction("recv");
 
@@ -169,10 +169,10 @@ void Webserv::get_message_from_client(Client *client)
     std::string s;
     s.assign(buffer, buffer + bytes);
     client->append_request(s);
-    
+
     if (bytes == SIZE_BUFFER)
         return;
- 
+
     std::cout << "Final Message from client: " << client->get_request() << "\n";
     client->clear_request();
 
@@ -180,16 +180,16 @@ void Webserv::get_message_from_client(Client *client)
     send(client->get_client_fd(), reply.c_str(), reply.size(), 0);
 }
 
-void Webserv::manage_connection(int epoll_fd, struct epoll_event& events)
+void Webserv::manage_connection(int epoll_fd, struct epoll_event &events)
 {
     std::string reply = "Message received\n";
     int server_fd = events.data.fd;
-    
+
     if (server_fd < static_cast<int>(_map_fd_to_serv.size() + 4))
         get_new_client(epoll_fd, server_fd);
 
     else
-        get_message_from_client(static_cast<Client*>(events.data.ptr));
+        get_message_from_client(static_cast<Client *>(events.data.ptr));
 }
 
 void Webserv::webserv_listen(int epoll_fd)
@@ -208,7 +208,7 @@ void Webserv::webserv_listen(int epoll_fd)
             return;
 
         for (int i = 0; i < nfds; ++i)
-            manage_connection(epoll_fd, events[i]); 
+            manage_connection(epoll_fd, events[i]);
     }
 }
 
@@ -243,13 +243,13 @@ bool Webserv::initialisation_connection()
 }
 
 void Webserv::close_connection(int epoll_fd)
-{   
-    //Close fd client
-    
-    std::map<int, std::set<Server *> >::iterator it = _map_fd_to_serv.begin();
+{
+    // Close fd client
+
+    std::map<int, std::set<Server *>>::iterator it = _map_fd_to_serv.begin();
     for (; it != _map_fd_to_serv.end(); ++it)
         close((*it).first);
     _map_fd_to_serv.clear();
-    
+
     close(epoll_fd);
 }

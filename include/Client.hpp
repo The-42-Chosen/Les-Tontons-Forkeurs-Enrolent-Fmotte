@@ -10,10 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# pragma once
- 
-# include "Server.hpp"
-# include "struct.hpp"
+#pragma once
+
+#include "Server.hpp"
+#include "struct.hpp"
 
 class Client
 {
