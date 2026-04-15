@@ -13,8 +13,8 @@
 #pragma once
 
 #include "Client.hpp"
-#include "Server.hpp"
 #include "HttpRequest.hpp"
+#include "Server.hpp"
 #include "execption.hpp"
 #include "struct.hpp"
 #include "utils_connection.hpp"

@@ -170,11 +170,11 @@ void Webserv::get_message_from_client(Client *client)
 
     if (bytes == SIZE_BUFFER)
         return;
-    
-	if (client->get_request().find("\r\n\r\n") == std::string::npos)
+
+    if (client->get_request().find("\r\n\r\n") == std::string::npos)
         return;
-    
-	std::cout << "Final Message from client: " << client->get_request() << "\n";
+
+    std::cout << "Final Message from client: " << client->get_request() << "\n";
     HttpRequest request(client->get_request());
     client->clear_request();
 
@@ -248,7 +248,7 @@ void Webserv::close_connection(int epoll_fd)
 {
     // Close fd client
 
-    std::map<int, std::set<Server*> >::iterator it = _map_fd_to_serv.begin();
+    std::map<int, std::set<Server *>>::iterator it = _map_fd_to_serv.begin();
     for (; it != _map_fd_to_serv.end(); ++it)
         close((*it).first);
     _map_fd_to_serv.clear();

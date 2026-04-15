@@ -14,8 +14,6 @@
 
 #include "Client.hpp"
 #include "struct.hpp"
-#include "Client.hpp"
-#include "struct.hpp"
 
 extern int stop_webserv;
 
