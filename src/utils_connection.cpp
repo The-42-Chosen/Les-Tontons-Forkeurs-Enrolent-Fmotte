@@ -66,8 +66,8 @@ int create_server_socket(std::string ip_address, unsigned int port_number, unsig
 
     sockaddr_in serverAddress = create_socket_adrress(ip_address, port_number);
 
-	int opt = 1;
-	setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+    int opt = 1;
+    setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
     if (bind(serverSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) == -1)
         throw ExecptionErrorFunction("bind");

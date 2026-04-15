@@ -19,7 +19,6 @@
 // == Canonical Form  ==
 // =====================
 
-
 HttpRequest::HttpRequest() : _keepAlive(false), _contentLength(0)
 {
 }
@@ -132,8 +131,8 @@ HttpRequest &HttpRequest::parseHeaderMethod(const std::string &headerContent)
 // _headers
 HttpRequest &HttpRequest::parseHeader(const std::string &headerContent)
 {
-	// _headers
-	std::string requestLine;
+    // _headers
+    std::string requestLine;
     std::string::size_type headerEnd = headerContent.find("\r\n\r\n");
     std::string::size_type lineEnd = headerContent.find("\r\n");
     if (headerEnd == std::string::npos)
@@ -190,20 +189,19 @@ HttpRequest &HttpRequest::parseBody(const std::string &headerContent)
         for (std::string::size_type i = 0; i < bodyContent.size(); ++i)
             _body.push_back(static_cast<__uint8_t>(bodyContent[i]));
     }
-	return (*this);
+    return (*this);
 }
 
 HttpRequest &HttpRequest::parseHttpRequest(const std::string &headerContent)
 {
-	parseHeaderMethod(headerContent);
-	std::cout << "Method : |" << this->getMethod() << "| - Uri |" << this->getUri() << "| - Protocol |" << this->getProtocol() << "|" << std::endl;
-	parseHeader(headerContent);
-	for (std::map<std::string, std::string>::const_iterator it = _headers.begin(); it != _headers.end(); it++)
-	{
-		std::cout << it->first << " | " << it->second << std::endl;
-	}
-	// parseBody(headerContent);
-	return (*this);
+    parseHeaderMethod(headerContent);
+    std::cout << "Method : |" << this->getMethod() << "| - Uri |" << this->getUri() << "| - Protocol |"
+              << this->getProtocol() << "|" << std::endl;
+    parseHeader(headerContent);
+    for (std::map<std::string, std::string>::const_iterator it = _headers.begin(); it != _headers.end(); it++)
+    {
+        std::cout << it->first << " | " << it->second << std::endl;
+    }
+    // parseBody(headerContent);
+    return (*this);
 }
-
-
