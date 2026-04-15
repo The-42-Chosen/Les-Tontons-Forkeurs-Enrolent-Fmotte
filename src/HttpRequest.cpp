@@ -74,18 +74,18 @@ const std::string &HttpRequest::getProtocol() const
 
 const char *HttpRequest::methodToString(method_http method)
 {
-	switch (method)
-	{
-		case 0:
-			return ("GET");
-		case 1:
-			return ("POST");
-		case 2:
-			return ("DELETE");
-		case 3:
-			return ("HEAD");
-		}
-	return ("UNKNOWN");
+    switch (method)
+    {
+    case 0:
+        return ("GET");
+    case 1:
+        return ("POST");
+    case 2:
+        return ("DELETE");
+    case 3:
+        return ("HEAD");
+    }
+    return ("UNKNOWN");
 }
 
 // =====================
