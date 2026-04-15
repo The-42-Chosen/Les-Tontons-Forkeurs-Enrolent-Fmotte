@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/15 20:18:09 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/15 20:20:37 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,10 +97,8 @@ void Webserv::initialisation_socket(int epoll_fd)
     std::map<s_listen, int> map_socket_fd;
     std::map<s_listen, int>::iterator it;
 
-    // For each server
-    for (size_t i = 0; i < get_servers_count(); i++)
+    for (size_t i = 0; i < get_servers_count(); ++i)
     {
-        // For each listen
         server = get_server(i);
 
         for (size_t j = 0;; ++j)
@@ -126,7 +124,6 @@ void Webserv::initialisation_socket(int epoll_fd)
             {
                 serverSocket = it->second;
                 std::set<Server *> &set_server = _map_fd_to_serv[serverSocket];
-
                 if (set_server.find(server) == set_server.end())
                     set_server.insert(server);
             }
@@ -156,7 +153,6 @@ void Webserv::get_message_from_client(Client *client)
 {
     int bytes;
     char buffer[SIZE_BUFFER];
-
     if ((bytes = recv(client->get_client_fd(), buffer, sizeof(buffer), 0)) == -1)
         throw ExecptionErrorFunction("recv");
 
@@ -256,6 +252,6 @@ void Webserv::close_connection(int epoll_fd)
     for (; it != _map_fd_to_serv.end(); ++it)
         close((*it).first);
     _map_fd_to_serv.clear();
-
+    
     close(epoll_fd);
 }

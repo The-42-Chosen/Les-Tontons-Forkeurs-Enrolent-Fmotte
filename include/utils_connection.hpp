@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_connection.hpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 14:55:35 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/15 15:17:32 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/15 20:21:08 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 #include "Client.hpp"
 #include "struct.hpp"
+#include "Client.hpp"
 
 extern int stop_webserv;
 
