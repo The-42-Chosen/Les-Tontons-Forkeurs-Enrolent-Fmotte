@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 14:55:35 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/15 20:21:08 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/15 20:21:26 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "Client.hpp"
 #include "struct.hpp"
 #include "Client.hpp"
+#include "struct.hpp"
 
 extern int stop_webserv;
 

@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 14:55:37 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/15 20:18:41 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/15 20:21:31 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ int create_server_socket(std::string ip_address, unsigned int port_number, unsig
 
     if ((serverSocket = socket(AF_INET, SOCK_STREAM, 0)) == -1)
         throw ExecptionErrorFunction("socket");
-    
+
     sockaddr_in serverAddress = create_socket_adrress(ip_address, port_number);
 
     int opt = 1;
