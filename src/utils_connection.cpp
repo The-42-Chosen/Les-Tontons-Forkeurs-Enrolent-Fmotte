@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_connection.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 14:55:37 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/13 17:20:57 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/15 16:11:42 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,9 @@ int create_server_socket(std::string ip_address, unsigned int port_number, unsig
         throw ExecptionErrorFunction("socket");
 
     sockaddr_in serverAddress = create_socket_adrress(ip_address, port_number);
+
+	int opt = 1;
+	setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
     if (bind(serverSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) == -1)
         throw ExecptionErrorFunction("bind");

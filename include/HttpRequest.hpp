@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/13 19:48:16 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/15 13:55:38 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,10 @@ class HttpRequest
     ~HttpRequest();
 
     // Member Functions
-    HttpRequest &parseHeaderMethod(const std::string &headerContent);
+	HttpRequest &parseHttpRequest(const std::string &headerContent);
     HttpRequest &parseHeader(const std::string &headerContent);
+    HttpRequest &parseHeaderMethod(const std::string &headerContent);
+	HttpRequest &parseBody(const std::string &headerContent);
 
     // Getter
     method_http getMethod() const;

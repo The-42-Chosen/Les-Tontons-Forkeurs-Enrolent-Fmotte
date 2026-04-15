@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/14 18:18:21 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/15 16:20:42 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,18 +19,6 @@
 // == Canonical Form  ==
 // =====================
 
-static method_http parseMethodToken(const std::string &method)
-{
-    if (method == "GET")
-        return (GET);
-    if (method == "POST")
-        return (POST);
-    if (method == "DELETE")
-        return (DELETE);
-    if (method == "HEAD")
-        return (HEAD);
-    throw std::runtime_error("Unsupported HTTP method: " + method);
-}
 
 HttpRequest::HttpRequest() : _keepAlive(false), _contentLength(0)
 {
@@ -38,7 +26,7 @@ HttpRequest::HttpRequest() : _keepAlive(false), _contentLength(0)
 
 HttpRequest::HttpRequest(std::string requestRawContent) : _keepAlive(false), _contentLength(0)
 {
-    parseHeader(requestRawContent);
+    parseHttpRequest(requestRawContent);
 }
 
 HttpRequest::HttpRequest(const HttpRequest &cpy)
@@ -102,13 +90,25 @@ const char *HttpRequest::methodToString(method_http method)
 // ==     Method      ==
 // =====================
 
+static method_http parseMethodToken(const std::string &method)
+{
+    if (method == "GET")
+        return (GET);
+    if (method == "POST")
+        return (POST);
+    if (method == "DELETE")
+        return (DELETE);
+    if (method == "HEAD")
+        return (HEAD);
+    throw std::runtime_error("Unsupported HTTP method: " + method);
+}
+
+// _method | _uri | _protocol
 HttpRequest &HttpRequest::parseHeaderMethod(const std::string &headerContent)
 {
     _headers.clear();
 
-    // _method | _uri | _protocol
     std::string requestLine;
-    std::string::size_type headerEnd = headerContent.find("\r\n\r\n");
     std::string::size_type lineEnd = headerContent.find("\r\n");
 
     if (lineEnd == std::string::npos)
@@ -118,13 +118,24 @@ HttpRequest &HttpRequest::parseHeaderMethod(const std::string &headerContent)
 
     std::stringstream ssMethod(requestLine);
     std::string method;
+    std::string extraToken;
 
     if (!(ssMethod >> method >> _uri >> _protocol))
         throw std::runtime_error("Invalid HTTP request line");
+    if (ssMethod >> extraToken)
+        throw std::runtime_error("Invalid HTTP request line: extra token");
 
     _method = parseMethodToken(method);
+    return (*this);
+}
 
-    // _headers
+// _headers
+HttpRequest &HttpRequest::parseHeader(const std::string &headerContent)
+{
+	// _headers
+	std::string requestLine;
+    std::string::size_type headerEnd = headerContent.find("\r\n\r\n");
+    std::string::size_type lineEnd = headerContent.find("\r\n");
     if (headerEnd == std::string::npos)
         headerEnd = headerContent.size();
     else
@@ -165,23 +176,34 @@ HttpRequest &HttpRequest::parseHeaderMethod(const std::string &headerContent)
         }
         current = next + 2;
     }
+    return (*this);
+}
 
-    // _body
+// _body
+HttpRequest &HttpRequest::parseBody(const std::string &headerContent)
+{
     std::string::size_type bodyStart = headerContent.find("\r\n\r\n");
     if (bodyStart != std::string::npos)
     {
         bodyStart += 4;
         std::string bodyContent = headerContent.substr(bodyStart);
         for (std::string::size_type i = 0; i < bodyContent.size(); ++i)
-        {
             _body.push_back(static_cast<__uint8_t>(bodyContent[i]));
-        }
     }
-
-    return (*this);
+	return (*this);
 }
 
-HttpRequest &HttpRequest::parseHeader(const std::string &headerContent)
+HttpRequest &HttpRequest::parseHttpRequest(const std::string &headerContent)
 {
-    return (parseHeaderMethod(headerContent));
+	parseHeaderMethod(headerContent);
+	std::cout << "Method : |" << this->getMethod() << "| - Uri |" << this->getUri() << "| - Protocol |" << this->getProtocol() << "|" << std::endl;
+	parseHeader(headerContent);
+	for (std::map<std::string, std::string>::const_iterator it = _headers.begin(); it != _headers.end(); it++)
+	{
+		std::cout << it->first << " | " << it->second << std::endl;
+	}
+	// parseBody(headerContent);
+	return (*this);
 }
+
+
