@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 14:43:09 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/14 18:38:10 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/15 19:26:25 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ Client::Client(const Client &other)
 Client &Client::operator=(const Client &other)
 {
     this->_client_fd = other._client_fd;
+    this->_server_fd = other._server_fd;
     this->_server = other._server;
     this->_request = other._request;
 
@@ -77,9 +78,8 @@ std::string &Client::get_request(void)
 {
     return _request;
 }
-void Client::set_request(std::string &request)
+void Client::clear_request(void)
 {
-    (void)request;
     _request.clear();
 }
 void Client::append_request(std::string &request)
