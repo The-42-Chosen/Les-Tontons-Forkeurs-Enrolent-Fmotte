@@ -38,10 +38,10 @@ class HttpRequest
     ~HttpRequest();
 
     // Member Functions
-	HttpRequest &parseHttpRequest(const std::string &headerContent);
+    HttpRequest &parseHttpRequest(const std::string &headerContent);
     HttpRequest &parseHeader(const std::string &headerContent);
     HttpRequest &parseHeaderMethod(const std::string &headerContent);
-	HttpRequest &parseBody(const std::string &headerContent);
+    HttpRequest &parseBody(const std::string &headerContent);
 
     // Getter
     method_http getMethod() const;
