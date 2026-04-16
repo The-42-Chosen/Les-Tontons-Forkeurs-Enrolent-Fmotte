@@ -103,36 +103,35 @@ const char *HttpRequest::methodToString(method_http method)
 // ==     Method      ==
 // =====================
 
-bool	isValidURI(const std::string uri)
+bool isValidURI(const std::string uri)
 {
-	if (uri[0] != '/')
-	{
-		throw std::runtime_error("URI format need to start with '/'");
-		return false;
-	}
-	return true;
+    if (uri[0] != '/')
+    {
+        throw std::runtime_error("URI format need to start with '/'");
+        return false;
+    }
+    return true;
 }
 
-bool	isValidProtocol(const std::string protocol)
+bool isValidProtocol(const std::string protocol)
 {
-	std::string::size_type serverHTTP = headerContent.find("/")
-	if (;)
+    std::string::size_type serverHTTP = headerContent.find("/") if (;)
 }
 
-bool	isHostPresentAndValid(std::map<std::string, std::string> headers)
+bool isHostPresentAndValid(std::map<std::string, std::string> headers)
 {
     for (std::map<std::string, std::string>::const_iterator it = headers.begin(); it != headers.end(); it++)
     {
-       if (it->first == "Host")
-	   {
-		   if (!it->second.empty())
-				return (true);
-		   else
-				throw std::runtime_error("Host is invalid");
-		}
-	}
-	throw std::runtime_error("Host not found");
-	return (false);
+        if (it->first == "Host")
+        {
+            if (!it->second.empty())
+                return (true);
+            else
+                throw std::runtime_error("Host is invalid");
+        }
+    }
+    throw std::runtime_error("Host not found");
+    return (false);
 }
 
 static method_http parseMethodToken(const std::string &method)
@@ -171,7 +170,7 @@ HttpRequest &HttpRequest::parseHeaderMethod(const std::string &headerContent)
         throw std::runtime_error("Invalid HTTP request line: extra token");
 
     _method = parseMethodToken(method);
-	isValidURI(_uri);
+    isValidURI(_uri);
     return (*this);
 }
 
