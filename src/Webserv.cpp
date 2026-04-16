@@ -250,7 +250,7 @@ void Webserv::close_connection(int epoll_fd)
 {
     // Close fd client
 
-    std::map<int, std::set<Server *> >::iterator it = _map_fd_to_serv.begin();
+    std::map<int, std::set<Server *>>::iterator it = _map_fd_to_serv.begin();
     for (; it != _map_fd_to_serv.end(); ++it)
         close((*it).first);
     _map_fd_to_serv.clear();
