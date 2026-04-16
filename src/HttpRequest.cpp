@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/15 21:07:46 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/16 18:58:32 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,38 @@ const char *HttpRequest::methodToString(method_http method)
 // ==     Method      ==
 // =====================
 
+bool	isValidURI(const std::string uri)
+{
+	if (uri[0] != '/')
+	{
+		throw std::runtime_error("URI format need to start with '/'");
+		return false;
+	}
+	return true;
+}
+
+bool	isValidProtocol(const std::string protocol)
+{
+	std::string::size_type serverHTTP = headerContent.find("/")
+	if (;)
+}
+
+bool	isHostPresentAndValid(std::map<std::string, std::string> headers)
+{
+    for (std::map<std::string, std::string>::const_iterator it = headers.begin(); it != headers.end(); it++)
+    {
+       if (it->first == "Host")
+	   {
+		   if (!it->second.empty())
+				return (true);
+		   else
+				throw std::runtime_error("Host is invalid");
+		}
+	}
+	throw std::runtime_error("Host not found");
+	return (false);
+}
+
 static method_http parseMethodToken(const std::string &method)
 {
     if (method == "GET")
@@ -128,6 +160,7 @@ HttpRequest &HttpRequest::parseHeaderMethod(const std::string &headerContent)
         throw std::runtime_error("Invalid HTTP request line: extra token");
 
     _method = parseMethodToken(method);
+	isValidURI(_uri);
     return (*this);
 }
 
