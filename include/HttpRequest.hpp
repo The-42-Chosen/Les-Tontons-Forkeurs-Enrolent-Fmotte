@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/20 16:10:36 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/20 16:12:07 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ class HttpRequest
 
     void interpretation(void);
     void link_to_server(void);
-
+    
     // =====================
     // ==     Validity    ==
     // =====================

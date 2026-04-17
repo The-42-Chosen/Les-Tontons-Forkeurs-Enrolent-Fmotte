@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:43:21 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/17 16:37:44 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/20 16:12:57 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,11 +44,13 @@ class Server
     unsigned int _client_max_body_size;
     s_return _ret;
 
+
+
   public:
     // =====================
     // == Canonical Form  ==
     // =====================
-
+    
     Server();
     Server(const Webserv *webser);
     ~Server();
