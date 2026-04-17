@@ -33,8 +33,8 @@ class Client;
 class Webserv
 {
   private:
-    std::vector<Server*> _vector_server;
-    std::map<int, std::set<Server *> > _map_fd_to_serv;
+    std::vector<Server *> _vector_server;
+    std::map<int, std::set<Server *>> _map_fd_to_serv;
 
   public:
     // =====================
@@ -51,9 +51,9 @@ class Webserv
     // =====================
 
     // SERVERS
-    const std::vector<Server*> &get_server(void) const;
-    const std::map<int, std::set<Server *> > &get_map(void) const;
-    
+    const std::vector<Server *> &get_server(void) const;
+    const std::map<int, std::set<Server *>> &get_map(void) const;
+
     // =====================
     // ==     Method      ==
     // =====================

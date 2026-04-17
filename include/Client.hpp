@@ -58,6 +58,6 @@ class Client
     void append_request(std::string &request);
 
     // WEBSERV
-    Webserv* get_webserv(void);
+    Webserv *get_webserv(void);
     void set_webserv(Webserv *webserv);
 };

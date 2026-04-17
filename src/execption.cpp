@@ -82,7 +82,8 @@ const char *ExecptionErrorFunction::what() const throw()
     return _message.c_str();
 }
 
-ExecptionErrorUninitializedVariable::ExecptionErrorUninitializedVariable(const std::string &var, const std::string &instance)
+ExecptionErrorUninitializedVariable::ExecptionErrorUninitializedVariable(const std::string &var,
+                                                                         const std::string &instance)
     : _message("Error: Attempt to use an uninitialized variable '" + var + "' in instance '" + instance + "'.")
 {
 }

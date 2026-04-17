@@ -15,9 +15,9 @@
 #include <sys/epoll.h>
 
 #include "Location.hpp"
-#include "struct.hpp"
 #include "Webserv.hpp"
 #include "execption.hpp"
+#include "struct.hpp"
 #include "utils_duplicate.hpp"
 #include "utils_parsing.hpp"
 
@@ -25,14 +25,13 @@
 #define DEFAULT_PORT 8080
 #define DEFAULT_CLIENT_MAX_BODY_SIZE 5000
 
-class Webserv; 
+class Webserv;
 
 class Server
 {
   private:
-    
     const Webserv *_webser;
-    
+
     std::vector<s_listen> _listens;
     std::vector<std::string> _name_servers;
     std::vector<Location> _locations;
@@ -45,13 +44,11 @@ class Server
     unsigned int _client_max_body_size;
     s_return _ret;
 
-
-
   public:
     // =====================
     // == Canonical Form  ==
     // =====================
-    
+
     Server();
     Server(const Webserv *webser);
     ~Server();

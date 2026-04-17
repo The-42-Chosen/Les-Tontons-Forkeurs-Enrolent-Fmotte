@@ -40,12 +40,12 @@ Webserv &Webserv::operator=(const Webserv &other)
 // =====================
 
 // SERVERS
-const std::vector<Server*> &Webserv::get_server(void) const
+const std::vector<Server *> &Webserv::get_server(void) const
 {
     return _vector_server;
 }
 
-const std::map<int, std::set<Server *> > &Webserv::get_map(void) const
+const std::map<int, std::set<Server *>> &Webserv::get_map(void) const
 {
     return _map_fd_to_serv;
 }
@@ -89,8 +89,8 @@ void Webserv::initialisation_socket(int epoll_fd)
 
     std::map<s_listen, int> map_socket_fd;
     std::map<s_listen, int>::iterator it;
-    std::vector<Server*> vector_server = get_server();
-    
+    std::vector<Server *> vector_server = get_server();
+
     for (size_t i = 0; i < vector_server.size(); ++i)
     {
         server = vector_server[i];
@@ -128,12 +128,12 @@ void Webserv::initialisation_socket(int epoll_fd)
 void Webserv::had_new_client(int epoll_fd, int server_fd)
 {
     int clientSocket;
-    
+
     if ((clientSocket = accept(server_fd, NULL, NULL)) == -1)
         throw ExecptionErrorFunction("accept");
-    
+
     Client *client = new Client;
-    
+
     add_socket_to_event(epoll_fd, clientSocket, client);
     client->set_client_fd(clientSocket);
     client->set_server_fd(server_fd);
@@ -242,20 +242,18 @@ bool Webserv::initialisation_connection()
 void Webserv::close_connection(int epoll_fd)
 {
     // Close fd client
-    
-    
+
     // Close fd server
-    std::map<int, std::set<Server *> >::iterator it_fd = _map_fd_to_serv.begin();
+    std::map<int, std::set<Server *>>::iterator it_fd = _map_fd_to_serv.begin();
     for (; it_fd != _map_fd_to_serv.end(); ++it_fd)
         close((*it_fd).first);
     _map_fd_to_serv.clear();
-    
+
     // Free instance server
-    std::vector<Server*>::iterator it_server = _vector_server.begin();
+    std::vector<Server *>::iterator it_server = _vector_server.begin();
     for (; it_server != _vector_server.end(); ++it_server)
         delete (*it_server);
     _vector_server.clear();
-    
 
     close(epoll_fd);
 }

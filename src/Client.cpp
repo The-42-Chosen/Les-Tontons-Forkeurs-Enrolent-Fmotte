@@ -16,7 +16,7 @@
 // == Canonical Form  ==
 // =====================
 
-Client::Client() : _client_fd(-1), _server_fd(-1), _server(0),  _webserv(0),_request("")
+Client::Client() : _client_fd(-1), _server_fd(-1), _server(0), _webserv(0), _request("")
 {
 }
 
@@ -87,7 +87,7 @@ void Client::append_request(std::string &request)
     _request.append(request);
 }
 
-Webserv* Client::get_webserv(void)
+Webserv *Client::get_webserv(void)
 {
     return _webserv;
 }

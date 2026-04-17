@@ -23,10 +23,10 @@ HttpRequest::HttpRequest() : _keepAlive(false), _contentLength(0)
 {
 }
 
-HttpRequest::HttpRequest(Client* client) : _keepAlive(false), _contentLength(0)
+HttpRequest::HttpRequest(Client *client) : _keepAlive(false), _contentLength(0)
 {
     set_client(client);
-    
+
     parseHttpRequest(client->get_request());
     interpretation();
 }
@@ -75,7 +75,13 @@ const std::string &HttpRequest::getProtocol() const
     return (_protocol);
 }
 
-void HttpRequest::set_client(Client *client) {if (client == NULL) throw ExecptionErrorUninitializedVariable("client", "HttpRequest"); else _client = client;}
+void HttpRequest::set_client(Client *client)
+{
+    if (client == NULL)
+        throw ExecptionErrorUninitializedVariable("client", "HttpRequest");
+    else
+        _client = client;
+}
 
 const char *HttpRequest::methodToString(method_http method)
 {
@@ -210,7 +216,8 @@ HttpRequest &HttpRequest::parseHttpRequest(const std::string &headerContent)
 
 void HttpRequest::interpretation(void)
 {
-    std::cout << "Method : |" << this->getMethod() << "| - Uri |" << this->getUri() << "| - Protocol |" << this->getProtocol() << "|" << std::endl;
+    std::cout << "Method : |" << this->getMethod() << "| - Uri |" << this->getUri() << "| - Protocol |"
+              << this->getProtocol() << "|" << std::endl;
 
     for (std::map<std::string, std::string>::const_iterator it = _headers.begin(); it != _headers.end(); it++)
         std::cout << it->first << " | " << it->second << std::endl;
@@ -227,15 +234,15 @@ void HttpRequest::link_to_server(void)
 
     for (it = set_server.begin(); it != set_server.end(); ++it)
     {
-        for (size_t i = 0; ;++i)
+        for (size_t i = 0;; ++i)
         {
             if ((*it)->get_name_server(i) == "")
                 break;
-            
+
             std::cout << "\n";
             std::cout << "Name: " << (*it)->get_name_server(i) << "\n";
             std::cout << "HOST: " << _headers.find("Host")->second << "\n";
-            
+
             if ((*it)->get_name_server(i) == _headers.find("Host")->second)
             {
                 std::cout << "match\n";
@@ -245,7 +252,7 @@ void HttpRequest::link_to_server(void)
             {
                 std::cout << "dump\n";
             }
-        }  
+        }
     }
     // if here host not find
 }

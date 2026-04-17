@@ -16,13 +16,15 @@
 // == Canonical Form  ==
 // =====================
 
-Server::Server(): _webser(0), _listens(0), _name_servers(0), _locations(0), _root(""), _index_files(0), _auto_index(false), _error_page(0),
-      _client_max_body_size(DEFAULT_CLIENT_MAX_BODY_SIZE), _ret(s_return())
+Server::Server()
+    : _webser(0), _listens(0), _name_servers(0), _locations(0), _root(""), _index_files(0), _auto_index(false),
+      _error_page(0), _client_max_body_size(DEFAULT_CLIENT_MAX_BODY_SIZE), _ret(s_return())
 {
 }
 
-Server::Server(const Webserv *webser): _webser(webser), _listens(0), _name_servers(0), _locations(0), _root(""), _index_files(0), _auto_index(false), _error_page(0),
-      _client_max_body_size(DEFAULT_CLIENT_MAX_BODY_SIZE), _ret(s_return())
+Server::Server(const Webserv *webser)
+    : _webser(webser), _listens(0), _name_servers(0), _locations(0), _root(""), _index_files(0), _auto_index(false),
+      _error_page(0), _client_max_body_size(DEFAULT_CLIENT_MAX_BODY_SIZE), _ret(s_return())
 {
 }
 

@@ -12,12 +12,12 @@
 
 #pragma once
 
-# include "struct.hpp"
-# include <map>
-# include <string>
-# include <vector>
-# include "Client.hpp"
-# include "execption.hpp"
+#include "Client.hpp"
+#include "execption.hpp"
+#include "struct.hpp"
+#include <map>
+#include <string>
+#include <vector>
 
 class Client;
 
@@ -26,7 +26,7 @@ class HttpRequest
   private:
     // Attributs
     HttpRequest();
-    Client* _client;
+    Client *_client;
     method_http _method;
     std::string _uri;
     std::string _protocol;
@@ -37,7 +37,7 @@ class HttpRequest
 
   public:
     // OCF
-    HttpRequest(Client* client);
+    HttpRequest(Client *client);
     HttpRequest(const HttpRequest &cpy);
     HttpRequest &operator=(const HttpRequest &cpy);
     ~HttpRequest();
@@ -47,16 +47,16 @@ class HttpRequest
     HttpRequest &parseHeader(const std::string &headerContent);
     HttpRequest &parseHeaderMethod(const std::string &headerContent);
     HttpRequest &parseBody(const std::string &headerContent);
-  
+
     void interpretation(void);
     void link_to_server(void);
-    
+
     // Getter
     method_http getMethod() const;
     const std::string &getUri() const;
     const std::string &getProtocol() const;
     void set_client(Client *client);
-    
+
     // Helper
     static const char *methodToString(method_http method);
 };
