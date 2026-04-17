@@ -28,7 +28,7 @@ if [ ! -s "$TMP_LIST" ]; then
 fi
 
 while IFS= read -r file; do
-    "$CLANG_FORMAT" -i --style=microsoft "$file"
+    "$CLANG_FORMAT" -i --style="{BasedOnStyle: microsoft, Standard: Cpp03}" "$file"
 done < "$TMP_LIST"
 
 CHANGED=0
