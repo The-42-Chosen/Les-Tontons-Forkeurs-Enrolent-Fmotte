@@ -47,7 +47,7 @@ class HttpRequest
     method_http getMethod() const;
     const std::string &getUri() const;
     const std::string &getProtocol() const;
-	
+
     // =====================
     // == 	  Member	  ==
     // =====================
@@ -62,8 +62,6 @@ class HttpRequest
     bool isValidURI(void);
     bool isValidProtocol(void);
     bool isHostPresentAndValid(void);
-
-
 
     // Helper
     static const char *methodToString(method_http method);
