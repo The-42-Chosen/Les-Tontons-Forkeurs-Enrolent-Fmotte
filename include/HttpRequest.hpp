@@ -20,9 +20,9 @@
 class HttpRequest
 {
   private:
-  	// =====================
-	// ==    Attributs    ==
-	// =====================
+    // =====================
+    // ==    Attributs    ==
+    // =====================
     HttpRequest();
     method_http _method;
     std::string _uri;
@@ -34,31 +34,31 @@ class HttpRequest
 
   public:
     // =====================
-	// ==       OCF       ==
-	// =====================
+    // ==       OCF       ==
+    // =====================
     HttpRequest(std::string requestRawContent);
     HttpRequest(const HttpRequest &cpy);
     HttpRequest &operator=(const HttpRequest &cpy);
     ~HttpRequest();
 
     // =====================
-	// == 	  Member	  ==
-	// =====================
+    // == 	  Member	  ==
+    // =====================
     void parseHttpRequest(const std::string &headerContent);
     void parseHeader(const std::string &headerContent);
     void parseHeaderMethod(const std::string &headerContent);
     void parseBody(const std::string &headerContent);
 
     // =====================
-	// ==     Validity    ==
-	// =====================
-	bool isValidURI(void);
-	bool isValidProtocol(void);
-	bool isHostPresentAndValid(void);
+    // ==     Validity    ==
+    // =====================
+    bool isValidURI(void);
+    bool isValidProtocol(void);
+    bool isHostPresentAndValid(void);
 
     // =====================
-	// ==     Getters     ==
-	// =====================
+    // ==     Getters     ==
+    // =====================
     method_http getMethod() const;
     const std::string &getUri() const;
     const std::string &getProtocol() const;
