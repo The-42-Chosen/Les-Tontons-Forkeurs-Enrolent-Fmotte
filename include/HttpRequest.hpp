@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/17 16:27:41 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/20 16:06:01 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,9 @@ class Client;
 class HttpRequest
 {
   private:
-    // Attributs
+  	// =====================
+	// ==    Attributs    ==
+	// =====================
     HttpRequest();
     Client *_client;
     method_http _method;
@@ -42,11 +44,13 @@ class HttpRequest
     HttpRequest &operator=(const HttpRequest &cpy);
     ~HttpRequest();
 
-    // Member Functions
-    HttpRequest &parseHttpRequest(const std::string &headerContent);
-    HttpRequest &parseHeader(const std::string &headerContent);
-    HttpRequest &parseHeaderMethod(const std::string &headerContent);
-    HttpRequest &parseBody(const std::string &headerContent);
+    // =====================
+	// == 	  Member	  ==
+	// =====================
+    void parseHttpRequest(const std::string &headerContent);
+    void parseHeader(const std::string &headerContent);
+    void parseHeaderMethod(const std::string &headerContent);
+    void parseBody(const std::string &headerContent);
 
     void interpretation(void);
     void link_to_server(void);
