@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/17 18:18:58 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/17 18:37:33 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,13 @@ class HttpRequest
     ~HttpRequest();
 
     // =====================
+    // ==     Getters     ==
+    // =====================
+    method_http getMethod() const;
+    const std::string &getUri() const;
+    const std::string &getProtocol() const;
+	
+    // =====================
     // == 	  Member	  ==
     // =====================
     void parseHttpRequest(const std::string &headerContent);
@@ -56,12 +63,7 @@ class HttpRequest
     bool isValidProtocol(void);
     bool isHostPresentAndValid(void);
 
-    // =====================
-    // ==     Getters     ==
-    // =====================
-    method_http getMethod() const;
-    const std::string &getUri() const;
-    const std::string &getProtocol() const;
+
 
     // Helper
     static const char *methodToString(method_http method);
