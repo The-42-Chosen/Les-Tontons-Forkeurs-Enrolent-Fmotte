@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/08 13:08:22 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/11 17:53:56 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/17 17:33:45 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,20 @@ ExecptionErrorFunction::~ExecptionErrorFunction() throw()
 {
 }
 const char *ExecptionErrorFunction::what() const throw()
+{
+    return _message.c_str();
+}
+
+ExecptionErrorUninitializedVariable::ExecptionErrorUninitializedVariable(const std::string &var, const std::string &instance)
+    : _message("Error: Attempt to use an uninitialized variable '" + var + "' in instance '" + instance + "'.")
+{
+}
+
+ExecptionErrorUninitializedVariable::~ExecptionErrorUninitializedVariable() throw()
+{
+}
+
+const char *ExecptionErrorUninitializedVariable::what() const throw()
 {
     return _message.c_str();
 }

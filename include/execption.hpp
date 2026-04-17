@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/08 13:08:20 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/11 17:52:59 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/17 17:31:00 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,5 +78,16 @@ class ExecptionErrorFunction : public std::exception
   public:
     ExecptionErrorFunction(const std::string &argument);
     ~ExecptionErrorFunction() throw();
+    const char *what() const throw();
+};
+
+class ExecptionErrorUninitializedVariable : public std::exception
+{
+  private:
+    std::string _message;
+
+  public:
+    ExecptionErrorUninitializedVariable(const std::string &var, const std::string &instance);
+    ~ExecptionErrorUninitializedVariable() throw();
     const char *what() const throw();
 };
