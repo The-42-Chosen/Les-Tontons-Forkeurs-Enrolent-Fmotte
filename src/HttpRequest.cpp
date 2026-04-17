@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/16 18:58:32 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/17 18:30:07 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,15 @@ HttpRequest::HttpRequest() : _keepAlive(false), _contentLength(0)
 
 HttpRequest::HttpRequest(std::string requestRawContent) : _keepAlive(false), _contentLength(0)
 {
-    parseHttpRequest(requestRawContent);
+	try
+	{
+		parseHttpRequest(requestRawContent);
+	}
+	catch (const std::exception &e)
+	{
+		std::cerr << e.what() << '\n';
+        return ;
+	}
 }
 
 HttpRequest::HttpRequest(const HttpRequest &cpy)
@@ -89,37 +97,47 @@ const char *HttpRequest::methodToString(method_http method)
 }
 
 // =====================
-// ==     Method      ==
+// == 	Validations   ==
 // =====================
 
-bool isValidURI(const std::string uri)
+bool HttpRequest::isValidURI(void)
 {
-    if (uri[0] != '/')
+    if (_uri[0] != '/')
     {
-        throw std::runtime_error("URI format need to start with '/'");
-        return false;
+        throw std::runtime_error("400 Bad Request");
+        return (false);
     }
-    return true;
+	if (_uri.size() > 8192)
+	{
+		throw std::runtime_error("414 URI Too Long");
+        return (false);
+	}
+    return (true);
 }
 
-bool isValidProtocol(const std::string protocol)
+bool HttpRequest::isValidProtocol(void)
 {
-    std::string::size_type serverHTTP = headerContent.find("/") if (;)
+	if (_protocol != "HTTP/1.1")
+	{
+        throw std::runtime_error("505 HTTP Version Not Supported");
+		return (false);
+	}
+	return (true);
 }
 
-bool isHostPresentAndValid(std::map<std::string, std::string> headers)
+bool HttpRequest::isHostPresentAndValid(void)
 {
-    for (std::map<std::string, std::string>::const_iterator it = headers.begin(); it != headers.end(); it++)
+    for (std::map<std::string, std::string>::const_iterator it = _headers.begin(); it != _headers.end(); it++)
     {
         if (it->first == "Host")
         {
             if (!it->second.empty())
                 return (true);
             else
-                throw std::runtime_error("Host is invalid");
+                throw std::runtime_error("400 Bad Request");
         }
     }
-    throw std::runtime_error("Host not found");
+    throw std::runtime_error("400 Bad Request");
     return (false);
 }
 
@@ -133,11 +151,15 @@ static method_http parseMethodToken(const std::string &method)
         return (DELETE);
     if (method == "HEAD")
         return (HEAD);
-    throw std::runtime_error("Unsupported HTTP method: " + method);
+    throw std::runtime_error("501 Not Implemented");
 }
 
+// =====================
+// ==     Method      ==
+// =====================
+
 // _method | _uri | _protocol
-HttpRequest &HttpRequest::parseHeaderMethod(const std::string &headerContent)
+void HttpRequest::parseHeaderMethod(const std::string &headerContent)
 {
     _headers.clear();
 
@@ -154,17 +176,19 @@ HttpRequest &HttpRequest::parseHeaderMethod(const std::string &headerContent)
     std::string extraToken;
 
     if (!(ssMethod >> method >> _uri >> _protocol))
-        throw std::runtime_error("Invalid HTTP request line");
+        throw std::runtime_error("400 Bad Request");
     if (ssMethod >> extraToken)
-        throw std::runtime_error("Invalid HTTP request line: extra token");
+        throw std::runtime_error("400 Bad Request");
 
     _method = parseMethodToken(method);
-    isValidURI(_uri);
-    return (*this);
+    if (!isValidURI())
+		throw std::runtime_error("400 Bad Request");
+	if (!isValidProtocol())
+		throw std::runtime_error("505 HTTP Version Not Supported");
 }
 
 // _headers
-HttpRequest &HttpRequest::parseHeader(const std::string &headerContent)
+void HttpRequest::parseHeader(const std::string &headerContent)
 {
     // _headers
     std::string requestLine;
@@ -187,7 +211,7 @@ HttpRequest &HttpRequest::parseHeader(const std::string &headerContent)
         {
             std::string::size_type colon = requestLine.find(':');
             if (colon == std::string::npos)
-                throw std::runtime_error("Invalid HTTP header line");
+                throw std::runtime_error("400 Bad Request");
 
             std::string key = requestLine.substr(0, colon);
             std::string value = requestLine.substr(colon + 1);
@@ -203,18 +227,19 @@ HttpRequest &HttpRequest::parseHeader(const std::string &headerContent)
             {
                 std::stringstream ssLength(value);
                 if (!(ssLength >> _contentLength))
-                    throw std::runtime_error("Invalid Content-Length header");
+                    throw std::runtime_error("400 Bad Request");
             }
             else if (key == "Connection" && value == "keep-alive")
                 _keepAlive = true; // _keepAlive
         }
         current = next + 2;
+		if (!isHostPresentAndValid())
+			throw std::runtime_error("400 Bad Request");
     }
-    return (*this);
 }
 
 // _body
-HttpRequest &HttpRequest::parseBody(const std::string &headerContent)
+void HttpRequest::parseBody(const std::string &headerContent)
 {
     std::string::size_type bodyStart = headerContent.find("\r\n\r\n");
     if (bodyStart != std::string::npos)
@@ -224,10 +249,9 @@ HttpRequest &HttpRequest::parseBody(const std::string &headerContent)
         for (std::string::size_type i = 0; i < bodyContent.size(); ++i)
             _body.push_back(static_cast<__uint8_t>(bodyContent[i]));
     }
-    return (*this);
 }
 
-HttpRequest &HttpRequest::parseHttpRequest(const std::string &headerContent)
+void HttpRequest::parseHttpRequest(const std::string &headerContent)
 {
     parseHeaderMethod(headerContent);
     std::cout << "Method : |" << this->getMethod() << "| - Uri |" << this->getUri() << "| - Protocol |"
@@ -238,5 +262,4 @@ HttpRequest &HttpRequest::parseHttpRequest(const std::string &headerContent)
         std::cout << it->first << " | " << it->second << std::endl;
     }
     // parseBody(headerContent);
-    return (*this);
 }

@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/15 13:55:38 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/17 18:18:58 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,9 @@
 class HttpRequest
 {
   private:
-    // Attributs
+  	// =====================
+	// ==    Attributs    ==
+	// =====================
     HttpRequest();
     method_http _method;
     std::string _uri;
@@ -31,19 +33,32 @@ class HttpRequest
     size_t _contentLength;
 
   public:
-    // OCF
+    // =====================
+	// ==       OCF       ==
+	// =====================
     HttpRequest(std::string requestRawContent);
     HttpRequest(const HttpRequest &cpy);
     HttpRequest &operator=(const HttpRequest &cpy);
     ~HttpRequest();
 
-    // Member Functions
-    HttpRequest &parseHttpRequest(const std::string &headerContent);
-    HttpRequest &parseHeader(const std::string &headerContent);
-    HttpRequest &parseHeaderMethod(const std::string &headerContent);
-    HttpRequest &parseBody(const std::string &headerContent);
+    // =====================
+	// == 	  Member	  ==
+	// =====================
+    void parseHttpRequest(const std::string &headerContent);
+    void parseHeader(const std::string &headerContent);
+    void parseHeaderMethod(const std::string &headerContent);
+    void parseBody(const std::string &headerContent);
 
-    // Getter
+    // =====================
+	// ==     Validity    ==
+	// =====================
+	bool isValidURI(void);
+	bool isValidProtocol(void);
+	bool isHostPresentAndValid(void);
+
+    // =====================
+	// ==     Getters     ==
+	// =====================
     method_http getMethod() const;
     const std::string &getUri() const;
     const std::string &getProtocol() const;
