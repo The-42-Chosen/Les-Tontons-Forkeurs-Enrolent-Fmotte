@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/15 20:24:51 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/17 18:56:00 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,21 +40,14 @@ Webserv &Webserv::operator=(const Webserv &other)
 // =====================
 
 // SERVERS
-Server *Webserv::get_server(size_t i)
+const std::vector<Server*> &Webserv::get_server(void) const
 {
-    if (i < _vector_server.size())
-        return &_vector_server[i];
-    else
-        return NULL;
+    return _vector_server;
 }
 
-size_t Webserv::get_servers_count(void)
+const std::map<int, std::set<Server *> > &Webserv::get_map(void) const
 {
-    return _vector_server.size();
-}
-std::vector<Server> *Webserv::get_all_servers(void)
-{
-    return &_vector_server;
+    return _map_fd_to_serv;
 }
 
 // =====================
@@ -74,10 +67,10 @@ bool Webserv::splitServers(std::vector<std::string> &tokens)
     {
         while (!tokens.empty())
         {
-            Server server;
-            server.initialisation_server(tokens);
-            server.initialisation_check();
+            Server *server = new Server(this);
             _vector_server.push_back(server);
+            server->initialisation_server(tokens);
+            server->initialisation_check();
         }
     }
     catch (const std::exception &e)
@@ -96,10 +89,11 @@ void Webserv::initialisation_socket(int epoll_fd)
 
     std::map<s_listen, int> map_socket_fd;
     std::map<s_listen, int>::iterator it;
-
-    for (size_t i = 0; i < get_servers_count(); ++i)
+    std::vector<Server*> vector_server = get_server();
+    
+    for (size_t i = 0; i < vector_server.size(); ++i)
     {
-        server = get_server(i);
+        server = vector_server[i];
 
         for (size_t j = 0;; ++j)
         {
@@ -131,25 +125,24 @@ void Webserv::initialisation_socket(int epoll_fd)
     }
 }
 
-void Webserv::get_new_client(int epoll_fd, int server_fd)
+void Webserv::had_new_client(int epoll_fd, int server_fd)
 {
     int clientSocket;
-    Client *client = new Client;
-
+    
     if ((clientSocket = accept(server_fd, NULL, NULL)) == -1)
-    {
-        delete client;
         throw ExecptionErrorFunction("accept");
-    }
-
+    
+    Client *client = new Client;
+    
     add_socket_to_event(epoll_fd, clientSocket, client);
     client->set_client_fd(clientSocket);
     client->set_server_fd(server_fd);
+    client->set_webserv(this);
 
     std::cout << "Nouveau client connecté: fd=" << clientSocket << "\n";
 }
 
-void Webserv::get_message_from_client(Client *client)
+void Webserv::received_message_from_client(Client *client)
 {
     int bytes;
     char buffer[SIZE_BUFFER];
@@ -175,7 +168,7 @@ void Webserv::get_message_from_client(Client *client)
         return;
 
     std::cout << "Final Message from client: " << client->get_request() << "\n";
-    HttpRequest request(client->get_request());
+    HttpRequest request(client);
     client->clear_request();
 
     std::string reply = "Message received\n";
@@ -188,10 +181,10 @@ void Webserv::manage_connection(int epoll_fd, struct epoll_event &events)
     int server_fd = events.data.fd;
 
     if (server_fd < static_cast<int>(_map_fd_to_serv.size() + 4))
-        get_new_client(epoll_fd, server_fd);
+        had_new_client(epoll_fd, server_fd);
 
     else
-        get_message_from_client(static_cast<Client *>(events.data.ptr));
+        received_message_from_client(static_cast<Client *>(events.data.ptr));
 }
 
 void Webserv::webserv_listen(int epoll_fd)
@@ -249,11 +242,20 @@ bool Webserv::initialisation_connection()
 void Webserv::close_connection(int epoll_fd)
 {
     // Close fd client
-
-    std::map<int, std::set<Server *>>::iterator it = _map_fd_to_serv.begin();
-    for (; it != _map_fd_to_serv.end(); ++it)
-        close((*it).first);
+    
+    
+    // Close fd server
+    std::map<int, std::set<Server *> >::iterator it_fd = _map_fd_to_serv.begin();
+    for (; it_fd != _map_fd_to_serv.end(); ++it_fd)
+        close((*it_fd).first);
     _map_fd_to_serv.clear();
+    
+    // Free instance server
+    std::vector<Server*>::iterator it_server = _vector_server.begin();
+    for (; it_server != _vector_server.end(); ++it_server)
+        delete (*it_server);
+    _vector_server.clear();
+    
 
     close(epoll_fd);
 }
