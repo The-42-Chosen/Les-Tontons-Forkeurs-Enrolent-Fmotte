@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/20 16:15:11 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/20 16:16:17 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ HttpRequest::HttpRequest(Client *client) : _keepAlive(false), _contentLength(0)
 {
     try
     {
-        set_client(client);
+        setClient(client);
         parseHttpRequest(client->get_request());
         interpretation();
     }
@@ -265,7 +265,6 @@ HttpRequest &HttpRequest::parseHttpRequest(const std::string &headerContent)
     parseHeaderMethod(headerContent);
     parseHeader(headerContent);
     // parseBody(headerContent);
-    return (*this);
 }
 
 void HttpRequest::interpretation(void)

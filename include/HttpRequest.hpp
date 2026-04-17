@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/20 16:12:07 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/20 16:16:01 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,9 @@ class HttpRequest
     size_t _contentLength;
 
   public:
-  // =====================
-  // ==       OCF       ==
-  // =====================
+    // =====================
+    // ==       OCF       ==
+    // =====================
     HttpRequest(Client *client);
     HttpRequest(const HttpRequest &cpy);
     HttpRequest &operator=(const HttpRequest &cpy);
@@ -52,6 +52,8 @@ class HttpRequest
     method_http getMethod() const;
     const std::string &getUri() const;
     const std::string &getProtocol() const;
+    void    setClient(Client *client);
+
 
     // =====================
     // == 	  Member	  ==
