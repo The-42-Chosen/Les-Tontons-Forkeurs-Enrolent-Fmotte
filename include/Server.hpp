@@ -44,13 +44,11 @@ class Server
     unsigned int _client_max_body_size;
     s_return _ret;
 
-
-
   public:
     // =====================
     // == Canonical Form  ==
     // =====================
-    
+
     Server();
     Server(const Webserv *webser);
     ~Server();

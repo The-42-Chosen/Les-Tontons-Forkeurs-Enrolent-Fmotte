@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:20 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/20 16:13:26 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/20 16:18:03 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,9 @@ class Webserv
     // =====================
 
     // SERVERS
-    const std::vector<Server*> &get_server(void) const;
-    const std::map<int, std::set<Server *> > &get_map(void) const;
-    
+    const std::vector<Server *> &get_server(void) const;
+    const std::map<int, std::set<Server *>> &get_map(void) const;
+
     // =====================
     // ==     Method      ==
     // =====================

@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/20 16:17:37 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/20 16:18:12 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ const std::map<int, std::set<Server *>> &Webserv::get_map(void) const
     return _map_fd_to_serv;
 }
 
-const std::map<int, std::set<Server *> > &Webserv::get_map(void) const
+const std::map<int, std::set<Server *>> &Webserv::get_map(void) const
 {
     return _map_fd_to_serv;
 }
@@ -248,17 +248,16 @@ void Webserv::close_connection(int epoll_fd)
 {
     // Close fd client
     // Close fd server
-    std::map<int, std::set<Server *> >::iterator it_fd = _map_fd_to_serv.begin();
+    std::map<int, std::set<Server *>>::iterator it_fd = _map_fd_to_serv.begin();
     for (; it_fd != _map_fd_to_serv.end(); ++it_fd)
         close((*it_fd).first);
     _map_fd_to_serv.clear();
-    
+
     // Free instance server
-    std::vector<Server*>::iterator it_server = _vector_server.begin();
+    std::vector<Server *>::iterator it_server = _vector_server.begin();
     for (; it_server != _vector_server.end(); ++it_server)
         delete (*it_server);
     _vector_server.clear();
-    
 
     // Free instance server
     std::vector<Server *>::iterator it_server = _vector_server.begin();
