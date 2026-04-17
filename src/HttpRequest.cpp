@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/15 21:07:46 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/17 18:56:57 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,12 @@ HttpRequest::HttpRequest() : _keepAlive(false), _contentLength(0)
 {
 }
 
-HttpRequest::HttpRequest(std::string requestRawContent) : _keepAlive(false), _contentLength(0)
+HttpRequest::HttpRequest(Client* client) : _keepAlive(false), _contentLength(0)
 {
-    parseHttpRequest(requestRawContent);
+    set_client(client);
+    
+    parseHttpRequest(client->get_request());
+    interpretation();
 }
 
 HttpRequest::HttpRequest(const HttpRequest &cpy)
@@ -71,6 +74,8 @@ const std::string &HttpRequest::getProtocol() const
 {
     return (_protocol);
 }
+
+void HttpRequest::set_client(Client *client) {if (client == NULL) throw ExecptionErrorUninitializedVariable("client", "HttpRequest"); else _client = client;}
 
 const char *HttpRequest::methodToString(method_http method)
 {
@@ -198,13 +203,49 @@ HttpRequest &HttpRequest::parseBody(const std::string &headerContent)
 HttpRequest &HttpRequest::parseHttpRequest(const std::string &headerContent)
 {
     parseHeaderMethod(headerContent);
-    std::cout << "Method : |" << this->getMethod() << "| - Uri |" << this->getUri() << "| - Protocol |"
-              << this->getProtocol() << "|" << std::endl;
     parseHeader(headerContent);
-    for (std::map<std::string, std::string>::const_iterator it = _headers.begin(); it != _headers.end(); it++)
-    {
-        std::cout << it->first << " | " << it->second << std::endl;
-    }
     // parseBody(headerContent);
     return (*this);
+}
+
+void HttpRequest::interpretation(void)
+{
+    std::cout << "Method : |" << this->getMethod() << "| - Uri |" << this->getUri() << "| - Protocol |" << this->getProtocol() << "|" << std::endl;
+
+    for (std::map<std::string, std::string>::const_iterator it = _headers.begin(); it != _headers.end(); it++)
+        std::cout << it->first << " | " << it->second << std::endl;
+
+    link_to_server();
+    std::cout << "Test: " << _client->get_server_ptr()->get_name_server(0) << "\n";
+}
+
+void HttpRequest::link_to_server(void)
+{
+    int fd_server = _client->get_server_fd();
+    std::set<Server *>::iterator it;
+    std::set<Server *> set_server = _client->get_webserv()->get_map().find(fd_server)->second;
+
+    for (it = set_server.begin(); it != set_server.end(); ++it)
+    {
+        for (size_t i = 0; ;++i)
+        {
+            if ((*it)->get_name_server(i) == "")
+                break;
+            
+            std::cout << "\n";
+            std::cout << "Name: " << (*it)->get_name_server(i) << "\n";
+            std::cout << "HOST: " << _headers.find("Host")->second << "\n";
+            
+            if ((*it)->get_name_server(i) == _headers.find("Host")->second)
+            {
+                std::cout << "match\n";
+                _client->set_server_ptr(*it);
+            }
+            else
+            {
+                std::cout << "dump\n";
+            }
+        }  
+    }
+    // if here host not find
 }

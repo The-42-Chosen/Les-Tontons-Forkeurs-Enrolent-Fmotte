@@ -6,21 +6,22 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:50:27 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/14 18:25:28 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/17 16:31:52 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
-#include "execption.hpp"
-#include "utils_duplicate.hpp"
-#include "utils_parsing.hpp"
 
 // =====================
 // == Canonical Form  ==
 // =====================
 
-Server::Server()
-    : _listens(0), _name_servers(0), _locations(0), _root(""), _index_files(0), _auto_index(false), _error_page(0),
+Server::Server(): _webser(0), _listens(0), _name_servers(0), _locations(0), _root(""), _index_files(0), _auto_index(false), _error_page(0),
+      _client_max_body_size(DEFAULT_CLIENT_MAX_BODY_SIZE), _ret(s_return())
+{
+}
+
+Server::Server(const Webserv *webser): _webser(webser), _listens(0), _name_servers(0), _locations(0), _root(""), _index_files(0), _auto_index(false), _error_page(0),
       _client_max_body_size(DEFAULT_CLIENT_MAX_BODY_SIZE), _ret(s_return())
 {
 }

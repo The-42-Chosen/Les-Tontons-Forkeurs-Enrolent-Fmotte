@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:43:21 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/15 20:15:34 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/17 16:37:44 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,23 @@
 
 #include "Location.hpp"
 #include "struct.hpp"
+#include "Webserv.hpp"
+#include "execption.hpp"
+#include "utils_duplicate.hpp"
+#include "utils_parsing.hpp"
 
 #define DEFAULT_IP "0.0.0.0"
 #define DEFAULT_PORT 8080
 #define DEFAULT_CLIENT_MAX_BODY_SIZE 5000
 
+class Webserv; 
+
 class Server
 {
   private:
+    
+    const Webserv *_webser;
+    
     std::vector<s_listen> _listens;
     std::vector<std::string> _name_servers;
     std::vector<Location> _locations;
@@ -36,12 +45,15 @@ class Server
     unsigned int _client_max_body_size;
     s_return _ret;
 
+
+
   public:
     // =====================
     // == Canonical Form  ==
     // =====================
-
+    
     Server();
+    Server(const Webserv *webser);
     ~Server();
     Server(const Server &other);
     Server &operator=(const Server &other);

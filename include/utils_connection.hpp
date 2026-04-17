@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_connection.hpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 14:55:35 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/15 20:21:26 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/17 16:29:05 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 #include "struct.hpp"
 
 extern int stop_webserv;
+
+class Client;
 
 void handle_sigint(int sig);
 void init_signal(struct sigaction &sa);
