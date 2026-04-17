@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/20 16:10:25 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/20 16:10:36 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ class HttpRequest
     method_http getMethod() const;
     const std::string &getUri() const;
     const std::string &getProtocol() const;
-	
+
     // =====================
     // == 	  Member	  ==
     // =====================
@@ -70,7 +70,6 @@ class HttpRequest
     bool isValidURI(void);
     bool isValidProtocol(void);
     bool isHostPresentAndValid(void);
-
 
     // Helper
     static const char *methodToString(method_http method);
