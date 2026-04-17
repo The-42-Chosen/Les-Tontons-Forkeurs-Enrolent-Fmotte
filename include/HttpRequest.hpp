@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/20 16:06:01 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/20 16:09:30 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,9 @@ class Client;
 class HttpRequest
 {
   private:
-  	// =====================
-	// ==    Attributs    ==
-	// =====================
+    // =====================
+    // ==    Attributs    ==
+    // =====================
     HttpRequest();
     Client *_client;
     method_http _method;
@@ -38,15 +38,17 @@ class HttpRequest
     size_t _contentLength;
 
   public:
-    // OCF
+  // =====================
+  // ==       OCF       ==
+  // =====================
     HttpRequest(Client *client);
     HttpRequest(const HttpRequest &cpy);
     HttpRequest &operator=(const HttpRequest &cpy);
     ~HttpRequest();
 
     // =====================
-	// == 	  Member	  ==
-	// =====================
+    // == 	  Member	  ==
+    // =====================
     void parseHttpRequest(const std::string &headerContent);
     void parseHeader(const std::string &headerContent);
     void parseHeaderMethod(const std::string &headerContent);
@@ -55,7 +57,16 @@ class HttpRequest
     void interpretation(void);
     void link_to_server(void);
 
-    // Getter
+    // =====================
+    // ==     Validity    ==
+    // =====================
+    bool isValidURI(void);
+    bool isValidProtocol(void);
+    bool isHostPresentAndValid(void);
+
+    // =====================
+    // ==     Getters     ==
+    // =====================
     method_http getMethod() const;
     const std::string &getUri() const;
     const std::string &getProtocol() const;

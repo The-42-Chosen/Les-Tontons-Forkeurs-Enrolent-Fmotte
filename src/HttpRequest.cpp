@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/20 16:08:16 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/20 16:10:07 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,12 +118,22 @@ bool isValidURI(const std::string uri)
         throw std::runtime_error("URI format need to start with '/'");
         return false;
     }
-    return true;
+    if (_uri.size() > 8192)
+    {
+        throw std::runtime_error("414 URI Too Long");
+        return (false);
+    }
+    return (true);
 }
 
 bool isValidProtocol(const std::string protocol)
 {
-    std::string::size_type serverHTTP = headerContent.find("/") if (;)
+    if (_protocol != "HTTP/1.1")
+    {
+        throw std::runtime_error("505 HTTP Version Not Supported");
+        return (false);
+    }
+    return (true);
 }
 
 bool isHostPresentAndValid(std::map<std::string, std::string> headers)
@@ -178,8 +188,10 @@ HttpRequest &HttpRequest::parseHeaderMethod(const std::string &headerContent)
         throw std::runtime_error("Invalid HTTP request line: extra token");
 
     _method = parseMethodToken(method);
-    isValidURI(_uri);
-    return (*this);
+    if (!isValidURI())
+        throw std::runtime_error("400 Bad Request");
+    if (!isValidProtocol())
+        throw std::runtime_error("505 HTTP Version Not Supported");
 }
 
 // _headers
@@ -228,6 +240,8 @@ HttpRequest &HttpRequest::parseHeader(const std::string &headerContent)
                 _keepAlive = true; // _keepAlive
         }
         current = next + 2;
+        if (!isHostPresentAndValid())
+            throw std::runtime_error("400 Bad Request");
     }
     return (*this);
 }
