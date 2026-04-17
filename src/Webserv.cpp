@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/20 16:05:27 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/20 16:11:11 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -244,7 +244,7 @@ void Webserv::close_connection(int epoll_fd)
     // Close fd client
 
     // Close fd server
-    std::map<int, std::set<Server *>>::iterator it_fd = _map_fd_to_serv.begin();
+    std::map<int, std::set<Server *> >::iterator it_fd = _map_fd_to_serv.begin();
     for (; it_fd != _map_fd_to_serv.end(); ++it_fd)
         close((*it_fd).first);
     _map_fd_to_serv.clear();

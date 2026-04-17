@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:20 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/20 16:05:33 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/20 16:11:02 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ class Webserv
 {
   private:
     std::vector<Server *> _vector_server;
-    std::map<int, std::set<Server *>> _map_fd_to_serv;
+    std::map<int, std::set<Server *> > _map_fd_to_serv;
 
   public:
     // =====================
