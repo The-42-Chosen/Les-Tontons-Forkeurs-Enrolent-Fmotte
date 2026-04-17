@@ -25,15 +25,15 @@ HttpRequest::HttpRequest() : _keepAlive(false), _contentLength(0)
 
 HttpRequest::HttpRequest(std::string requestRawContent) : _keepAlive(false), _contentLength(0)
 {
-	try
-	{
-		parseHttpRequest(requestRawContent);
-	}
-	catch (const std::exception &e)
-	{
-		std::cerr << e.what() << '\n';
-        return ;
-	}
+    try
+    {
+        parseHttpRequest(requestRawContent);
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << '\n';
+        return;
+    }
 }
 
 HttpRequest::HttpRequest(const HttpRequest &cpy)
@@ -107,22 +107,22 @@ bool HttpRequest::isValidURI(void)
         throw std::runtime_error("400 Bad Request");
         return (false);
     }
-	if (_uri.size() > 8192)
-	{
-		throw std::runtime_error("414 URI Too Long");
+    if (_uri.size() > 8192)
+    {
+        throw std::runtime_error("414 URI Too Long");
         return (false);
-	}
+    }
     return (true);
 }
 
 bool HttpRequest::isValidProtocol(void)
 {
-	if (_protocol != "HTTP/1.1")
-	{
+    if (_protocol != "HTTP/1.1")
+    {
         throw std::runtime_error("505 HTTP Version Not Supported");
-		return (false);
-	}
-	return (true);
+        return (false);
+    }
+    return (true);
 }
 
 bool HttpRequest::isHostPresentAndValid(void)
@@ -182,9 +182,9 @@ void HttpRequest::parseHeaderMethod(const std::string &headerContent)
 
     _method = parseMethodToken(method);
     if (!isValidURI())
-		throw std::runtime_error("400 Bad Request");
-	if (!isValidProtocol())
-		throw std::runtime_error("505 HTTP Version Not Supported");
+        throw std::runtime_error("400 Bad Request");
+    if (!isValidProtocol())
+        throw std::runtime_error("505 HTTP Version Not Supported");
 }
 
 // _headers
@@ -233,8 +233,8 @@ void HttpRequest::parseHeader(const std::string &headerContent)
                 _keepAlive = true; // _keepAlive
         }
         current = next + 2;
-		if (!isHostPresentAndValid())
-			throw std::runtime_error("400 Bad Request");
+        if (!isHostPresentAndValid())
+            throw std::runtime_error("400 Bad Request");
     }
 }
 
