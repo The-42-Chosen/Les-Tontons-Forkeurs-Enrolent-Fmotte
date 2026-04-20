@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/20 16:16:01 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/20 16:44:36 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,21 +64,6 @@ class HttpRequest
 
     void interpretation(void);
     void link_to_server(void);
-
-    // =====================
-    // ==     Validity    ==
-    // =====================
-    bool isValidURI(void);
-    bool isValidProtocol(void);
-    bool isHostPresentAndValid(void);
-
-    // =====================
-    // == 	  Member	  ==
-    // =====================
-    void parseHttpRequest(const std::string &headerContent);
-    void parseHeader(const std::string &headerContent);
-    void parseHeaderMethod(const std::string &headerContent);
-    void parseBody(const std::string &headerContent);
 
     // =====================
     // ==     Validity    ==
