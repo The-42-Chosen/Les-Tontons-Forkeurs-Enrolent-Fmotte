@@ -164,7 +164,7 @@ void Webserv::received_message_from_client(Client *client)
         close(client->get_client_fd());
         delete client;
         std::cout << "Client is disconnected\n";
-        //remove epoll client
+        // remove epoll client
         return;
     }
 
@@ -202,9 +202,9 @@ void Webserv::webserv_listen()
 {
     int nfds;
     struct epoll_event events[MAX_EVENTS];
-    
+
     std::cout << "Serveur en attente..." << std::endl;
-    
+
     while (1)
     {
         if ((nfds = epoll_wait(get_webser_epoll(), events, MAX_EVENTS, -1)) == -1)
@@ -232,7 +232,7 @@ bool Webserv::initialisation_connection()
     {
         if ((epoll_fd = epoll_create(1)) == -1)
             throw ExecptionErrorFunction("epoll_create");
-        
+
         set_webser_epoll(epoll_fd);
         initialisation_socket();
         webserv_listen();
@@ -254,7 +254,7 @@ bool Webserv::initialisation_connection()
 void Webserv::close_connection()
 {
     // Close fd client
-    
+
     // Close fd server
     std::map<int, std::set<Server *> >::iterator it_fd = _map_fd_to_serv.begin();
     for (; it_fd != _map_fd_to_serv.end(); ++it_fd)
