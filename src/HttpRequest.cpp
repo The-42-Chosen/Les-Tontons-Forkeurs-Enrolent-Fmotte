@@ -38,7 +38,6 @@ HttpRequest::HttpRequest(Client *client) : _keepAlive(false), _contentLength(0)
     }
 }
 
-
 HttpRequest::HttpRequest(const HttpRequest &cpy)
     : _method(cpy._method), _uri(cpy._uri), _protocol(cpy._protocol), _headers(cpy._headers), _body(cpy._body),
       _keepAlive(cpy._keepAlive), _contentLength(cpy._contentLength)

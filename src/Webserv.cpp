@@ -45,7 +45,7 @@ const std::vector<Server *> &Webserv::get_server(void) const
     return _vector_server;
 }
 
-const std::map<int, std::set<Server *>> &Webserv::get_map(void) const
+const std::map<int, std::set<Server *> > &Webserv::get_map(void) const
 {
     return _map_fd_to_serv;
 }
