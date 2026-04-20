@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/22 20:54:05 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/22 20:55:45 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -420,7 +420,8 @@ void HttpRequest::interpretation(void)
 
     for (std::map<std::string, std::string>::const_iterator it = _headers.begin(); it != _headers.end(); it++)
         std::cout << it->first << " | " << it->second << std::endl;
-
+        
+        
     link_to_server();
     std::cout << "\nServer select: " << _client->getServerPtr()->get_name_server(0) << "\n";
 
