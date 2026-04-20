@@ -83,7 +83,7 @@ const std::string &HttpRequest::getProtocol() const
     return (_protocol);
 }
 
-void HttpRequest::set_client(Client *client)
+void HttpRequest::setClient(Client *client)
 {
     if (client == NULL)
         throw ExecptionErrorUninitializedVariable("client", "HttpRequest");
