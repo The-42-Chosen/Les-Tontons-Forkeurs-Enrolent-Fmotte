@@ -52,8 +52,7 @@ class HttpRequest
     method_http getMethod() const;
     const std::string &getUri() const;
     const std::string &getProtocol() const;
-    void    setClient(Client *client);
-
+    void setClient(Client *client);
 
     // =====================
     // == 	  Member	  ==
@@ -65,7 +64,7 @@ class HttpRequest
 
     void interpretation(void);
     void link_to_server(void);
-    
+
     // =====================
     // ==     Validity    ==
     // =====================
