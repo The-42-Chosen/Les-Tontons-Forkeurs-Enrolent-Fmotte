@@ -52,7 +52,7 @@ class Webserv
 
     // SERVERS
     const std::vector<Server *> &get_server(void) const;
-    const std::map<int, std::set<Server *>> &get_map(void) const;
+    const std::map<int, std::set<Server *> > &get_map(void) const;
 
     // =====================
     // ==     Method      ==

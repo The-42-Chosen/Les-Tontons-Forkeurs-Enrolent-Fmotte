@@ -50,7 +50,7 @@ const std::map<int, std::set<Server *>> &Webserv::get_map(void) const
     return _map_fd_to_serv;
 }
 
-const std::map<int, std::set<Server *>> &Webserv::get_map(void) const
+const std::map<int, std::set<Server *> > &Webserv::get_map(void) const
 {
     return _map_fd_to_serv;
 }
@@ -248,7 +248,7 @@ void Webserv::close_connection(int epoll_fd)
 {
     // Close fd client
     // Close fd server
-    std::map<int, std::set<Server *>>::iterator it_fd = _map_fd_to_serv.begin();
+    std::map<int, std::set<Server *> >::iterator it_fd = _map_fd_to_serv.begin();
     for (; it_fd != _map_fd_to_serv.end(); ++it_fd)
         close((*it_fd).first);
     _map_fd_to_serv.clear();
