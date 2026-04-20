@@ -88,6 +88,9 @@ re : fclean all
 git-setup:
 	@sh doc/scripts/setup-git-ignore-42-header.sh
 	@sh doc/scripts/setup-git-hooks.sh
+
+nc:
+	nc -C 127.0.0.1 8080
 	
 # Automatic inclusion of .d files if they exist
 -include $(DEP_FILES)
