@@ -209,9 +209,9 @@ void Webserv::webserv_listen()
 {
     int nfds;
     struct epoll_event events[MAX_EVENTS];
-    
+
     std::cout << "Serveur en attente..." << std::endl;
-    
+
     while (1)
     {
         if ((nfds = epoll_wait(get_webser_epoll(), events, MAX_EVENTS, -1)) == -1)

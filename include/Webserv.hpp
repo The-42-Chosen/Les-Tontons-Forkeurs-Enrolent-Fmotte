@@ -56,6 +56,7 @@ class Webserv
     const std::map<int, std::set<Server *> > &get_map(void) const;
     void set_webser_epoll(const int epoll);
     int get_webser_epoll(void);
+
     // =====================
     // ==     Method      ==
     // =====================
