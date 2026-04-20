@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/20 16:16:17 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/20 19:11:03 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -275,9 +275,16 @@ void HttpRequest::interpretation(void)
 
     for (std::map<std::string, std::string>::const_iterator it = _headers.begin(); it != _headers.end(); it++)
         std::cout << it->first << " | " << it->second << std::endl;
-
+        
+        
     link_to_server();
     std::cout << "Test: " << _client->get_server_ptr()->get_name_server(0) << "\n";
+    if (_client->get_server_ptr()->get_return()->code != 0)
+    {
+        //Server Close
+        return;
+    }
+    
 }
 
 void HttpRequest::link_to_server(void)
@@ -293,20 +300,12 @@ void HttpRequest::link_to_server(void)
             if ((*it)->get_name_server(i) == "")
                 break;
 
-            std::cout << "\n";
-            std::cout << "Name: " << (*it)->get_name_server(i) << "\n";
-            std::cout << "HOST: " << _headers.find("Host")->second << "\n";
-
             if ((*it)->get_name_server(i) == _headers.find("Host")->second)
             {
-                std::cout << "match\n";
                 _client->set_server_ptr(*it);
-            }
-            else
-            {
-                std::cout << "dump\n";
+                return ;
             }
         }
     }
-    // if here host not find
+    _client->set_server_ptr(*(set_server.begin()));
 }
