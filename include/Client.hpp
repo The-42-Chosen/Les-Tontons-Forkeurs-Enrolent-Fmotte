@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 14:43:11 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/15 20:50:34 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/17 18:07:01 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,16 @@
 #include "Server.hpp"
 #include "struct.hpp"
 
+class Server;
+class Webserv;
+
 class Client
 {
   private:
     int _client_fd;
     int _server_fd;
     Server *_server;
+    Webserv *_webserv;
     std::string _request;
 
   public:
@@ -52,4 +56,8 @@ class Client
     std::string &get_request(void);
     void clear_request(void);
     void append_request(std::string &request);
+
+    // WEBSERV
+    Webserv *get_webserv(void);
+    void set_webserv(Webserv *webserv);
 };

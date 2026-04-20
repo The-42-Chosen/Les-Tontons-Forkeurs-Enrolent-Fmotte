@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 14:43:09 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/15 20:16:12 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/17 17:37:14 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 // == Canonical Form  ==
 // =====================
 
-Client::Client() : _client_fd(-1), _server_fd(-1), _server(0), _request("")
+Client::Client() : _client_fd(-1), _server_fd(-1), _server(0), _webserv(0), _request("")
 {
 }
 
@@ -85,4 +85,16 @@ void Client::clear_request(void)
 void Client::append_request(std::string &request)
 {
     _request.append(request);
+}
+
+Webserv *Client::get_webserv(void)
+{
+    return _webserv;
+}
+
+void Client::set_webserv(Webserv *webserv)
+{
+    if (webserv == NULL)
+        throw ExecptionErrorUninitializedVariable("webserv", "Client");
+    _webserv = webserv;
 }

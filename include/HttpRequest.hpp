@@ -3,19 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/17 18:37:33 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/20 16:16:01 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+#include "Client.hpp"
+#include "execption.hpp"
 #include "struct.hpp"
 #include <map>
 #include <string>
 #include <vector>
+
+class Client;
 
 class HttpRequest
 {
@@ -24,6 +28,7 @@ class HttpRequest
     // ==    Attributs    ==
     // =====================
     HttpRequest();
+    Client *_client;
     method_http _method;
     std::string _uri;
     std::string _protocol;
@@ -36,7 +41,7 @@ class HttpRequest
     // =====================
     // ==       OCF       ==
     // =====================
-    HttpRequest(std::string requestRawContent);
+    HttpRequest(Client *client);
     HttpRequest(const HttpRequest &cpy);
     HttpRequest &operator=(const HttpRequest &cpy);
     ~HttpRequest();
@@ -47,6 +52,25 @@ class HttpRequest
     method_http getMethod() const;
     const std::string &getUri() const;
     const std::string &getProtocol() const;
+    void setClient(Client *client);
+
+    // =====================
+    // == 	  Member	  ==
+    // =====================
+    void parseHttpRequest(const std::string &headerContent);
+    void parseHeader(const std::string &headerContent);
+    void parseHeaderMethod(const std::string &headerContent);
+    void parseBody(const std::string &headerContent);
+
+    void interpretation(void);
+    void link_to_server(void);
+
+    // =====================
+    // ==     Validity    ==
+    // =====================
+    bool isValidURI(void);
+    bool isValidProtocol(void);
+    bool isHostPresentAndValid(void);
 
     // =====================
     // == 	  Member	  ==

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:20 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/16 14:38:59 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/20 16:18:03 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,13 @@
 #define MAX_EVENTS 10
 #define SIZE_BUFFER 1024
 
+class Server;
+class Client;
+
 class Webserv
 {
   private:
-    std::vector<Server> _vector_server;
+    std::vector<Server *> _vector_server;
     std::map<int, std::set<Server *> > _map_fd_to_serv;
 
   public:
@@ -48,9 +51,8 @@ class Webserv
     // =====================
 
     // SERVERS
-    Server *get_server(size_t i);
-    size_t get_servers_count(void);
-    std::vector<Server> *get_all_servers(void);
+    const std::vector<Server *> &get_server(void) const;
+    const std::map<int, std::set<Server *> > &get_map(void) const;
 
     // =====================
     // ==     Method      ==
@@ -63,7 +65,7 @@ class Webserv
     void initialisation_socket(int epoll_fd);
     void webserv_listen(int epoll_fd);
     void manage_connection(int epoll_fd, struct epoll_event &events);
-    void get_new_client(int epoll_fd, int server_fd);
-    void get_message_from_client(Client *client);
+    void had_new_client(int epoll_fd, int server_fd);
+    void received_message_from_client(Client *client);
     void close_connection(int epoll_fd);
 };
