@@ -107,15 +107,15 @@ const char *HttpRequest::methodToString(method_http method)
 }
 
 // =====================
-// ==     Method      ==
+// == 	Validations   ==
 // =====================
 
-bool isValidURI(const std::string uri)
+bool HttpRequest::isValidURI(void)
 {
-    if (uri[0] != '/')
+    if (_uri[0] != '/')
     {
-        throw std::runtime_error("URI format need to start with '/'");
-        return false;
+        throw std::runtime_error("400 Bad Request");
+        return (false);
     }
     if (_uri.size() > 8192)
     {
@@ -125,7 +125,7 @@ bool isValidURI(const std::string uri)
     return (true);
 }
 
-bool isValidProtocol(const std::string protocol)
+bool HttpRequest::isValidProtocol(void)
 {
     if (_protocol != "HTTP/1.1")
     {
@@ -135,19 +135,19 @@ bool isValidProtocol(const std::string protocol)
     return (true);
 }
 
-bool isHostPresentAndValid(std::map<std::string, std::string> headers)
+bool HttpRequest::isHostPresentAndValid(void)
 {
-    for (std::map<std::string, std::string>::const_iterator it = headers.begin(); it != headers.end(); it++)
+    for (std::map<std::string, std::string>::const_iterator it = _headers.begin(); it != _headers.end(); it++)
     {
         if (it->first == "Host")
         {
             if (!it->second.empty())
                 return (true);
             else
-                throw std::runtime_error("Host is invalid");
+                throw std::runtime_error("400 Bad Request");
         }
     }
-    throw std::runtime_error("Host not found");
+    throw std::runtime_error("400 Bad Request");
     return (false);
 }
 
@@ -161,11 +161,15 @@ static method_http parseMethodToken(const std::string &method)
         return (DELETE);
     if (method == "HEAD")
         return (HEAD);
-    throw std::runtime_error("Unsupported HTTP method: " + method);
+    throw std::runtime_error("501 Not Implemented");
 }
 
+// =====================
+// ==     Method      ==
+// =====================
+
 // _method | _uri | _protocol
-HttpRequest &HttpRequest::parseHeaderMethod(const std::string &headerContent)
+void HttpRequest::parseHeaderMethod(const std::string &headerContent)
 {
     _headers.clear();
 
@@ -182,9 +186,9 @@ HttpRequest &HttpRequest::parseHeaderMethod(const std::string &headerContent)
     std::string extraToken;
 
     if (!(ssMethod >> method >> _uri >> _protocol))
-        throw std::runtime_error("Invalid HTTP request line");
+        throw std::runtime_error("400 Bad Request");
     if (ssMethod >> extraToken)
-        throw std::runtime_error("Invalid HTTP request line: extra token");
+        throw std::runtime_error("400 Bad Request");
 
     _method = parseMethodToken(method);
     if (!isValidURI())
@@ -194,7 +198,7 @@ HttpRequest &HttpRequest::parseHeaderMethod(const std::string &headerContent)
 }
 
 // _headers
-HttpRequest &HttpRequest::parseHeader(const std::string &headerContent)
+void HttpRequest::parseHeader(const std::string &headerContent)
 {
     // _headers
     std::string requestLine;
@@ -217,7 +221,7 @@ HttpRequest &HttpRequest::parseHeader(const std::string &headerContent)
         {
             std::string::size_type colon = requestLine.find(':');
             if (colon == std::string::npos)
-                throw std::runtime_error("Invalid HTTP header line");
+                throw std::runtime_error("400 Bad Request");
 
             std::string key = requestLine.substr(0, colon);
             std::string value = requestLine.substr(colon + 1);
@@ -233,7 +237,7 @@ HttpRequest &HttpRequest::parseHeader(const std::string &headerContent)
             {
                 std::stringstream ssLength(value);
                 if (!(ssLength >> _contentLength))
-                    throw std::runtime_error("Invalid Content-Length header");
+                    throw std::runtime_error("400 Bad Request");
             }
             else if (key == "Connection" && value == "keep-alive")
                 _keepAlive = true; // _keepAlive
@@ -242,11 +246,10 @@ HttpRequest &HttpRequest::parseHeader(const std::string &headerContent)
         if (!isHostPresentAndValid())
             throw std::runtime_error("400 Bad Request");
     }
-    return (*this);
 }
 
 // _body
-HttpRequest &HttpRequest::parseBody(const std::string &headerContent)
+void HttpRequest::parseBody(const std::string &headerContent)
 {
     std::string::size_type bodyStart = headerContent.find("\r\n\r\n");
     if (bodyStart != std::string::npos)
@@ -256,10 +259,9 @@ HttpRequest &HttpRequest::parseBody(const std::string &headerContent)
         for (std::string::size_type i = 0; i < bodyContent.size(); ++i)
             _body.push_back(static_cast<__uint8_t>(bodyContent[i]));
     }
-    return (*this);
 }
 
-HttpRequest &HttpRequest::parseHttpRequest(const std::string &headerContent)
+void HttpRequest::parseHttpRequest(const std::string &headerContent)
 {
     parseHeaderMethod(headerContent);
     parseHeader(headerContent);

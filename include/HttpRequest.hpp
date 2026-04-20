@@ -72,6 +72,21 @@ class HttpRequest
     bool isValidProtocol(void);
     bool isHostPresentAndValid(void);
 
+    // =====================
+    // == 	  Member	  ==
+    // =====================
+    void parseHttpRequest(const std::string &headerContent);
+    void parseHeader(const std::string &headerContent);
+    void parseHeaderMethod(const std::string &headerContent);
+    void parseBody(const std::string &headerContent);
+
+    // =====================
+    // ==     Validity    ==
+    // =====================
+    bool isValidURI(void);
+    bool isValidProtocol(void);
+    bool isHostPresentAndValid(void);
+
     // Helper
     static const char *methodToString(method_http method);
 };
