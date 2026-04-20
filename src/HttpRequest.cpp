@@ -275,16 +275,14 @@ void HttpRequest::interpretation(void)
 
     for (std::map<std::string, std::string>::const_iterator it = _headers.begin(); it != _headers.end(); it++)
         std::cout << it->first << " | " << it->second << std::endl;
-        
-        
+
     link_to_server();
     std::cout << "Test: " << _client->get_server_ptr()->get_name_server(0) << "\n";
     if (_client->get_server_ptr()->get_return()->code != 0)
     {
-        //Server Close
+        // Server Close
         return;
     }
-    
 }
 
 void HttpRequest::link_to_server(void)
@@ -303,7 +301,7 @@ void HttpRequest::link_to_server(void)
             if ((*it)->get_name_server(i) == _headers.find("Host")->second)
             {
                 _client->set_server_ptr(*it);
-                return ;
+                return;
             }
         }
     }
