@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/20 16:45:45 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/20 17:44:15 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,15 +156,17 @@ void Webserv::received_message_from_client(Client *client)
 {
     int bytes;
     char buffer[SIZE_BUFFER];
+    
     if ((bytes = recv(client->get_client_fd(), buffer, sizeof(buffer), 0)) == -1)
         return;
 
     if (bytes == 0)
     {
+        if (epoll_ctl(get_webser_epoll(), EPOLL_CTL_DEL, client->get_client_fd(), NULL) == -1)
+        throw ExecptionErrorFunction("epoll_ctl");
         close(client->get_client_fd());
         delete client;
         std::cout << "Client is disconnected\n";
-        // remove epoll client
         return;
     }
 
