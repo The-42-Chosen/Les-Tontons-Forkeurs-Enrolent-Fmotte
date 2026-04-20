@@ -6,7 +6,7 @@
 #    By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/11 16:36:16 by fmotte            #+#    #+#              #
-#    Updated: 2026/04/15 20:52:38 by erpascua         ###   ########.fr        #
+#    Updated: 2026/04/20 19:11:59 by erpascua         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -87,6 +87,9 @@ re : fclean all
 git-setup:
 	@sh doc/scripts/setup-git-ignore-42-header.sh
 	@sh doc/scripts/setup-git-hooks.sh
+
+nc:
+	nc -C 127.0.0.1 8080
 	
 # Automatic inclusion of .d files if they exist
 -include $(DEP_FILES)
