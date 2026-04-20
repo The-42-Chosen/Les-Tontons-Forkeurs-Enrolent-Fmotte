@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/20 16:18:27 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/20 16:45:45 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 // == Canonical Form  ==
 // =====================
 
-Webserv::Webserv() : _vector_server(0)
+Webserv::Webserv() : _vector_server(0), _webser_epoll(-1)
 {
 }
 
@@ -50,9 +50,14 @@ const std::map<int, std::set<Server *> > &Webserv::get_map(void) const
     return _map_fd_to_serv;
 }
 
-const std::map<int, std::set<Server *> > &Webserv::get_map(void) const
+void Webserv::set_webser_epoll(const int epoll)
 {
-    return _map_fd_to_serv;
+    _webser_epoll = epoll;
+}
+
+int Webserv::get_webser_epoll(void)
+{
+    return _webser_epoll;
 }
 
 // =====================
@@ -86,7 +91,7 @@ bool Webserv::splitServers(std::vector<std::string> &tokens)
     return (false);
 }
 
-void Webserv::initialisation_socket(int epoll_fd)
+void Webserv::initialisation_socket()
 {
     int serverSocket;
     s_listen *listen;
@@ -111,7 +116,7 @@ void Webserv::initialisation_socket(int epoll_fd)
             if (it == map_socket_fd.end())
             {
                 serverSocket = create_server_socket(listen->ip, listen->port, MAX_CLIENT);
-                add_socket_to_event(epoll_fd, serverSocket, NULL);
+                add_socket_to_event(get_webser_epoll(), serverSocket, NULL);
 
                 map_socket_fd.insert(std::make_pair(*listen, serverSocket));
 
@@ -130,7 +135,7 @@ void Webserv::initialisation_socket(int epoll_fd)
     }
 }
 
-void Webserv::had_new_client(int epoll_fd, int server_fd)
+void Webserv::had_new_client(int server_fd)
 {
     int clientSocket;
 
@@ -139,7 +144,7 @@ void Webserv::had_new_client(int epoll_fd, int server_fd)
 
     Client *client = new Client;
 
-    add_socket_to_event(epoll_fd, clientSocket, client);
+    add_socket_to_event(get_webser_epoll(), clientSocket, client);
     client->set_client_fd(clientSocket);
     client->set_server_fd(server_fd);
     client->set_webserv(this);
@@ -152,13 +157,14 @@ void Webserv::received_message_from_client(Client *client)
     int bytes;
     char buffer[SIZE_BUFFER];
     if ((bytes = recv(client->get_client_fd(), buffer, sizeof(buffer), 0)) == -1)
-        throw ExecptionErrorFunction("recv");
+        return;
 
     if (bytes == 0)
     {
         close(client->get_client_fd());
         delete client;
         std::cout << "Client is disconnected\n";
+        //remove epoll client
         return;
     }
 
@@ -180,35 +186,35 @@ void Webserv::received_message_from_client(Client *client)
     send(client->get_client_fd(), reply.c_str(), reply.size(), 0);
 }
 
-void Webserv::manage_connection(int epoll_fd, struct epoll_event &events)
+void Webserv::manage_connection(struct epoll_event &events)
 {
     std::string reply = "Message received\n";
     int server_fd = events.data.fd;
 
     if (server_fd < static_cast<int>(_map_fd_to_serv.size() + 4))
-        had_new_client(epoll_fd, server_fd);
+        had_new_client(server_fd);
 
     else
         received_message_from_client(static_cast<Client *>(events.data.ptr));
 }
 
-void Webserv::webserv_listen(int epoll_fd)
+void Webserv::webserv_listen()
 {
     int nfds;
     struct epoll_event events[MAX_EVENTS];
-
+    
     std::cout << "Serveur en attente..." << std::endl;
-
+    
     while (1)
     {
-        if ((nfds = epoll_wait(epoll_fd, events, MAX_EVENTS, -1)) == -1)
+        if ((nfds = epoll_wait(get_webser_epoll(), events, MAX_EVENTS, -1)) == -1)
             throw ExecptionErrorFunction("epoll_wait");
 
         if (stop_webserv)
             return;
 
         for (int i = 0; i < nfds; ++i)
-            manage_connection(epoll_fd, events[i]);
+            manage_connection(events[i]);
     }
 }
 
@@ -226,9 +232,10 @@ bool Webserv::initialisation_connection()
     {
         if ((epoll_fd = epoll_create(1)) == -1)
             throw ExecptionErrorFunction("epoll_create");
-
-        initialisation_socket(epoll_fd);
-        webserv_listen(epoll_fd);
+        
+        set_webser_epoll(epoll_fd);
+        initialisation_socket();
+        webserv_listen();
     }
     catch (const std::exception &e)
     {
@@ -240,13 +247,14 @@ bool Webserv::initialisation_connection()
             res = true;
         }
     }
-    close_connection(epoll_fd);
+    close_connection();
     return res;
 }
 
-void Webserv::close_connection(int epoll_fd)
+void Webserv::close_connection()
 {
     // Close fd client
+    
     // Close fd server
     std::map<int, std::set<Server *> >::iterator it_fd = _map_fd_to_serv.begin();
     for (; it_fd != _map_fd_to_serv.end(); ++it_fd)
@@ -259,11 +267,5 @@ void Webserv::close_connection(int epoll_fd)
         delete (*it_server);
     _vector_server.clear();
 
-    // Free instance server
-    std::vector<Server *>::iterator it_server = _vector_server.begin();
-    for (; it_server != _vector_server.end(); ++it_server)
-        delete (*it_server);
-    _vector_server.clear();
-
-    close(epoll_fd);
+    close(get_webser_epoll());
 }
