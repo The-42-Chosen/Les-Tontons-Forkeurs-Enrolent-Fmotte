@@ -97,7 +97,7 @@ HttpRequest::HttpRequest(Client *client) : _keepAlive(false), _contentLength(0)
         setClient(client);
         parseHttpRequest(client->get_request());
         interpretation();
-		bodyInterpretation();
+        bodyInterpretation();
     }
     catch (const std::exception &e)
     {
@@ -306,15 +306,15 @@ void HttpRequest::parseHeader(const std::string &headerContent)
             //     std::stringstream ssLength(value);
             //     if (!(ssLength >> _contentLength))
             //         throw std::runtime_error("400 Bad Request");
-			// 	parseBody(headerContent);
+            // 	parseBody(headerContent);
             // }
-			// if (key == "Transfer-Encoding")
-			// {
-			// 	if (value == "chuncked")
-			// 	{
-			// 		parseBody(headerContent);
-			// 	}
-			// }
+            // if (key == "Transfer-Encoding")
+            // {
+            // 	if (value == "chuncked")
+            // 	{
+            // 		parseBody(headerContent);
+            // 	}
+            // }
             // else if (key == "Connection" && value == "keep-alive")
             //     _keepAlive = true; // _keepAlive
         }
@@ -341,8 +341,8 @@ void HttpRequest::parseBody(const std::string &headerContent)
         if (transferEncodingIt->second != "chunked")
             throw std::runtime_error("501 Not Implemented");
 
-		parseChunkedBody(headerContent, _body);
-		_contentLength = _body.size();
+        parseChunkedBody(headerContent, _body);
+        _contentLength = _body.size();
         return;
     }
 
