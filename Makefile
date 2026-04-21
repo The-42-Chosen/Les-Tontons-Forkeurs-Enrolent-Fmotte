@@ -6,7 +6,7 @@
 #    By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/11 16:36:16 by fmotte            #+#    #+#              #
-#    Updated: 2026/04/20 19:11:59 by erpascua         ###   ########.fr        #
+#    Updated: 2026/04/21 14:23:26 by erpascua         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -88,8 +88,14 @@ git-setup:
 	@sh doc/scripts/setup-git-ignore-42-header.sh
 	@sh doc/scripts/setup-git-hooks.sh
 
+serv: re
+	./$(NAME) doc/parsing_tests/valid_minimal.conf
+
 nc:
 	nc -C 127.0.0.1 8080
+
+c:
+	curl localhost:8080 -H @doc/request
 	
 # Automatic inclusion of .d files if they exist
 -include $(DEP_FILES)
