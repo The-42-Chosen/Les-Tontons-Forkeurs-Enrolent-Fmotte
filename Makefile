@@ -89,8 +89,14 @@ git-setup:
 	@sh doc/scripts/setup-git-ignore-42-header.sh
 	@sh doc/scripts/setup-git-hooks.sh
 
+serv: re
+	./$(NAME) doc/parsing_tests/valid_minimal.conf
+
 nc:
 	nc -C 127.0.0.1 8080
+
+c:
+	curl localhost:8080 -H @doc/request
 	
 # Automatic inclusion of .d files if they exist
 -include $(DEP_FILES)

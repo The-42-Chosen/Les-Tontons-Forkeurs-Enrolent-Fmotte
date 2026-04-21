@@ -3,14 +3,84 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/22 11:20:23 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/22 20:53:08 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
+#include "colors.hpp"
+
+#include <sstream>
+#include <stdexcept>
+
+static std::string trimChunkSizeToken(const std::string &token)
+{
+    std::string::size_type begin = token.find_first_not_of(" \t");
+    if (begin == std::string::npos)
+        return ("");
+    std::string::size_type end = token.find_last_not_of(" \t");
+    return (token.substr(begin, end - begin + 1));
+}
+
+static size_t parseChunkSize(const std::string &line)
+{
+    std::string sizeToken = line;
+    std::string::size_type semicolon = sizeToken.find(';');
+    if (semicolon != std::string::npos)
+        sizeToken = sizeToken.substr(0, semicolon);
+    sizeToken = trimChunkSizeToken(sizeToken);
+    if (sizeToken.empty())
+        throw std::runtime_error("400 Bad Request");
+
+    std::stringstream ss(sizeToken);
+    size_t chunkSize = 0;
+    ss >> std::hex >> chunkSize;
+    if (ss.fail())
+        throw std::runtime_error("400 Bad Request");
+    if (!ss.eof())
+        throw std::runtime_error("400 Bad Request");
+    return (chunkSize);
+}
+
+static void appendBodyBytes(std::vector<__uint8_t> &body, const std::string &data)
+{
+    for (std::string::size_type i = 0; i < data.size(); ++i)
+        body.push_back(static_cast<__uint8_t>(data[i]));
+}
+
+static void parseChunkedBody(const std::string &headerContent, std::vector<__uint8_t> &body)
+{
+    std::string::size_type current = headerContent.find("\r\n\r\n");
+    if (current == std::string::npos)
+        return;
+    current += 4;
+
+    while (current < headerContent.size())
+    {
+        std::string::size_type lineEnd = headerContent.find("\r\n", current);
+        if (lineEnd == std::string::npos)
+            throw std::runtime_error("400 Bad Request");
+
+        size_t chunkSize = parseChunkSize(headerContent.substr(current, lineEnd - current));
+        current = lineEnd + 2;
+
+        if (chunkSize == 0)
+            return;
+
+        if (current + chunkSize > headerContent.size())
+            throw std::runtime_error("400 Bad Request");
+
+        appendBodyBytes(body, headerContent.substr(current, chunkSize));
+        current += chunkSize;
+
+        if (headerContent.substr(current, 2) != "\r\n")
+            throw std::runtime_error("400 Bad Request");
+        current += 2;
+    }
+}
 
 // =====================
 // == Canonical Form  ==
@@ -27,6 +97,7 @@ HttpRequest::HttpRequest(Client *client) : _keepAlive(false), _contentLength(0)
         setClient(client);
         parseHttpRequest(client->getRequest());
         interpretation();
+		bodyInterpretation();
     }
     catch (const std::exception &e)
     {
@@ -269,14 +340,22 @@ void HttpRequest::parseHeader(const std::string &headerContent)
 
             _headers[key] = value;
             // _contentLength
-            if (key == "Content-Length")
-            {
-                std::stringstream ssLength(value);
-                if (!(ssLength >> _contentLength))
-                    throw std::runtime_error("400 Bad Request");
-            }
-            else if (key == "Connection" && value == "keep-alive")
-                _keepAlive = true; // _keepAlive
+            // if (key == "Content-Length")
+            // {
+            //     std::stringstream ssLength(value);
+            //     if (!(ssLength >> _contentLength))
+            //         throw std::runtime_error("400 Bad Request");
+			// 	parseBody(headerContent);
+            // }
+			// if (key == "Transfer-Encoding")
+			// {
+			// 	if (value == "chuncked")
+			// 	{
+			// 		parseBody(headerContent);
+			// 	}
+			// }
+            // else if (key == "Connection" && value == "keep-alive")
+            //     _keepAlive = true; // _keepAlive
         }
         current = next + 2;
         isHostPresentAndValid();
@@ -286,21 +365,52 @@ void HttpRequest::parseHeader(const std::string &headerContent)
 // _body
 void HttpRequest::parseBody(const std::string &headerContent)
 {
-    std::string::size_type bodyStart = headerContent.find("\r\n\r\n");
-    if (bodyStart != std::string::npos)
+    _body.clear();
+
+    std::map<std::string, std::string>::const_iterator contentLengthIt = _headers.find("Content-Length");
+    std::map<std::string, std::string>::const_iterator transferEncodingIt = _headers.find("Transfer-Encoding");
+    std::map<std::string, std::string>::const_iterator connectionIt = _headers.find("Connection");
+
+    if (connectionIt != _headers.end() && connectionIt->second == "keep-alive")
+        _keepAlive = true;
+
+    if (transferEncodingIt != _headers.end())
     {
-        bodyStart += 4;
-        std::string bodyContent = headerContent.substr(bodyStart);
-        for (std::string::size_type i = 0; i < bodyContent.size(); ++i)
-            _body.push_back(static_cast<__uint8_t>(bodyContent[i]));
+        if (transferEncodingIt->second != "chunked")
+            throw std::runtime_error("501 Not Implemented");
+
+		parseChunkedBody(headerContent, _body);
+		_contentLength = _body.size();
+        return;
     }
+
+    if (contentLengthIt != _headers.end())
+    {
+        std::stringstream ssLength(contentLengthIt->second);
+        if (!(ssLength >> _contentLength))
+            throw std::runtime_error("400 Bad Request");
+
+        std::string::size_type bodyStart = headerContent.find("\r\n\r\n");
+        if (bodyStart == std::string::npos)
+            throw std::runtime_error("400 Bad Request");
+
+        bodyStart += 4;
+        if (bodyStart + _contentLength > headerContent.size())
+            throw std::runtime_error("400 Bad Request");
+
+        appendBodyBytes(_body, headerContent.substr(bodyStart, _contentLength));
+        return;
+    }
+
+    if (headerContent.find("\r\n\r\n") != std::string::npos)
+        return;
 }
 
 void HttpRequest::parseHttpRequest(const std::string &headerContent)
 {
     parseHeaderMethod(headerContent);
     parseHeader(headerContent);
-    // parseBody(headerContent);
+    parseBody(headerContent);
 }
 
 void HttpRequest::interpretation(void)
@@ -345,6 +455,12 @@ void HttpRequest::interpretation(void)
 
     init_root();
     std::cout << "root: " << getRoot() << "\n";
+}
+
+void HttpRequest::bodyInterpretation(void)
+{
+    for (std::vector<__uint8_t>::const_iterator it = _body.begin(); it != _body.end(); it++)
+        std::cout << *it << std::endl;
 }
 
 void HttpRequest::link_to_server(void)
