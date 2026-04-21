@@ -77,7 +77,7 @@ class HttpRequest
     void parseBody(const std::string &headerContent);
 
     void interpretation(void);
-	void bodyInterpretation(void);
+    void bodyInterpretation(void);
     void link_to_server(void);
     Location *findLocation(void);
     void init_root(void);
