@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 13:53:46 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/22 21:07:09 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/22 21:10:33 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,4 +66,12 @@ int longestPrefixMatch(std::string uri, std::string location)
         ++j;
     }
     return score;
+}
+
+std::string toLowerString(const std::string &str)
+{
+    std::string result = str;
+    for (std::string::size_type i = 0; i < result.size(); ++i)
+        result[i] = static_cast<char>(std::tolower(static_cast<unsigned char>(result[i])));
+    return result;
 }

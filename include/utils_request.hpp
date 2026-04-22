@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_request.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 13:53:22 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/22 16:55:25 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/22 21:10:45 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,3 +16,4 @@
 
 int computeRemainingCost(const std::string &string, size_t min_len, int score);
 int longestPrefixMatch(std::string string1, std::string string2);
+std::string toLowerString(const std::string &str);
