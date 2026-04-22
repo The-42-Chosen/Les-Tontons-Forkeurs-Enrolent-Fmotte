@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:50:27 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/20 16:15:24 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/22 09:39:19 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,11 +99,11 @@ Location *Server::get_location(size_t i)
 }
 
 // ROOT
-void Server::set_root(std::string root)
+void Server::setRoot(std::string root)
 {
     _root = root;
 }
-std::string Server::get_root(void)
+std::string Server::getRoot(void)
 {
     return _root;
 }
@@ -187,10 +187,12 @@ void Server::initialisation_server(std::vector<std::string> &tokens)
     tokens.erase(tokens.begin());
     size_t tokens_size = tokens.size();
     size_t new_tokens_size;
+    
     while (true)
     {
         if (tokens.empty())
             throw ExecptionMissBrace();
+            
         if (tokens[0] == "}")
             break;
 
@@ -208,6 +210,7 @@ void Server::initialisation_server(std::vector<std::string> &tokens)
         new_tokens_size = tokens.size();
         if (tokens_size == new_tokens_size)
             throw ExecptionWrongArgument(tokens[0]);
+            
         tokens_size = new_tokens_size;
     }
 
@@ -320,7 +323,7 @@ void Server::initialisation_root(std::vector<std::string> &tokens)
 {
     std::string root = return_root(tokens);
     if (root != "")
-        set_root(root);
+        setRoot(root);
 }
 
 void Server::initialisation_auto_index(std::vector<std::string> &tokens)

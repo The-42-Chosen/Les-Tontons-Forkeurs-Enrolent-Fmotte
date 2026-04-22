@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   location.hpp                                       :+:      :+:    :+:   */
+/*   Location.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 15:45:26 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/08 15:22:25 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/21 16:28:52 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,8 @@ class Location
     std::string get_index(void);
 
     // ROOT
-    void set_root(std::string root);
-    std::string get_root(void);
+    void setRoot(std::string root);
+    std::string getRoot(void);
 
     // AUTO-INDEX
     void set_auto_index(bool auto_index);

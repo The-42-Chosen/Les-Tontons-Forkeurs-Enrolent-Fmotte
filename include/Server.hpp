@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:43:21 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/20 16:12:57 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/21 16:28:52 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,8 +72,8 @@ class Server
     Location *get_location(size_t i);
 
     // ROOT
-    void set_root(std::string root);
-    std::string get_root(void);
+    void setRoot(std::string root);
+    std::string getRoot(void);
 
     // INDEX
     void add_index(std::string index);

@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:20 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/20 16:44:49 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/22 11:30:59 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,5 +70,6 @@ class Webserv
     void manage_connection(struct epoll_event &events);
     void had_new_client(int server_fd);
     void received_message_from_client(Client *client);
+    void deleteClient(Client *client);
     void close_connection();
 };
