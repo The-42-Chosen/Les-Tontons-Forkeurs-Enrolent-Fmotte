@@ -16,11 +16,11 @@ server {
     error_page 404 /errors/404.html;
     error_page 500 /errors/500.html;
 
-    return 301 http://example.com;
+    #return 301 http://example.com;
 
-		location / {
-        index index.html;
-    }
+		#location / {
+        #index index.html;
+    #}
 
     location /images {
 
@@ -28,6 +28,20 @@ server {
 
 		#Commentaire ne pas lire
 		
+        autoindex on;
+
+    }
+
+    location /images/cat {
+
+        root /var/www/assets;	
+        autoindex on;
+
+    }
+
+    location /images/dog {
+
+        root /var/www/assets;
         autoindex on;
 
     }

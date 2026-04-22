@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   location.cpp                                       :+:      :+:    :+:   */
+/*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 15:45:46 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/12 18:04:42 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/22 09:38:14 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,11 +85,11 @@ std::string Location::get_index(void)
 }
 
 // ROOT
-void Location::set_root(std::string root)
+void Location::setRoot(std::string root)
 {
     _root = root;
 }
-std::string Location::get_root(void)
+std::string Location::getRoot(void)
 {
     return _root;
 }
@@ -155,10 +155,12 @@ void Location::init_location(std::vector<std::string> &tokens)
     tokens.erase(tokens.begin());
     size_t tokens_size = tokens.size();
     size_t new_tokens_size;
+
     while (true)
     {
         if (tokens.empty())
             throw ExecptionMissBrace();
+
         if (tokens[0] == "}")
             break;
 
@@ -174,6 +176,7 @@ void Location::init_location(std::vector<std::string> &tokens)
         new_tokens_size = tokens.size();
         if (tokens_size == new_tokens_size)
             throw ExecptionWrongArgument(tokens[0]);
+
         tokens_size = new_tokens_size;
     }
     tokens.erase(tokens.begin());
@@ -209,7 +212,7 @@ void Location::init_location_root(std::vector<std::string> &tokens)
 {
     std::string root = return_root(tokens);
     if (root != "")
-        set_root(root);
+        setRoot(root);
 }
 
 void Location::init_location_index(std::vector<std::string> &tokens)

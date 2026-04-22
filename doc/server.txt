@@ -65,3 +65,70 @@ En HTTP/1.1 → souvent gardée ouverte (keep-alive)
 	Il traite la demande
 	Il renvoie une réponse
 	Le client affiche
+
+
+Index && Auto Index
+
+🔹 index — fichier par défaut
+
+La directive index sert à dire à NGINX :
+
+👉 “Quel fichier je dois servir quand on accède à un dossier ?”
+
+Exemple
+location / {
+    index index.html index.htm;
+}
+
+👉 Si quelqu’un va sur :
+
+/blog/
+
+NGINX va chercher dans le dossier :
+
+index.html
+sinon index.htm
+
+✔️ S’il en trouve un → il le renvoie
+❌ Sinon → erreur (souvent 403 ou 404)
+
+🔹 autoindex — affichage du dossier
+
+La directive autoindex permet d’afficher la liste des fichiers d’un dossier.
+
+Exemple
+location /files/ {
+    autoindex on;
+}
+
+👉 Si quelqu’un va sur :
+
+/files/
+
+✔️ NGINX affiche une page avec :
+
+liste des fichiers
+tailles
+dates
+⚠️ Interaction entre les deux
+
+C’est là que ça devient intéressant :
+
+Cas 1 — index trouve un fichier
+index index.html;
+autoindex on;
+
+👉 /docs/ contient index.html
+➡️ NGINX sert index.html
+➡️ autoindex n’est pas utilisé
+
+Cas 2 — pas de fichier index
+
+👉 /docs/ ne contient pas index.html
+
+autoindex off → ❌ erreur
+autoindex on → ✔️ liste des fichiers
+🔹 Résumé simple
+Directive	Rôle
+index	fichier à servir par défaut
+autoindex	afficher le contenu du dossier

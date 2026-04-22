@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 14:43:11 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/17 18:07:01 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/21 14:24:55 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,23 +41,23 @@ class Client
     // =====================
 
     // CLIENT-FD
-    int get_client_fd(void);
-    void set_client_fd(int client_fd);
+    int getClientFd(void);
+    void setClientFd(int client_fd);
 
     // SERVER-FD
-    int get_server_fd(void);
-    void set_server_fd(int server_fd);
+    int getServerFd(void);
+    void setServerFd(int server_fd);
 
     // SERVER-PTR
-    Server *get_server_ptr(void);
-    void set_server_ptr(Server *server);
+    Server *getServerPtr(void);
+    void setServerPtr(Server *server);
 
     // REQUEST
-    std::string &get_request(void);
-    void clear_request(void);
-    void append_request(std::string &request);
+    std::string &getRequest(void);
+    void clearRequest(void);
+    void appendRequest(std::string &request);
 
     // WEBSERV
-    Webserv *get_webserv(void);
-    void set_webserv(Webserv *webserv);
+    Webserv *getWebserv(void);
+    void setWebserv(Webserv *webserv);
 };

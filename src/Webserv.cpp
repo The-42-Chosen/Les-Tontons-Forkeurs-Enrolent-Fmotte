@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/20 16:45:45 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/22 11:30:59 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,45 +145,52 @@ void Webserv::had_new_client(int server_fd)
     Client *client = new Client;
 
     add_socket_to_event(get_webser_epoll(), clientSocket, client);
-    client->set_client_fd(clientSocket);
-    client->set_server_fd(server_fd);
-    client->set_webserv(this);
+    client->setClientFd(clientSocket);
+    client->setServerFd(server_fd);
+    client->setWebserv(this);
 
-    std::cout << "Nouveau client connecté: fd=" << client->get_client_fd() << "\n";
+    std::cout << "Nouveau client connecté: fd=" << client->getClientFd() << "\n";
+}
+
+void Webserv::deleteClient(Client *client)
+{
+    if (epoll_ctl(get_webser_epoll(), EPOLL_CTL_DEL, client->getClientFd(), NULL) == -1)
+        throw ExecptionErrorFunction("epoll_ctl");
+    close(client->getClientFd());
+    delete client;
+    std::cout << "Client is disconnected\n";
 }
 
 void Webserv::received_message_from_client(Client *client)
 {
     int bytes;
     char buffer[SIZE_BUFFER];
-    if ((bytes = recv(client->get_client_fd(), buffer, sizeof(buffer), 0)) == -1)
+
+    if ((bytes = recv(client->getClientFd(), buffer, sizeof(buffer), 0)) == -1)
         return;
 
     if (bytes == 0)
     {
-        close(client->get_client_fd());
-        delete client;
-        std::cout << "Client is disconnected\n";
-        // remove epoll client
+        deleteClient(client);
         return;
     }
 
     std::string s;
     s.assign(buffer, buffer + bytes);
-    client->append_request(s);
+    client->appendRequest(s);
 
     if (bytes == SIZE_BUFFER)
         return;
 
-    if (client->get_request().find("\r\n\r\n") == std::string::npos)
+    if (client->getRequest().find("\r\n\r\n") == std::string::npos)
         return;
 
-    std::cout << "Final Message from client: " << client->get_request() << "\n";
+    std::cout << "Final Message from client: " << client->getRequest() << "\n";
     HttpRequest request(client);
-    client->clear_request();
+    client->clearRequest();
 
     std::string reply = "Message received\n";
-    send(client->get_client_fd(), reply.c_str(), reply.size(), 0);
+    send(client->getClientFd(), reply.c_str(), reply.size(), 0);
 }
 
 void Webserv::manage_connection(struct epoll_event &events)

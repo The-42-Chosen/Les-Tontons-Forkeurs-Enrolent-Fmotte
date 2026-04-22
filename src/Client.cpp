@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 14:43:09 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/17 17:37:14 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/21 14:33:12 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,57 +44,57 @@ Client &Client::operator=(const Client &other)
 // =====================
 
 // CLIENT-FD
-int Client::get_client_fd(void)
+int Client::getClientFd(void)
 {
     return _client_fd;
 }
-void Client::set_client_fd(int client_fd)
+void Client::setClientFd(int client_fd)
 {
     _client_fd = client_fd;
 }
 
 // SERVER-FD
-int Client::get_server_fd(void)
+int Client::getServerFd(void)
 {
     return _server_fd;
 }
-void Client::set_server_fd(int server_fd)
+void Client::setServerFd(int server_fd)
 {
     _server_fd = server_fd;
 }
 
 // SERVER-PTR
-Server *Client::get_server_ptr(void)
+Server *Client::getServerPtr(void)
 {
     return _server;
 }
-void Client::set_server_ptr(Server *server)
+void Client::setServerPtr(Server *server)
 {
     _server = server;
 }
 
 // REQUEST
-std::string &Client::get_request(void)
+std::string &Client::getRequest(void)
 {
     return _request;
 }
-void Client::clear_request(void)
+void Client::clearRequest(void)
 {
     _request.clear();
 }
-void Client::append_request(std::string &request)
+void Client::appendRequest(std::string &request)
 {
     _request.append(request);
 }
 
-Webserv *Client::get_webserv(void)
+Webserv *Client::getWebserv(void)
 {
     return _webserv;
 }
 
-void Client::set_webserv(Webserv *webserv)
+void Client::setWebserv(Webserv *webserv)
 {
     if (webserv == NULL)
-        throw ExecptionErrorUninitializedVariable("webserv", "Client");
+        throw ExecptionErrorUninitializedVariable("*webserv", "Client");
     _webserv = webserv;
 }
