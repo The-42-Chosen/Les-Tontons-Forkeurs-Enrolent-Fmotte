@@ -15,12 +15,12 @@
 #include "Client.hpp"
 #include "execption.hpp"
 #include "struct.hpp"
-#include <map>
-#include <string>
-#include <vector>
 #include "utils_request.hpp"
+#include <map>
 #include <sstream>
 #include <stdexcept>
+#include <string>
+#include <vector>
 
 class Client;
 class Server;
@@ -35,7 +35,7 @@ class HttpRequest
     Client *_client;
     Server *_server;
     Location *_location;
-    
+
     method_http _method;
     std::string _uri;
     std::string _protocol;
@@ -62,12 +62,12 @@ class HttpRequest
     const std::string &getProtocol() const;
     void setClient(Client *client);
     void setServer(Server *server);
-    Server * getServer(void) const;
+    Server *getServer(void) const;
     void setLocation(Location *location);
-    Location * getLocation(void) const;
+    Location *getLocation(void) const;
     void setRoot(std::string root);
     std::string getRoot(void) const;
-    
+
     // =====================
     // == 	  Member	  ==
     // =====================
@@ -80,7 +80,7 @@ class HttpRequest
     void link_to_server(void);
     Location *findLocation(void);
     void init_root(void);
-    
+
     // =====================
     // ==     Validity    ==
     // =====================
@@ -88,7 +88,7 @@ class HttpRequest
     void isValidProtocol(void);
     void isHostPresentAndValid(void);
     void checkAllowedMethods(void);
-    
+
     // Helper
     static const char *methodToString(method_http method);
 };

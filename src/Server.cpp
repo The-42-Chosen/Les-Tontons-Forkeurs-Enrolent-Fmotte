@@ -187,12 +187,12 @@ void Server::initialisation_server(std::vector<std::string> &tokens)
     tokens.erase(tokens.begin());
     size_t tokens_size = tokens.size();
     size_t new_tokens_size;
-    
+
     while (true)
     {
         if (tokens.empty())
             throw ExecptionMissBrace();
-            
+
         if (tokens[0] == "}")
             break;
 
@@ -210,7 +210,7 @@ void Server::initialisation_server(std::vector<std::string> &tokens)
         new_tokens_size = tokens.size();
         if (tokens_size == new_tokens_size)
             throw ExecptionWrongArgument(tokens[0]);
-            
+
         tokens_size = new_tokens_size;
     }
 

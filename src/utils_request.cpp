@@ -10,25 +10,25 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "utils_request.hpp"
+#include "utils_request.hpp"
 
-int longestPrefixMatch (std::string string1, std::string string2)
+int longestPrefixMatch(std::string string1, std::string string2)
 {
     size_t i;
     int score = 0;
-    
+
     std::string sub_string;
     std::vector<std::string> token_str1;
     std::vector<std::string> token_str2;
-    
+
     std::stringstream iss1(string1);
     while (getline(iss1, sub_string, '/'))
         token_str1.push_back(sub_string);
-    
+
     std::stringstream iss2(string2);
     while (getline(iss2, sub_string, '/'))
         token_str2.push_back(sub_string);
-    
+
     while (!token_str1.empty() || !token_str2.empty())
     {
         const std::string s1 = token_str1.empty() ? "" : token_str1.front();
@@ -47,10 +47,12 @@ int longestPrefixMatch (std::string string1, std::string string2)
         for (size_t i = min_len; i < s2.size(); ++i)
             score += s2[i];
 
-        if (!token_str1.empty()) token_str1.erase(token_str1.begin());
-        if (!token_str2.empty()) token_str2.erase(token_str2.begin());
+        if (!token_str1.empty())
+            token_str1.erase(token_str1.begin());
+        if (!token_str2.empty())
+            token_str2.erase(token_str2.begin());
     }
-    
+
     std::cout << "Score: " << score << "\n";
     return score;
 }

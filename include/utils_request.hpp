@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# pragma once
+#pragma once
 
-# include "struct.hpp"
+#include "struct.hpp"
 
-int longestPrefixMatch (std::string string1, std::string string2);
+int longestPrefixMatch(std::string string1, std::string string2);

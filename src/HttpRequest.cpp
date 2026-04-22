@@ -137,7 +137,7 @@ std::string HttpRequest::getRoot(void) const
 {
     return _path_root;
 }
-    
+
 // =====================
 // == 	Validations   ==
 // =====================
@@ -146,7 +146,7 @@ void HttpRequest::isValidURI(void)
 {
     if (_uri[0] != '/')
         throw std::runtime_error("400 Bad Request");
-        
+
     if (_uri.size() > 8192)
         throw std::runtime_error("414 URI Too Long");
 }
@@ -186,17 +186,17 @@ static method_http parseMethodToken(const std::string &method)
 }
 
 void HttpRequest::checkAllowedMethods(void)
-{   
+{
     std::set<method_http> set_allowed_methods = getLocation()->get_methode_http();
 
     if (set_allowed_methods.size() == 0)
         return;
-        
+
     std::set<method_http>::iterator it = set_allowed_methods.begin();
     for (; it != set_allowed_methods.end(); ++it)
     {
         if (*it == _method)
-            return ;
+            return;
     }
     throw std::runtime_error("405 Method Not Allowed");
 }
@@ -228,7 +228,7 @@ void HttpRequest::parseHeaderMethod(const std::string &headerContent)
         throw std::runtime_error("400 Bad Request");
 
     _method = parseMethodToken(method);
-    
+
     isValidURI();
     isValidProtocol();
 }
@@ -307,7 +307,7 @@ void HttpRequest::interpretation(void)
 {
     Location *location;
     std::string path_root;
-    
+
     std::cout << "Method : |" << this->getMethod() << "| - Uri |" << this->getUri() << "| - Protocol |"
               << this->getProtocol() << "|" << std::endl;
 
@@ -316,34 +316,33 @@ void HttpRequest::interpretation(void)
 
     link_to_server();
     std::cout << "\nServer select: " << _client->getServerPtr()->get_name_server(0) << "\n";
-    
+
     if (_client->getServerPtr()->get_return()->code != 0)
     {
         std::cout << "Server close\n";
         return; // Server Close
     }
 
+    // Init varible for execution
 
-    //Init varible for execution
-    
-    //Implemente function
+    // Implemente function
     location = findLocation();
     if (location == NULL)
         std::cout << "No location look to index\n";
 
     else
-    {   
+    {
         setLocation(location);
-        std::cout << "Location: "<< location->get_name() << "\n";   
-        
+        std::cout << "Location: " << location->get_name() << "\n";
+
         if (location->get_return()->code != 0)
         {
             std::cout << "Server close\n";
             return; // Server Close
         }
-        checkAllowedMethods(); 
+        checkAllowedMethods();
     }
-    
+
     init_root();
     std::cout << "root: " << getRoot() << "\n";
 }
@@ -380,11 +379,11 @@ Location *HttpRequest::findLocation(void)
     int best_score = 100000;
     int score;
     int i = 0;
-    
+
     while ((location = _client->getServerPtr()->get_location(i)) != NULL)
     {
         score = longestPrefixMatch(_uri, location->get_name());
-        
+
         if (score < best_score)
         {
             best_location = location;
