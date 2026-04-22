@@ -450,7 +450,6 @@ void HttpRequest::parseChunkedBody(const std::string &headerContent)
     }
 }
 
-
 void HttpRequest::link_to_server(void)
 {
     int fd_server = _client->getServerFd();
