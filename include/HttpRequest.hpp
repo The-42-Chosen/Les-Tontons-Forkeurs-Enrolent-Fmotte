@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/21 14:16:55 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/22 13:03:40 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,8 @@ class HttpRequest
     void parseHeader(const std::string &headerContent);
     void parseHeaderMethod(const std::string &headerContent);
     void parseBody(const std::string &headerContent);
+	void parseChunkedBody(const std::string &headerContent);
+	void appendBodyBytes(const std::string &data);
 
     void interpretation(void);
     void bodyInterpretation(void);
