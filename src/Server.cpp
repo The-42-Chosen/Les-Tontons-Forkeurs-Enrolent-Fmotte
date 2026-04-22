@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:50:27 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/22 09:39:19 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/22 20:58:01 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,12 +187,10 @@ void Server::initialisation_server(std::vector<std::string> &tokens)
     tokens.erase(tokens.begin());
     size_t tokens_size = tokens.size();
     size_t new_tokens_size;
-
     while (true)
     {
         if (tokens.empty())
             throw ExecptionMissBrace();
-
         if (tokens[0] == "}")
             break;
 
@@ -210,7 +208,6 @@ void Server::initialisation_server(std::vector<std::string> &tokens)
         new_tokens_size = tokens.size();
         if (tokens_size == new_tokens_size)
             throw ExecptionWrongArgument(tokens[0]);
-
         tokens_size = new_tokens_size;
     }
 
