@@ -80,10 +80,10 @@ void HttpRequest::parseChunkedBody(const std::string &headerContent)
         if (headerContent.substr(current, 2) != "\r\n")
             throw std::runtime_error("400 Bad Request");
         current += 2;
-    }   
+    }
 }
 
-std::string toLowerString(const std::string& str)
+std::string toLowerString(const std::string &str)
 {
     std::string result = str;
     for (std::string::size_type i = 0; i < result.size(); ++i)
@@ -323,7 +323,7 @@ void HttpRequest::parseBody(const std::string &headerContent)
 
     std::map<std::string, std::string>::const_iterator contentLengthIt = _headers.find("content-length");
     std::map<std::string, std::string>::const_iterator transferEncodingIt = _headers.find("transfer-encoding");
-    std::map<std::string, std::string>::const_iterator connectionIt = _headers.find("connection"); 
+    std::map<std::string, std::string>::const_iterator connectionIt = _headers.find("connection");
 
     if (connectionIt != _headers.end() && connectionIt->second == "keep-alive")
         _keepAlive = true;
@@ -333,7 +333,8 @@ void HttpRequest::parseBody(const std::string &headerContent)
         if (transferEncodingIt->second != "chunked")
             throw std::runtime_error("501 Not Implemented");
 
-		std::cout << GREEN << "Body treatment method : " << transferEncodingIt->first << " | " << transferEncodingIt->second << RESET << std::endl;
+        std::cout << GREEN << "Body treatment method : " << transferEncodingIt->first << " | "
+                  << transferEncodingIt->second << RESET << std::endl;
         parseChunkedBody(headerContent);
         _contentLength = _body.size();
         return;
@@ -353,7 +354,8 @@ void HttpRequest::parseBody(const std::string &headerContent)
         if (bodyStart + _contentLength > headerContent.size())
             throw std::runtime_error("400 Bad Request");
 
-		std::cout << GREEN << "Body treatment method : " << contentLengthIt->first << " | " << contentLengthIt->second << RESET << std::endl;
+        std::cout << GREEN << "Body treatment method : " << contentLengthIt->first << " | " << contentLengthIt->second
+                  << RESET << std::endl;
         appendBodyBytes(headerContent.substr(bodyStart, _contentLength));
         return;
     }
@@ -364,7 +366,7 @@ void HttpRequest::parseBody(const std::string &headerContent)
 
 void HttpRequest::parseHttpRequest(const std::string &headerContent)
 {
-	//std::string headerLower = toLowerString(headerContent);
+    // std::string headerLower = toLowerString(headerContent);
     parseHeaderMethod(headerContent);
     parseHeader(headerContent);
     parseBody(headerContent);
@@ -384,10 +386,10 @@ void HttpRequest::interpretation(void)
 
 void HttpRequest::bodyInterpretation(void)
 {
-	std::cout << YELLOW << "_body content |";
+    std::cout << YELLOW << "_body content |";
     for (std::vector<__uint8_t>::const_iterator it = _body.begin(); it != _body.end(); it++)
-		std::cout << *it;
-	std::cout << "|" << RESET << std::endl;
+        std::cout << *it;
+    std::cout << "|" << RESET << std::endl;
 }
 
 void HttpRequest::link_to_server(void)
