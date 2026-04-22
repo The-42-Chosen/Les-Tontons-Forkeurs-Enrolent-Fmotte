@@ -6,14 +6,11 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/20 19:11:03 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/22 11:20:23 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
-
-#include <sstream>
-#include <stdexcept>
 
 // =====================
 // == Canonical Form  ==
@@ -28,7 +25,7 @@ HttpRequest::HttpRequest(Client *client) : _keepAlive(false), _contentLength(0)
     try
     {
         setClient(client);
-        parseHttpRequest(client->get_request());
+        parseHttpRequest(client->getRequest());
         interpretation();
     }
     catch (const std::exception &e)
@@ -85,7 +82,7 @@ const std::string &HttpRequest::getProtocol() const
 void HttpRequest::setClient(Client *client)
 {
     if (client == NULL)
-        throw ExecptionErrorUninitializedVariable("client", "HttpRequest");
+        throw ExecptionErrorUninitializedVariable("*client", "HttpRequest");
     else
         _client = client;
 }
@@ -106,49 +103,73 @@ const char *HttpRequest::methodToString(method_http method)
     return ("UNKNOWN");
 }
 
+void HttpRequest::setServer(Server *server)
+{
+    if (server == NULL)
+        throw ExecptionErrorUninitializedVariable("*server", "HttpRequest");
+    _server = server;
+}
+Server *HttpRequest::getServer(void) const
+{
+    return _server;
+}
+
+void HttpRequest::setLocation(Location *location)
+{
+    if (location == NULL)
+        throw ExecptionErrorUninitializedVariable("*location", "HttpRequest");
+    _location = location;
+}
+
+Location *HttpRequest::getLocation(void) const
+{
+    return _location;
+}
+
+void HttpRequest::setRoot(std::string root)
+{
+    if (root == "")
+        throw ExecptionErrorUninitializedVariable("root", "HttpRequest");
+    _path_root = root;
+}
+
+std::string HttpRequest::getRoot(void) const
+{
+    return _path_root;
+}
+    
 // =====================
 // == 	Validations   ==
 // =====================
 
-bool HttpRequest::isValidURI(void)
+void HttpRequest::isValidURI(void)
 {
     if (_uri[0] != '/')
-    {
         throw std::runtime_error("400 Bad Request");
-        return (false);
-    }
+        
     if (_uri.size() > 8192)
-    {
         throw std::runtime_error("414 URI Too Long");
-        return (false);
-    }
-    return (true);
 }
 
-bool HttpRequest::isValidProtocol(void)
+void HttpRequest::isValidProtocol(void)
 {
     if (_protocol != "HTTP/1.1")
-    {
         throw std::runtime_error("505 HTTP Version Not Supported");
-        return (false);
-    }
-    return (true);
 }
 
-bool HttpRequest::isHostPresentAndValid(void)
+void HttpRequest::isHostPresentAndValid(void)
 {
     for (std::map<std::string, std::string>::const_iterator it = _headers.begin(); it != _headers.end(); it++)
     {
         if (it->first == "Host")
         {
             if (!it->second.empty())
-                return (true);
+                return;
             else
                 throw std::runtime_error("400 Bad Request");
         }
     }
     throw std::runtime_error("400 Bad Request");
-    return (false);
 }
 
 static method_http parseMethodToken(const std::string &method)
@@ -162,6 +183,22 @@ static method_http parseMethodToken(const std::string &method)
     if (method == "HEAD")
         return (HEAD);
     throw std::runtime_error("501 Not Implemented");
+}
+
+void HttpRequest::checkAllowedMethods(void)
+{   
+    std::set<method_http> set_allowed_methods = getLocation()->get_methode_http();
+
+    if (set_allowed_methods.size() == 0)
+        return;
+        
+    std::set<method_http>::iterator it = set_allowed_methods.begin();
+    for (; it != set_allowed_methods.end(); ++it)
+    {
+        if (*it == _method)
+            return ;
+    }
+    throw std::runtime_error("405 Method Not Allowed");
 }
 
 // =====================
@@ -191,10 +228,9 @@ void HttpRequest::parseHeaderMethod(const std::string &headerContent)
         throw std::runtime_error("400 Bad Request");
 
     _method = parseMethodToken(method);
-    if (!isValidURI())
-        throw std::runtime_error("400 Bad Request");
-    if (!isValidProtocol())
-        throw std::runtime_error("505 HTTP Version Not Supported");
+    
+    isValidURI();
+    isValidProtocol();
 }
 
 // _headers
@@ -243,8 +279,7 @@ void HttpRequest::parseHeader(const std::string &headerContent)
                 _keepAlive = true; // _keepAlive
         }
         current = next + 2;
-        if (!isHostPresentAndValid())
-            throw std::runtime_error("400 Bad Request");
+        isHostPresentAndValid();
     }
 }
 
@@ -270,6 +305,9 @@ void HttpRequest::parseHttpRequest(const std::string &headerContent)
 
 void HttpRequest::interpretation(void)
 {
+    Location *location;
+    std::string path_root;
+    
     std::cout << "Method : |" << this->getMethod() << "| - Uri |" << this->getUri() << "| - Protocol |"
               << this->getProtocol() << "|" << std::endl;
 
@@ -277,19 +315,44 @@ void HttpRequest::interpretation(void)
         std::cout << it->first << " | " << it->second << std::endl;
 
     link_to_server();
-    std::cout << "Test: " << _client->get_server_ptr()->get_name_server(0) << "\n";
-    if (_client->get_server_ptr()->get_return()->code != 0)
+    std::cout << "\nServer select: " << _client->getServerPtr()->get_name_server(0) << "\n";
+    
+    if (_client->getServerPtr()->get_return()->code != 0)
     {
-        // Server Close
-        return;
+        std::cout << "Server close\n";
+        return; // Server Close
     }
+
+
+    //Init varible for execution
+    
+    //Implemente function
+    location = findLocation();
+    if (location == NULL)
+        std::cout << "No location look to index\n";
+
+    else
+    {   
+        setLocation(location);
+        std::cout << "Location: "<< location->get_name() << "\n";   
+        
+        if (location->get_return()->code != 0)
+        {
+            std::cout << "Server close\n";
+            return; // Server Close
+        }
+        checkAllowedMethods(); 
+    }
+    
+    init_root();
+    std::cout << "root: " << getRoot() << "\n";
 }
 
 void HttpRequest::link_to_server(void)
 {
-    int fd_server = _client->get_server_fd();
+    int fd_server = _client->getServerFd();
     std::set<Server *>::iterator it;
-    std::set<Server *> set_server = _client->get_webserv()->get_map().find(fd_server)->second;
+    std::set<Server *> set_server = _client->getWebserv()->get_map().find(fd_server)->second;
 
     for (it = set_server.begin(); it != set_server.end(); ++it)
     {
@@ -300,10 +363,42 @@ void HttpRequest::link_to_server(void)
 
             if ((*it)->get_name_server(i) == _headers.find("Host")->second)
             {
-                _client->set_server_ptr(*it);
+                setServer(*it);
+                _client->setServerPtr(*it);
                 return;
             }
         }
     }
-    _client->set_server_ptr(*(set_server.begin()));
+    setServer(*(set_server.begin()));
+    _client->setServerPtr(*(set_server.begin()));
+}
+
+Location *HttpRequest::findLocation(void)
+{
+    Location *location;
+    Location *best_location = NULL;
+    int best_score = 100000;
+    int score;
+    int i = 0;
+    
+    while ((location = _client->getServerPtr()->get_location(i)) != NULL)
+    {
+        score = longestPrefixMatch(_uri, location->get_name());
+        
+        if (score < best_score)
+        {
+            best_location = location;
+            best_score = score;
+        }
+        ++i;
+    }
+    return best_location;
+}
+
+void HttpRequest::init_root(void)
+{
+    if (getLocation()->getRoot() != "")
+        setRoot(getLocation()->getRoot());
+    else
+        setRoot(getServer()->getRoot());
 }

@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/20 16:44:36 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/21 16:35:55 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,12 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "utils_request.hpp"
+#include <sstream>
+#include <stdexcept>
 
 class Client;
+class Server;
 
 class HttpRequest
 {
@@ -29,6 +33,9 @@ class HttpRequest
     // =====================
     HttpRequest();
     Client *_client;
+    Server *_server;
+    Location *_location;
+    
     method_http _method;
     std::string _uri;
     std::string _protocol;
@@ -36,6 +43,7 @@ class HttpRequest
     std::vector<__uint8_t> _body;
     bool _keepAlive;
     size_t _contentLength;
+    std::string _path_root;
 
   public:
     // =====================
@@ -53,7 +61,13 @@ class HttpRequest
     const std::string &getUri() const;
     const std::string &getProtocol() const;
     void setClient(Client *client);
-
+    void setServer(Server *server);
+    Server * getServer(void) const;
+    void setLocation(Location *location);
+    Location * getLocation(void) const;
+    void setRoot(std::string root);
+    std::string getRoot(void) const;
+    
     // =====================
     // == 	  Member	  ==
     // =====================
@@ -64,14 +78,17 @@ class HttpRequest
 
     void interpretation(void);
     void link_to_server(void);
-
+    Location *findLocation(void);
+    void init_root(void);
+    
     // =====================
     // ==     Validity    ==
     // =====================
-    bool isValidURI(void);
-    bool isValidProtocol(void);
-    bool isHostPresentAndValid(void);
-
+    void isValidURI(void);
+    void isValidProtocol(void);
+    void isHostPresentAndValid(void);
+    void checkAllowedMethods(void);
+    
     // Helper
     static const char *methodToString(method_http method);
 };
