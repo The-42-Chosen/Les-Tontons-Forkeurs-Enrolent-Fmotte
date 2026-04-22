@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_request.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 13:53:46 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/22 17:24:26 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/22 21:07:09 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@ int computeRemainingCost(const std::string &string, size_t min_len, int score)
     for (size_t i = min_len; i < string.size(); ++i)
     {
         if (islower(string[i]))
-            score += std::abs(string[i] - 'a');
+            score += std::abs(string[i] - 'a') + 1;
         else if (isupper(string[i]))
-            score += std::abs(string[i] - 'A');
+            score += std::abs(string[i] - 'A') + 1;
         else
             score += string[i];
     }
