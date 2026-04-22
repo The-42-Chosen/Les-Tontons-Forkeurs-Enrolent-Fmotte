@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/21 16:35:55 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/22 20:58:53 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,9 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include "utils_request.hpp"
+#include <sstream>
+#include <stdexcept>
 
 class Client;
 class Server;
@@ -35,7 +38,6 @@ class HttpRequest
     Client *_client;
     Server *_server;
     Location *_location;
-
     method_http _method;
     std::string _uri;
     std::string _protocol;

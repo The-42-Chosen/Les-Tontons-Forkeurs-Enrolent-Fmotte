@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/22 20:56:44 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/22 21:00:50 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,7 +217,6 @@ std::string HttpRequest::getRoot(void) const
 {
     return _path_root;
 }
-
 // =====================
 // == 	Validations   ==
 // =====================
@@ -226,7 +225,6 @@ void HttpRequest::isValidURI(void)
 {
     if (_uri[0] != '/')
         throw std::runtime_error("400 Bad Request");
-
     if (_uri.size() > 8192)
         throw std::runtime_error("414 URI Too Long");
 }
@@ -271,7 +269,6 @@ void HttpRequest::checkAllowedMethods(void)
 
     if (set_allowed_methods.size() == 0)
         return;
-
     std::set<method_http>::iterator it = set_allowed_methods.begin();
     for (; it != set_allowed_methods.end(); ++it)
     {
@@ -308,7 +305,6 @@ void HttpRequest::parseHeaderMethod(const std::string &headerContent)
         throw std::runtime_error("400 Bad Request");
 
     _method = parseMethodToken(method);
-
     isValidURI();
     isValidProtocol();
 }
@@ -404,7 +400,6 @@ void HttpRequest::parseBody(const std::string &headerContent)
 
 void HttpRequest::parseHttpRequest(const std::string &headerContent)
 {
-    // std::string headerLower = toLowerString(headerContent);
     parseHeaderMethod(headerContent);
     parseHeader(headerContent);
     parseBody(headerContent);
@@ -414,7 +409,6 @@ void HttpRequest::interpretation(void)
 {
     Location *location;
     std::string path_root;
-
     std::cout << "Method : |" << this->getMethod() << "| - Uri |" << this->getUri() << "| - Protocol |"
               << this->getProtocol() << "|" << std::endl;
 
@@ -423,7 +417,6 @@ void HttpRequest::interpretation(void)
 
     link_to_server();
     std::cout << "\nServer select: " << _client->getServerPtr()->get_name_server(0) << "\n";
-
     if (_client->getServerPtr()->get_return()->code != 0)
     {
         std::cout << "Server close\n";
