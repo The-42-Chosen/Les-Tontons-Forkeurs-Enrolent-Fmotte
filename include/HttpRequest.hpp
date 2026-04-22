@@ -75,6 +75,8 @@ class HttpRequest
     void parseHeader(const std::string &headerContent);
     void parseHeaderMethod(const std::string &headerContent);
     void parseBody(const std::string &headerContent);
+	void parseChunkedBody(const std::string &headerContent);
+	void appendBodyBytes(const std::string &data);
 
     void interpretation(void);
     void bodyInterpretation(void);

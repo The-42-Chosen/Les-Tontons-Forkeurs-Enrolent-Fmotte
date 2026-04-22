@@ -6,13 +6,14 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/22 20:53:08 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/22 20:54:05 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
 #include "colors.hpp"
 
+#include <iostream>
 #include <sstream>
 #include <stdexcept>
 
@@ -45,13 +46,13 @@ static size_t parseChunkSize(const std::string &line)
     return (chunkSize);
 }
 
-static void appendBodyBytes(std::vector<__uint8_t> &body, const std::string &data)
+void HttpRequest::appendBodyBytes(const std::string &data)
 {
     for (std::string::size_type i = 0; i < data.size(); ++i)
-        body.push_back(static_cast<__uint8_t>(data[i]));
+        _body.push_back(static_cast<__uint8_t>(data[i]));
 }
 
-static void parseChunkedBody(const std::string &headerContent, std::vector<__uint8_t> &body)
+void HttpRequest::parseChunkedBody(const std::string &headerContent)
 {
     std::string::size_type current = headerContent.find("\r\n\r\n");
     if (current == std::string::npos)
@@ -73,13 +74,21 @@ static void parseChunkedBody(const std::string &headerContent, std::vector<__uin
         if (current + chunkSize > headerContent.size())
             throw std::runtime_error("400 Bad Request");
 
-        appendBodyBytes(body, headerContent.substr(current, chunkSize));
+        appendBodyBytes(headerContent.substr(current, chunkSize));
         current += chunkSize;
 
         if (headerContent.substr(current, 2) != "\r\n")
             throw std::runtime_error("400 Bad Request");
         current += 2;
-    }
+    }   
+}
+
+std::string toLowerString(const std::string& str)
+{
+    std::string result = str;
+    for (std::string::size_type i = 0; i < result.size(); ++i)
+        result[i] = static_cast<char>(std::tolower(static_cast<unsigned char>(result[i])));
+    return result;
 }
 
 // =====================
@@ -232,7 +241,7 @@ void HttpRequest::isHostPresentAndValid(void)
 {
     for (std::map<std::string, std::string>::const_iterator it = _headers.begin(); it != _headers.end(); it++)
     {
-        if (it->first == "Host")
+        if (it->first == "host")
         {
             if (!it->second.empty())
                 return;
@@ -338,24 +347,7 @@ void HttpRequest::parseHeader(const std::string &headerContent)
             else
                 value.clear();
 
-            _headers[key] = value;
-            // _contentLength
-            // if (key == "Content-Length")
-            // {
-            //     std::stringstream ssLength(value);
-            //     if (!(ssLength >> _contentLength))
-            //         throw std::runtime_error("400 Bad Request");
-            // 	parseBody(headerContent);
-            // }
-            // if (key == "Transfer-Encoding")
-            // {
-            // 	if (value == "chuncked")
-            // 	{
-            // 		parseBody(headerContent);
-            // 	}
-            // }
-            // else if (key == "Connection" && value == "keep-alive")
-            //     _keepAlive = true; // _keepAlive
+            _headers[toLowerString(key)] = toLowerString(value);
         }
         current = next + 2;
         isHostPresentAndValid();
@@ -367,9 +359,9 @@ void HttpRequest::parseBody(const std::string &headerContent)
 {
     _body.clear();
 
-    std::map<std::string, std::string>::const_iterator contentLengthIt = _headers.find("Content-Length");
-    std::map<std::string, std::string>::const_iterator transferEncodingIt = _headers.find("Transfer-Encoding");
-    std::map<std::string, std::string>::const_iterator connectionIt = _headers.find("Connection");
+    std::map<std::string, std::string>::const_iterator contentLengthIt = _headers.find("content-length");
+    std::map<std::string, std::string>::const_iterator transferEncodingIt = _headers.find("transfer-encoding");
+    std::map<std::string, std::string>::const_iterator connectionIt = _headers.find("connection"); 
 
     if (connectionIt != _headers.end() && connectionIt->second == "keep-alive")
         _keepAlive = true;
@@ -379,7 +371,8 @@ void HttpRequest::parseBody(const std::string &headerContent)
         if (transferEncodingIt->second != "chunked")
             throw std::runtime_error("501 Not Implemented");
 
-        parseChunkedBody(headerContent, _body);
+		std::cout << GREEN << "Body treatment method : " << transferEncodingIt->first << " | " << transferEncodingIt->second << RESET << std::endl;
+        parseChunkedBody(headerContent);
         _contentLength = _body.size();
         return;
     }
@@ -398,7 +391,8 @@ void HttpRequest::parseBody(const std::string &headerContent)
         if (bodyStart + _contentLength > headerContent.size())
             throw std::runtime_error("400 Bad Request");
 
-        appendBodyBytes(_body, headerContent.substr(bodyStart, _contentLength));
+		std::cout << GREEN << "Body treatment method : " << contentLengthIt->first << " | " << contentLengthIt->second << RESET << std::endl;
+        appendBodyBytes(headerContent.substr(bodyStart, _contentLength));
         return;
     }
 
@@ -408,6 +402,7 @@ void HttpRequest::parseBody(const std::string &headerContent)
 
 void HttpRequest::parseHttpRequest(const std::string &headerContent)
 {
+	//std::string headerLower = toLowerString(headerContent);
     parseHeaderMethod(headerContent);
     parseHeader(headerContent);
     parseBody(headerContent);
@@ -459,8 +454,10 @@ void HttpRequest::interpretation(void)
 
 void HttpRequest::bodyInterpretation(void)
 {
+	std::cout << YELLOW << "_body content |";
     for (std::vector<__uint8_t>::const_iterator it = _body.begin(); it != _body.end(); it++)
-        std::cout << *it << std::endl;
+		std::cout << *it;
+	std::cout << "|" << RESET << std::endl;
 }
 
 void HttpRequest::link_to_server(void)
@@ -476,7 +473,11 @@ void HttpRequest::link_to_server(void)
             if ((*it)->get_name_server(i) == "")
                 break;
 
-            if ((*it)->get_name_server(i) == _headers.find("Host")->second)
+            std::cout << "\n";
+            std::cout << "Name: " << (*it)->get_name_server(i) << "\n";
+            std::cout << "HOST: " << _headers.find("host")->second << "\n";
+
+            if ((*it)->get_name_server(i) == _headers.find("host")->second)
             {
                 setServer(*it);
                 _client->setServerPtr(*it);
