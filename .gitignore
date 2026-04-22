@@ -8,3 +8,7 @@ Webserv
 *.d
 
 .vscode
+
+# nvim setup
+compile_commands.json
+autoimport.db
