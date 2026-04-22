@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+         #
+#    By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/11 16:36:16 by fmotte            #+#    #+#              #
-#    Updated: 2026/04/15 20:52:38 by erpascua         ###   ########.fr        #
+#    Updated: 2026/04/21 13:54:57 by fmotte           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,6 +34,7 @@ CLASS_FILE =	Webserv \
 				utils_connection \
 				utils_duplicate \
 				utils_parsing \
+				utils_request \
 				execption \
 				struct \
 
