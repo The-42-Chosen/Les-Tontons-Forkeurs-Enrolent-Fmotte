@@ -12,7 +12,6 @@
 
 #include "utils_request.hpp"
 
-
 int computeRemainingCost(const std::string &string, size_t min_len, int score)
 {
     for (size_t i = min_len; i < string.size(); ++i)
@@ -20,7 +19,7 @@ int computeRemainingCost(const std::string &string, size_t min_len, int score)
         if (islower(string[i]))
             score += std::abs(string[i] - 'a');
         else if (isupper(string[i]))
-            score += std::abs(string[i] - 'A'); 
+            score += std::abs(string[i] - 'A');
         else
             score += string[i];
     }
@@ -30,7 +29,7 @@ int computeRemainingCost(const std::string &string, size_t min_len, int score)
 int longestPrefixMatch(std::string uri, std::string location)
 {
     int score = 0;
-    
+
     std::string sub_string;
     std::vector<std::string> token_str1;
     std::vector<std::string> token_str2;
@@ -46,15 +45,15 @@ int longestPrefixMatch(std::string uri, std::string location)
     size_t i = 0, j = 0;
     while (i < token_str1.size() || j < token_str2.size())
     {
-        if (token_str1.size() == i +1 && token_str1[i].find('.') != std::string::npos)
+        if (token_str1.size() == i + 1 && token_str1[i].find('.') != std::string::npos)
         {
             ++i;
             continue;
         }
-            
-        const std::string& s1 = (i < token_str1.size()) ? token_str1[i] : "";
-        const std::string& s2 = (j < token_str2.size()) ? token_str2[j] : "";
- 
+
+        const std::string &s1 = (i < token_str1.size()) ? token_str1[i] : "";
+        const std::string &s2 = (j < token_str2.size()) ? token_str2[j] : "";
+
         size_t min_len = std::min(s1.size(), s2.size());
 
         for (size_t i = 0; i < min_len; ++i)
@@ -62,7 +61,7 @@ int longestPrefixMatch(std::string uri, std::string location)
 
         score += computeRemainingCost(s1, min_len, score);
         score += computeRemainingCost(s2, min_len, score);
-            
+
         ++i;
         ++j;
     }
