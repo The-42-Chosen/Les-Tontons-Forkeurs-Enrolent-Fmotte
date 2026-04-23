@@ -90,7 +90,7 @@ git-setup:
 	@sh doc/scripts/setup-git-hooks.sh
 
 serv: re
-	./$(NAME) doc/parsing_tests/valid_minimal.conf
+	./$(NAME) doc/config_file
 
 nc:
 	nc -C 127.0.0.1 8080
