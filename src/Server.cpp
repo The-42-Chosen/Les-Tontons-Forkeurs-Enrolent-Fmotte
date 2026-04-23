@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:50:27 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/22 20:58:01 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/23 13:35:39 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,13 @@
 
 Server::Server()
     : _webser(0), _listens(0), _name_servers(0), _locations(0), _root(""), _index_files(0), _auto_index(false),
-      _error_page(0), _client_max_body_size(DEFAULT_CLIENT_MAX_BODY_SIZE), _ret(s_return())
+      _error_page(0), _client_max_body_size(DEFAULT_CLIENT_MAX_BODY_SIZE), _ret(HttpReturn())
 {
 }
 
 Server::Server(const Webserv *webser)
     : _webser(webser), _listens(0), _name_servers(0), _locations(0), _root(""), _index_files(0), _auto_index(false),
-      _error_page(0), _client_max_body_size(DEFAULT_CLIENT_MAX_BODY_SIZE), _ret(s_return())
+      _error_page(0), _client_max_body_size(DEFAULT_CLIENT_MAX_BODY_SIZE), _ret(HttpReturn())
 {
 }
 
@@ -58,12 +58,12 @@ Server &Server::operator=(const Server &other)
 // =====================
 
 // NAME-SERVERS
-void Server::add_name_server(std::string name)
+void Server::addNameServer(std::string name)
 {
     _name_servers.push_back(name);
 }
 
-std::string Server::get_name_server(size_t i)
+std::string Server::getNameServer(size_t i)
 {
     if (i >= _name_servers.size())
         return "";
@@ -72,12 +72,12 @@ std::string Server::get_name_server(size_t i)
 }
 
 // LISTEN
-void Server::add_listen(s_listen listen)
+void Server::addListen(Listen listen)
 {
     _listens.push_back(listen);
 }
 
-s_listen *Server::get_listen(size_t i)
+Listen *Server::getListen(size_t i)
 {
     if (i >= _listens.size())
         return NULL;
@@ -86,11 +86,11 @@ s_listen *Server::get_listen(size_t i)
 }
 
 // LOCATION
-void Server::add_location(Location &location)
+void Server::addLocation(Location &location)
 {
     _locations.push_back(location);
 }
-Location *Server::get_location(size_t i)
+Location *Server::getLocation(size_t i)
 {
     if (i < _locations.size())
         return &_locations[i];
@@ -109,11 +109,11 @@ std::string Server::getRoot(void)
 }
 
 // INDEX
-void Server::add_index(std::string index)
+void Server::addIndex(std::string index)
 {
     _index_files.push_back(index);
 }
-std::string Server::get_index(size_t i)
+std::string Server::getIndex(size_t i)
 {
     if (i < _index_files.size())
         return _index_files[i];
@@ -122,22 +122,22 @@ std::string Server::get_index(size_t i)
 }
 
 // AUTO-INDEX
-void Server::set_auto_index(bool auto_index)
+void Server::setAutoIndex(bool auto_index)
 {
     _auto_index = auto_index;
 }
-bool Server::get_auto_index(void)
+bool Server::getAutoIndex(void)
 {
     return _auto_index;
 }
 
 // ERROR-PAGE
-void Server::add_error_page(s_return error_page)
+void Server::addErrorPage(HttpReturn error_page)
 {
     _error_page.push_back(error_page);
 }
 
-s_return *Server::get_error_page(size_t i)
+HttpReturn *Server::getErrorPage(size_t i)
 {
     if (i < _error_page.size())
         return &_error_page[i];
@@ -146,21 +146,21 @@ s_return *Server::get_error_page(size_t i)
 }
 
 // CLIENT-MAX-BODY-SIZE
-void Server::set_client_max_body_size(unsigned int client_max_body_size)
+void Server::setClientMaxBodySize(unsigned int client_max_body_size)
 {
     _client_max_body_size = client_max_body_size;
 }
-unsigned int Server::get_client_max_body_size(void)
+unsigned int Server::getClientMaxBodySize(void)
 {
     return _client_max_body_size;
 }
 
 // RETURN
-void Server::set_return(s_return ret)
+void Server::setReturn(HttpReturn ret)
 {
     _ret = ret;
 }
-s_return *Server::get_return(void)
+HttpReturn *Server::getReturn(void)
 {
     return &_ret;
 }
@@ -171,7 +171,7 @@ s_return *Server::get_return(void)
 
 // bool Server::initialisatio
 
-void Server::initialisation_server(std::vector<std::string> &tokens)
+void Server::initializeServer(std::vector<std::string> &tokens)
 {
     if (tokens.empty())
         throw ExecptionMissBrace();
@@ -194,15 +194,15 @@ void Server::initialisation_server(std::vector<std::string> &tokens)
         if (tokens[0] == "}")
             break;
 
-        initialisation_listens(tokens);
-        initialisation_name_servers(tokens);
-        initialisation_location(tokens);
-        initialisation_root(tokens);
-        initialisation_index_files(tokens);
-        initialisation_auto_index(tokens);
-        initialisation_error_page(tokens);
-        initialisation_client_max_body_size(tokens);
-        initialisation_return(tokens);
+        initializeListens(tokens);
+        initializeNameServers(tokens);
+        initializeLocation(tokens);
+        initializeRoot(tokens);
+        initializeIndexFiles(tokens);
+        initializeAutoIndex(tokens);
+        initializeErrorPage(tokens);
+        initializeClientMaxBodySize(tokens);
+        initializeReturn(tokens);
 
         // Security to avoid inifite loop
         new_tokens_size = tokens.size();
@@ -214,7 +214,7 @@ void Server::initialisation_server(std::vector<std::string> &tokens)
     tokens.erase(tokens.begin());
 }
 
-void Server::initialisation_check()
+void Server::initializeCheck()
 {
     if (_listens.size() == 0)
         throw ExecptionMissElement("listen");
@@ -226,7 +226,7 @@ void Server::initialisation_check()
         throw ExecptionMissElement("root");
 }
 
-void Server::initialisation_name_servers(std::vector<std::string> &tokens)
+void Server::initializeNameServers(std::vector<std::string> &tokens)
 {
     if (tokens[0] == "server_name")
     {
@@ -234,22 +234,22 @@ void Server::initialisation_name_servers(std::vector<std::string> &tokens)
 
         while (tokens[0] != ";")
         {
-            add_name_server(tokens[0]);
+            addNameServer(tokens[0]);
             tokens.erase(tokens.begin());
         }
         tokens.erase(tokens.begin());
     }
 }
 
-void Server::initialisation_listens(std::vector<std::string> &tokens)
+void Server::initializeListens(std::vector<std::string> &tokens)
 {
     char sep = ':';
 
     std::string sub_string;
-    s_listen listen;
+    Listen listenAddr;
 
-    listen.ip = DEFAULT_IP;
-    listen.port = DEFAULT_PORT;
+    listenAddr.ip = DEFAULT_IP;
+    listenAddr.port = DEFAULT_PORT;
 
     if (tokens[0] == "listen")
     {
@@ -258,7 +258,7 @@ void Server::initialisation_listens(std::vector<std::string> &tokens)
         if (tokens[0] == ";")
         {
             tokens.erase(tokens.begin());
-            add_listen(listen);
+            addListen(listenAddr);
             return;
         }
         std::stringstream iss(tokens[0]);
@@ -266,12 +266,12 @@ void Server::initialisation_listens(std::vector<std::string> &tokens)
 
         while (getline(iss, sub_string, sep))
         {
-            if (get_nb_occurence(sub_string, '.') == 3)
-                listen.ip = sub_string;
+            if (countOccurrences(sub_string, '.') == 3)
+                listenAddr.ip = sub_string;
             else
             {
                 std::istringstream convert(sub_string);
-                convert >> listen.port;
+                convert >> listenAddr.port;
 
                 if (convert.fail())
                     throw ExecptionFailConvertion(sub_string);
@@ -282,30 +282,30 @@ void Server::initialisation_listens(std::vector<std::string> &tokens)
             throw ExecptionMissSemiColon();
 
         tokens.erase(tokens.begin());
-        add_listen(listen);
+        addListen(listenAddr);
     }
 }
 
-void Server::initialisation_location(std::vector<std::string> &tokens)
+void Server::initializeLocation(std::vector<std::string> &tokens)
 {
     if (tokens[0] == "location")
     {
         tokens.erase(tokens.begin());
 
         Location location;
-        location.init_location(tokens);
-        add_location(location);
+        location.initializeLocation(tokens);
+        addLocation(location);
     }
 }
 
-void Server::initialisation_index_files(std::vector<std::string> &tokens)
+void Server::initializeIndexFiles(std::vector<std::string> &tokens)
 {
     if (tokens[0] == "index")
     {
         tokens.erase(tokens.begin());
         while (tokens[0] != ";")
         {
-            add_index(tokens[0]);
+            addIndex(tokens[0]);
             tokens.erase(tokens.begin());
         }
 
@@ -316,45 +316,45 @@ void Server::initialisation_index_files(std::vector<std::string> &tokens)
     }
 }
 
-void Server::initialisation_root(std::vector<std::string> &tokens)
+void Server::initializeRoot(std::vector<std::string> &tokens)
 {
-    std::string root = return_root(tokens);
+    std::string root = parseRootDirective(tokens);
     if (root != "")
         setRoot(root);
 }
 
-void Server::initialisation_auto_index(std::vector<std::string> &tokens)
+void Server::initializeAutoIndex(std::vector<std::string> &tokens)
 {
-    int auto_index = return_auto_index(tokens);
+    int auto_index = parseAutoIndexDirective(tokens);
 
     if (auto_index == 0)
-        set_auto_index(false);
+        setAutoIndex(false);
     else if (auto_index == 1)
-        set_auto_index(true);
+        setAutoIndex(true);
 }
 
-void Server::initialisation_error_page(std::vector<std::string> &tokens)
+void Server::initializeErrorPage(std::vector<std::string> &tokens)
 {
     bool is_init = false;
-    s_return error_page = return_error_page(tokens, is_init);
+    HttpReturn error_page = parseErrorPageDirective(tokens, is_init);
 
     if (is_init)
-        add_error_page(error_page);
+        addErrorPage(error_page);
 }
 
-void Server::initialisation_client_max_body_size(std::vector<std::string> &tokens)
+void Server::initializeClientMaxBodySize(std::vector<std::string> &tokens)
 {
-    unsigned int client_max_body_size = return_client_max_body_size(tokens);
+    unsigned int client_max_body_size = parseClientMaxBodySizeDirective(tokens);
 
     if (client_max_body_size != 0)
-        set_client_max_body_size(client_max_body_size);
+        setClientMaxBodySize(client_max_body_size);
 }
 
-void Server::initialisation_return(std::vector<std::string> &tokens)
+void Server::initializeReturn(std::vector<std::string> &tokens)
 {
     bool is_init = false;
-    s_return ret = return_return(tokens, is_init);
+    HttpReturn ret = parseReturnDirective(tokens, is_init);
 
     if (is_init)
-        set_return(ret);
+        setReturn(ret);
 }

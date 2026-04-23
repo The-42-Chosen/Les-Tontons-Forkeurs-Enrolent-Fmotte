@@ -1,20 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   struct.cpp                                         :+:      :+:    :+:   */
+/*   utils_duplicate.hpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/13 16:14:09 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/23 13:35:39 by erpascua         ###   ########.fr       */
+/*   Created: 2026/04/08 12:58:22 by fmotte            #+#    #+#             */
+/*   Updated: 2026/04/23 12:30:33 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#pragma once
+
 #include "struct.hpp"
 
-bool Listen::operator<(const Listen &other) const
-{
-    if (ip != other.ip)
-        return ip < other.ip;
-    return port < other.port;
-}
+std::string parseRootDirective(std::vector<std::string> &tokens);
+int parseAutoIndexDirective(std::vector<std::string> &tokens);
+unsigned int parseClientMaxBodySizeDirective(std::vector<std::string> &tokens);
+HttpReturn parseErrorPageDirective(std::vector<std::string> &tokens, bool &is_init);
+HttpReturn parseReturnDirective(std::vector<std::string> &tokens, bool &is_init);

@@ -1,32 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils_connection.cpp                               :+:      :+:    :+:   */
+/*   utilsConnection.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 14:55:37 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/15 20:21:31 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/23 13:35:39 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils_connection.hpp"
+#include "utilsConnection.hpp"
 #include "execption.hpp"
 
-void handle_sigint(int sig)
+void handleSigint(int sig)
 {
     (void)sig;
     stop_webserv = 1;
 }
 
-void init_signal(struct sigaction &sa)
+void initializeSignal(struct sigaction &sa)
 {
-    sa.sa_handler = handle_sigint;
+    sa.sa_handler = handleSigint;
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
 }
 
-int set_nonblocking(int fd)
+int setNonblocking(int fd)
 {
     int flags;
     if ((flags = fcntl(fd, F_GETFL, 0)) == -1)
@@ -35,7 +35,7 @@ int set_nonblocking(int fd)
     return fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 }
 
-sockaddr_in create_socket_adrress(std::string ip_address, unsigned int port_number)
+sockaddr_in createSocketAddress(std::string ip_address, unsigned int port_number)
 {
     sockaddr_in serverAddress;
 
@@ -45,9 +45,9 @@ sockaddr_in create_socket_adrress(std::string ip_address, unsigned int port_numb
     return serverAddress;
 }
 
-void add_socket_to_event(int epoll_fd, int socket_fd, Client *client)
+void addSocketToEvent(int epoll_fd, int socket_fd, Client *client)
 {
-    set_nonblocking(socket_fd);
+    setNonblocking(socket_fd);
 
     struct epoll_event ev;
     ev.events = EPOLLIN;
@@ -58,14 +58,14 @@ void add_socket_to_event(int epoll_fd, int socket_fd, Client *client)
         throw ExecptionErrorFunction("epoll_ctl");
 }
 
-int create_server_socket(std::string ip_address, unsigned int port_number, unsigned int max_client)
+int createServerSocket(std::string ip_address, unsigned int port_number, unsigned int max_client)
 {
     int serverSocket;
 
     if ((serverSocket = socket(AF_INET, SOCK_STREAM, 0)) == -1)
         throw ExecptionErrorFunction("socket");
 
-    sockaddr_in serverAddress = create_socket_adrress(ip_address, port_number);
+    sockaddr_in serverAddress = createSocketAddress(ip_address, port_number);
 
     int opt = 1;
     setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));

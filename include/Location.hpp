@@ -18,13 +18,13 @@ class Location
 {
   private:
     std::string _name;
-    std::set<method_http> _allowed_methods;
+    std::set<HttpMethod> _allowed_methods;
     std::string _root;
     std::string _index;
     bool _auto_index;
-    s_return _error_page;
+    HttpReturn _error_page;
     unsigned int _client_max_body_size;
-    s_return _ret;
+    HttpReturn _ret;
 
   public:
     // =====================
@@ -43,50 +43,50 @@ class Location
     // =====================
 
     // NAME
-    void set_name(std::string name);
-    std::string get_name(void);
+    void setName(std::string name);
+    std::string getName(void);
 
     // METHOD-HTTP
-    void add_methode_http(method_http i);
-    std::set<method_http> get_methode_http(void);
+    void addAllowedMethod(HttpMethod i);
+    std::set<HttpMethod> getAllowedMethods(void);
 
     // INDEX
-    void set_index(std::string index);
-    std::string get_index(void);
+    void setIndex(std::string index);
+    std::string getIndex(void);
 
     // ROOT
     void setRoot(std::string root);
     std::string getRoot(void);
 
     // AUTO-INDEX
-    void set_auto_index(bool auto_index);
-    bool get_auto_index(void);
+    void setAutoIndex(bool auto_index);
+    bool getAutoIndex(void);
 
     // CLIENT-MAX-BODY-SIZE
-    void set_client_max_body_size(unsigned int client_max_body_size);
-    unsigned int get_client_max_body_size(void);
+    void setClientMaxBodySize(unsigned int client_max_body_size);
+    unsigned int getClientMaxBodySize(void);
 
     // ERROR-PAGE
-    void set_error_page(s_return error_page);
-    s_return *get_error_page(void);
+    void setErrorPage(HttpReturn error_page);
+    HttpReturn *getErrorPage(void);
 
     // RETURN
-    void set_return(s_return ret);
-    s_return *get_return(void);
+    void setReturn(HttpReturn ret);
+    HttpReturn *getReturn(void);
 
     // =====================
     // ==     Method      ==
     // =====================
 
-    void init_location(std::vector<std::string> &tokens);
+    void initializeLocation(std::vector<std::string> &tokens);
 
-    void init_location_allowed_methods(std::vector<std::string> &tokens);
-    void init_location_root(std::vector<std::string> &tokens);
+    void initializeLocationAllowedMethods(std::vector<std::string> &tokens);
+    void initializeLocationRoot(std::vector<std::string> &tokens);
 
-    void init_location_index(std::vector<std::string> &tokens);
-    void init_location_auto_index(std::vector<std::string> &tokens);
+    void initializeLocationIndex(std::vector<std::string> &tokens);
+    void initializeLocationAutoIndex(std::vector<std::string> &tokens);
 
-    void init_location_client_max_body_size(std::vector<std::string> &tokens);
-    void init_locatoin_error_page(std::vector<std::string> &tokens);
-    void init_location_return(std::vector<std::string> &tokens);
+    void initializeLocationClientMaxBodySize(std::vector<std::string> &tokens);
+    void initializeLocationErrorPage(std::vector<std::string> &tokens);
+    void initializeLocationReturn(std::vector<std::string> &tokens);
 };

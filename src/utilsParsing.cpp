@@ -1,19 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils_parsing.cpp                                  :+:      :+:    :+:   */
+/*   utilsParsing.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:21:25 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/11 17:22:40 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/23 13:35:39 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils_parsing.hpp"
+#include "utilsParsing.hpp"
 #include "execption.hpp"
 
-int parse_config_file(char *filename, std::string &content_file)
+int parseConfigFile(char *filename, std::string &content_file)
 {
     // Reading
     std::ifstream f(filename);
@@ -34,7 +34,7 @@ int parse_config_file(char *filename, std::string &content_file)
     return (0);
 }
 
-std::vector<std::string> tokenize_string(std::string &content_file)
+std::vector<std::string> tokenizeString(std::string &content_file)
 {
     std::vector<std::string> tokens;
     std::string delimiters = " \t\n\0";
@@ -64,7 +64,7 @@ std::vector<std::string> tokenize_string(std::string &content_file)
 
     for (size_t i = 0; i < tokens.size(); ++i)
     {
-        if (get_nb_occurence(tokens[i], '"') == 1)
+        if (countOccurrences(tokens[i], '"') == 1)
         {
             if (i + 1 < tokens.size())
             {
@@ -86,7 +86,7 @@ std::vector<std::string> tokenize_string(std::string &content_file)
     return tokens;
 }
 
-unsigned int get_nb_occurence(const std::string &string, const char occ)
+unsigned int countOccurrences(const std::string &string, const char occ)
 {
     unsigned int nb_occ = 0;
     unsigned int i = 0;

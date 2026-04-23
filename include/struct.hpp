@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   struct.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/03 17:58:55 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/14 16:07:20 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/23 12:26:05 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@
 #include <signal.h>
 #include <unistd.h>
 
-enum method_http
+enum HttpMethod
 {
     GET,
     POST,
@@ -37,15 +37,15 @@ enum method_http
     HEAD
 };
 
-struct s_listen
+struct Listen
 {
     std::string ip;
     unsigned int port;
 
-    bool operator<(const s_listen &other) const;
+    bool operator<(const Listen &other) const;
 };
 
-struct s_return
+struct HttpReturn
 {
     int code;
     std::string value; // URL ou message

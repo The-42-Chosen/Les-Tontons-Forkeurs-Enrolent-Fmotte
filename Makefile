@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+         #
+#    By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/11 16:36:16 by fmotte            #+#    #+#              #
-#    Updated: 2026/04/21 13:54:57 by fmotte           ###   ########.fr        #
+#    Updated: 2026/04/23 13:32:58 by erpascua         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,10 +31,10 @@ CLASS_FILE =	Webserv \
 				Location \
 				Client \
 				HttpRequest \
-				utils_connection \
-				utils_duplicate \
-				utils_parsing \
-				utils_request \
+				utilsConnection \
+				utilsDuplicate \
+				utilsParsing \
+				utilsRequest \
 				execption \
 				struct \
 

@@ -1,19 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils_duplicate.cpp                                :+:      :+:    :+:   */
+/*   utilsDuplicate.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/08 12:58:24 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/11 17:23:46 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/23 13:35:39 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils_duplicate.hpp"
+#include "utilsDuplicate.hpp"
 #include "execption.hpp"
 
-std::string return_root(std::vector<std::string> &tokens)
+std::string parseRootDirective(std::vector<std::string> &tokens)
 {
     if (tokens[0] == "root")
     {
@@ -30,7 +30,7 @@ std::string return_root(std::vector<std::string> &tokens)
     return "";
 }
 
-int return_auto_index(std::vector<std::string> &tokens)
+int parseAutoIndexDirective(std::vector<std::string> &tokens)
 {
     if (tokens[0] == "autoindex")
     {
@@ -60,7 +60,7 @@ int return_auto_index(std::vector<std::string> &tokens)
     return -1;
 }
 
-unsigned int return_client_max_body_size(std::vector<std::string> &tokens)
+unsigned int parseClientMaxBodySizeDirective(std::vector<std::string> &tokens)
 {
     unsigned int client_max_body_size;
 
@@ -84,9 +84,9 @@ unsigned int return_client_max_body_size(std::vector<std::string> &tokens)
     return 0;
 }
 
-s_return return_error_page(std::vector<std::string> &tokens, bool &is_init)
+HttpReturn parseErrorPageDirective(std::vector<std::string> &tokens, bool &is_init)
 {
-    s_return error_page;
+    HttpReturn error_page;
 
     if (tokens[0] == "error_page")
     {
@@ -112,9 +112,9 @@ s_return return_error_page(std::vector<std::string> &tokens, bool &is_init)
     return error_page;
 }
 
-s_return return_return(std::vector<std::string> &tokens, bool &is_init)
+HttpReturn parseReturnDirective(std::vector<std::string> &tokens, bool &is_init)
 {
-    s_return ret;
+    HttpReturn ret;
 
     if (tokens[0] == "return")
     {

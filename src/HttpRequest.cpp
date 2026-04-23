@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/22 21:14:17 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/23 12:30:18 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ HttpRequest::~HttpRequest()
 // == Getter & Setter ==
 // =====================
 
-method_http HttpRequest::getMethod() const
+HttpMethod HttpRequest::getMethod() const
 {
     return (_method);
 }
@@ -93,7 +93,7 @@ void HttpRequest::setClient(Client *client)
         _client = client;
 }
 
-const char *HttpRequest::methodToString(method_http method)
+const char *HttpRequest::methodToString(HttpMethod method)
 {
     switch (method)
     {
@@ -177,7 +177,7 @@ void HttpRequest::isHostPresentAndValid(void)
     throw std::runtime_error("400 Bad Request");
 }
 
-static method_http parseMethodToken(const std::string &method)
+static HttpMethod parseMethodToken(const std::string &method)
 {
     if (method == "GET")
         return (GET);
@@ -192,11 +192,11 @@ static method_http parseMethodToken(const std::string &method)
 
 void HttpRequest::checkAllowedMethods(void)
 {
-    std::set<method_http> set_allowed_methods = getLocation()->get_methode_http();
+    std::set<HttpMethod> set_allowed_methods = getLocation()->getAllowedMethods();
 
     if (set_allowed_methods.size() == 0)
         return;
-    std::set<method_http>::iterator it = set_allowed_methods.begin();
+    std::set<HttpMethod>::iterator it = set_allowed_methods.begin();
     for (; it != set_allowed_methods.end(); ++it)
     {
         if (*it == _method)
@@ -342,9 +342,9 @@ void HttpRequest::interpretation(void)
     for (std::map<std::string, std::string>::const_iterator it = _headers.begin(); it != _headers.end(); it++)
         std::cout << it->first << " | " << it->second << std::endl;
 
-    link_to_server();
-    std::cout << "\nServer select: " << _client->getServerPtr()->get_name_server(0) << "\n";
-    if (_client->getServerPtr()->get_return()->code != 0)
+    linkToServer();
+    std::cout << "\nServer select: " << _client->getServerPtr()->getNameServer(0) << "\n";
+    if (_client->getServerPtr()->getReturn()->code != 0)
     {
         std::cout << "Server close\n";
         return; // Server Close
@@ -360,9 +360,9 @@ void HttpRequest::interpretation(void)
     else
     {
         setLocation(location);
-        std::cout << "Location: " << location->get_name() << "\n";
+        std::cout << "Location: " << location->getName() << "\n";
 
-        if (location->get_return()->code != 0)
+        if (location->getReturn()->code != 0)
         {
             std::cout << "Server close\n";
             return; // Server Close
@@ -370,7 +370,7 @@ void HttpRequest::interpretation(void)
         checkAllowedMethods();
     }
 
-    init_root();
+    resolveRoot();
     std::cout << "root: " << getRoot() << "\n";
 }
 
@@ -419,24 +419,24 @@ void HttpRequest::parseChunkedBody(const std::string &headerContent)
     }
 }
 
-void HttpRequest::link_to_server(void)
+void HttpRequest::linkToServer(void)
 {
     int fd_server = _client->getServerFd();
     std::set<Server *>::iterator it;
-    std::set<Server *> set_server = _client->getWebserv()->get_map().find(fd_server)->second;
+    std::set<Server *> set_server = _client->getWebserv()->getFdToServersMap().find(fd_server)->second;
 
     for (it = set_server.begin(); it != set_server.end(); ++it)
     {
         for (size_t i = 0;; ++i)
         {
-            if ((*it)->get_name_server(i) == "")
+            if ((*it)->getNameServer(i) == "")
                 break;
 
             std::cout << "\n";
-            std::cout << "Name: " << (*it)->get_name_server(i) << "\n";
+            std::cout << "Name: " << (*it)->getNameServer(i) << "\n";
             std::cout << "HOST: " << _headers.find("host")->second << "\n";
 
-            if ((*it)->get_name_server(i) == _headers.find("host")->second)
+            if ((*it)->getNameServer(i) == _headers.find("host")->second)
             {
                 setServer(*it);
                 _client->setServerPtr(*it);
@@ -456,9 +456,9 @@ Location *HttpRequest::findLocation(void)
     int score;
     int i = 0;
 
-    while ((location = _client->getServerPtr()->get_location(i)) != NULL)
+    while ((location = _client->getServerPtr()->getLocation(i)) != NULL)
     {
-        score = longestPrefixMatch(_uri, location->get_name());
+        score = longestPrefixMatch(_uri, location->getName());
 
         if (score < best_score)
         {
@@ -470,7 +470,7 @@ Location *HttpRequest::findLocation(void)
     return best_location;
 }
 
-void HttpRequest::init_root(void)
+void HttpRequest::resolveRoot(void)
 {
     if (getLocation()->getRoot() != "")
         setRoot(getLocation()->getRoot());

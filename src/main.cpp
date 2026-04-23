@@ -6,14 +6,14 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/03 15:24:58 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/12 18:04:42 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/23 13:32:58 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Webserv.hpp"
 #include "colors.hpp"
 #include "struct.hpp"
-#include "utils_parsing.hpp"
+#include "utilsParsing.hpp"
 
 int stop_webserv = 0;
 
@@ -26,17 +26,17 @@ int main(int argc, char **argv)
     }
 
     std::string content_file;
-    if (parse_config_file(argv[1], content_file))
+    if (parseConfigFile(argv[1], content_file))
         return (1);
 
     std::vector<std::string> tokens;
-    tokens = tokenize_string(content_file);
+    tokens = tokenizeString(content_file);
 
     Webserv webser;
-    if (webser.initialisation_webserv(tokens))
+    if (webser.initializeWebserv(tokens))
         return (1);
 
-    if (webser.initialisation_connection())
+    if (webser.initializeConnection())
         return (2);
 
     return (0);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:20 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/22 11:30:59 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/23 13:48:15 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include "Server.hpp"
 #include "execption.hpp"
 #include "struct.hpp"
-#include "utils_connection.hpp"
+#include "utilsConnection.hpp"
 #include <cstring>
 #include <errno.h>
 #include <map>
@@ -52,24 +52,24 @@ class Webserv
     // =====================
 
     // SERVERS
-    const std::vector<Server *> &get_server(void) const;
-    const std::map<int, std::set<Server *> > &get_map(void) const;
-    void set_webser_epoll(const int epoll);
-    int get_webser_epoll(void);
+    const std::vector<Server *> &getServers(void) const;
+    const std::map<int, std::set<Server *> > &getFdToServersMap(void) const;
+    void setEpollFd(const int epoll);
+    int getEpollFd(void);
 
     // =====================
     // ==     Method      ==
     // =====================
 
-    bool initialisation_webserv(std::vector<std::string> &tokens);
-    bool splitServers(std::vector<std::string> &tokens);
+    bool initializeWebserv(std::vector<std::string> &tokens);
+    bool splitIntoServers(std::vector<std::string> &tokens);
 
-    bool initialisation_connection();
-    void initialisation_socket();
-    void webserv_listen();
-    void manage_connection(struct epoll_event &events);
-    void had_new_client(int server_fd);
-    void received_message_from_client(Client *client);
+    bool initializeConnection();
+    void initializeSocket();
+    void listenToWebserv();
+    void handleConnection(struct epoll_event &events);
+    void handleNewClient(int server_fd);
+    void receiveMessageFromClient(Client *client);
     void deleteClient(Client *client);
-    void close_connection();
+    void closeConnection();
 };

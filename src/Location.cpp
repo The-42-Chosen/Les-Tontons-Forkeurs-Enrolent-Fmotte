@@ -6,22 +6,22 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 15:45:46 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/22 20:57:47 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/23 13:35:39 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Location.hpp"
 #include "Server.hpp"
 #include "execption.hpp"
-#include "utils_duplicate.hpp"
+#include "utilsDuplicate.hpp"
 
 // =====================
 // == Canonical Form  ==
 // =====================
 
 Location::Location()
-    : _name(""), _allowed_methods(), _root(""), _index(""), _auto_index(false), _error_page(s_return()),
-      _client_max_body_size(DEFAULT_CLIENT_MAX_BODY_SIZE), _ret(s_return())
+    : _name(""), _allowed_methods(), _root(""), _index(""), _auto_index(false), _error_page(HttpReturn()),
+      _client_max_body_size(DEFAULT_CLIENT_MAX_BODY_SIZE), _ret(HttpReturn())
 {
 }
 
@@ -55,31 +55,31 @@ const std::string Location::list_allowed_methods[4] = {"GET", "POST", "DELETE", 
 // =====================
 
 // NAME
-void Location::set_name(std::string name)
+void Location::setName(std::string name)
 {
     _name = name;
 }
-std::string Location::get_name(void)
+std::string Location::getName(void)
 {
     return _name;
 }
 
 // METHOD-HTTP
-void Location::add_methode_http(method_http i)
+void Location::addAllowedMethod(HttpMethod i)
 {
     _allowed_methods.insert(i);
 }
-std::set<method_http> Location::get_methode_http(void)
+std::set<HttpMethod> Location::getAllowedMethods(void)
 {
     return _allowed_methods;
 }
 
 // INDEX
-void Location::set_index(std::string index)
+void Location::setIndex(std::string index)
 {
     _index = index;
 }
-std::string Location::get_index(void)
+std::string Location::getIndex(void)
 {
     return _index;
 }
@@ -95,41 +95,41 @@ std::string Location::getRoot(void)
 }
 
 // AUTO-INDEX
-void Location::set_auto_index(bool auto_index)
+void Location::setAutoIndex(bool auto_index)
 {
     _auto_index = auto_index;
 }
-bool Location::get_auto_index(void)
+bool Location::getAutoIndex(void)
 {
     return _auto_index;
 }
 
 // CLIENT-MAX-BODY-SIZE
-void Location::set_client_max_body_size(unsigned int client_max_body_size)
+void Location::setClientMaxBodySize(unsigned int client_max_body_size)
 {
     _client_max_body_size = client_max_body_size;
 }
-unsigned int Location::get_client_max_body_size(void)
+unsigned int Location::getClientMaxBodySize(void)
 {
     return _client_max_body_size;
 }
 
 // ERROR-PAGE
-void Location::set_error_page(s_return error_page)
+void Location::setErrorPage(HttpReturn error_page)
 {
     _error_page = error_page;
 }
-s_return *Location::get_error_page(void)
+HttpReturn *Location::getErrorPage(void)
 {
     return &_error_page;
 }
 
 // RETURN
-void Location::set_return(s_return ret)
+void Location::setReturn(HttpReturn ret)
 {
     _ret = ret;
 }
-s_return *Location::get_return(void)
+HttpReturn *Location::getReturn(void)
 {
     return &_ret;
 }
@@ -138,12 +138,12 @@ s_return *Location::get_return(void)
 // ==     Method      ==
 // =====================
 
-void Location::init_location(std::vector<std::string> &tokens)
+void Location::initializeLocation(std::vector<std::string> &tokens)
 {
     if (tokens.empty())
         throw ExecptionMissBrace();
 
-    set_name(tokens[0]);
+    setName(tokens[0]);
     tokens.erase(tokens.begin());
 
     if (tokens.empty())
@@ -162,13 +162,13 @@ void Location::init_location(std::vector<std::string> &tokens)
         if (tokens[0] == "}")
             break;
 
-        init_location_allowed_methods(tokens);
-        init_location_root(tokens);
-        init_location_index(tokens);
-        init_location_auto_index(tokens);
-        init_location_client_max_body_size(tokens);
-        init_locatoin_error_page(tokens);
-        init_location_return(tokens);
+        initializeLocationAllowedMethods(tokens);
+        initializeLocationRoot(tokens);
+        initializeLocationIndex(tokens);
+        initializeLocationAutoIndex(tokens);
+        initializeLocationClientMaxBodySize(tokens);
+        initializeLocationErrorPage(tokens);
+        initializeLocationReturn(tokens);
 
         // Security to avoid inifite loop
         new_tokens_size = tokens.size();
@@ -179,7 +179,7 @@ void Location::init_location(std::vector<std::string> &tokens)
     tokens.erase(tokens.begin());
 }
 
-void Location::init_location_allowed_methods(std::vector<std::string> &tokens)
+void Location::initializeLocationAllowedMethods(std::vector<std::string> &tokens)
 {
     if (tokens[0] == "allowed_methods")
     {
@@ -189,13 +189,13 @@ void Location::init_location_allowed_methods(std::vector<std::string> &tokens)
         while (tokens[0] != ";")
         {
             if (tokens[0] == "GET")
-                add_methode_http(GET);
+                addAllowedMethod(GET);
             else if (tokens[0] == "POST")
-                add_methode_http(POST);
+                addAllowedMethod(POST);
             else if (tokens[0] == "DELETE")
-                add_methode_http(DELETE);
+                addAllowedMethod(DELETE);
             else if (tokens[0] == "HEAD")
-                add_methode_http(HEAD);
+                addAllowedMethod(HEAD);
             else
                 throw ExecptionIllegalMethod(tokens[0]);
 
@@ -205,19 +205,19 @@ void Location::init_location_allowed_methods(std::vector<std::string> &tokens)
     }
 }
 
-void Location::init_location_root(std::vector<std::string> &tokens)
+void Location::initializeLocationRoot(std::vector<std::string> &tokens)
 {
-    std::string root = return_root(tokens);
+    std::string root = parseRootDirective(tokens);
     if (root != "")
         setRoot(root);
 }
 
-void Location::init_location_index(std::vector<std::string> &tokens)
+void Location::initializeLocationIndex(std::vector<std::string> &tokens)
 {
     if (tokens[0] == "index")
     {
         tokens.erase(tokens.begin());
-        set_index(tokens[0]);
+        setIndex(tokens[0]);
 
         tokens.erase(tokens.begin());
 
@@ -228,38 +228,38 @@ void Location::init_location_index(std::vector<std::string> &tokens)
     }
 }
 
-void Location::init_location_auto_index(std::vector<std::string> &tokens)
+void Location::initializeLocationAutoIndex(std::vector<std::string> &tokens)
 {
-    int auto_index = return_auto_index(tokens);
+    int auto_index = parseAutoIndexDirective(tokens);
 
     if (auto_index == 0)
-        set_auto_index(false);
+        setAutoIndex(false);
     else if (auto_index == 1)
-        set_auto_index(true);
+        setAutoIndex(true);
 }
 
-void Location::init_location_client_max_body_size(std::vector<std::string> &tokens)
+void Location::initializeLocationClientMaxBodySize(std::vector<std::string> &tokens)
 {
-    unsigned int client_max_body_size = return_client_max_body_size(tokens);
+    unsigned int client_max_body_size = parseClientMaxBodySizeDirective(tokens);
 
     if (client_max_body_size != 0)
-        set_client_max_body_size(client_max_body_size);
+        setClientMaxBodySize(client_max_body_size);
 }
 
-void Location::init_locatoin_error_page(std::vector<std::string> &tokens)
+void Location::initializeLocationErrorPage(std::vector<std::string> &tokens)
 {
     bool is_init = false;
-    s_return error_page = return_error_page(tokens, is_init);
+    HttpReturn error_page = parseErrorPageDirective(tokens, is_init);
 
     if (is_init)
-        set_error_page(error_page);
+        setErrorPage(error_page);
 }
 
-void Location::init_location_return(std::vector<std::string> &tokens)
+void Location::initializeLocationReturn(std::vector<std::string> &tokens)
 {
     bool is_init = false;
-    s_return ret = return_return(tokens, is_init);
+    HttpReturn ret = parseReturnDirective(tokens, is_init);
 
     if (is_init)
-        set_return(ret);
+        setReturn(ret);
 }

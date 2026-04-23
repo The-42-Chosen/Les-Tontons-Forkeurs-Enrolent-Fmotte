@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/22 20:58:53 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/23 13:32:58 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include "Client.hpp"
 #include "execption.hpp"
 #include "struct.hpp"
-#include "utils_request.hpp"
+#include "utilsRequest.hpp"
 #include <map>
 #include <sstream>
 #include <stdexcept>
@@ -35,7 +35,7 @@ class HttpRequest
     Client *_client;
     Server *_server;
     Location *_location;
-    method_http _method;
+    HttpMethod _method;
     std::string _uri;
     std::string _protocol;
     std::map<std::string, std::string> _headers;
@@ -56,7 +56,7 @@ class HttpRequest
     // =====================
     // ==     Getters     ==
     // =====================
-    method_http getMethod() const;
+    HttpMethod getMethod() const;
     const std::string &getUri() const;
     const std::string &getProtocol() const;
     void setClient(Client *client);
@@ -79,9 +79,9 @@ class HttpRequest
 
     void interpretation(void);
     void bodyInterpretation(void);
-    void link_to_server(void);
+    void linkToServer(void);
     Location *findLocation(void);
-    void init_root(void);
+    void resolveRoot(void);
 
     // =====================
     // ==     Validity    ==
@@ -92,5 +92,5 @@ class HttpRequest
     void checkAllowedMethods(void);
 
     // Helper
-    static const char *methodToString(method_http method);
+    static const char *methodToString(HttpMethod method);
 };
