@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/28 20:50:38 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/28 20:53:25 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ HttpRequest::HttpRequest() : _keepAlive(false), _contentLength(0), _totalChunked
 {
 }
 
-HttpRequest::HttpRequest(Client *client) : _client(NULL), _server(NULL), _keepAlive(false), _contentLength(0), _totalChunked(0)
+HttpRequest::HttpRequest(Client *client) : _client(NULL), _server(NULL), _location(NULL), _keepAlive(false), _contentLength(0), _totalChunked(0)
 {
     try
     {
@@ -633,7 +633,7 @@ Location *HttpRequest::findLocation(void)
     for (int i = 0; (location = _client->getServerPtr()->getLocation(i)) != NULL; ++i)
     {
         score = longestPrefixMatch(_uri, location->getName());
-
+        
         if (score < best_score)
         {
             best_location = location;
@@ -714,5 +714,51 @@ void HttpRequest::applyGetMethod(Location *location)
     checkPermisionReadFile(path);
     parseConfigFile(path.c_str(), contentFile);
 
+    std::cout << "\ncontentFile: " << contentFile << "\n";
+}
+
+void HttpRequest::readFile(void)
+{
+    std::string path = getRoot();
+    std::string locationPath = getRoot();
+    std::string contentFile = "";
+    char buffer[SIZE_BUFFER];
+    
+    if (getLocation() != NULL)
+    {
+        locationPath = getLocation()->getName();
+        if (path[path.length() - 1] != '/' && locationPath[0] != '/')
+            path += '/';
+        path += locationPath;
+    }
+    path += '/';   
+
+    path += "index.html";
+    std::cout << "Path to read: " << path << "\n";
+
+    
+    if (access(path.c_str(), F_OK) == -1)
+        throw std::runtime_error("404 file not find");
+
+    if (access(path.c_str(), R_OK) == -1)
+        throw std::runtime_error("404 cannot read the file");
+    
+    int fd = open(path.c_str(), O_RDONLY);
+
+    while (1)
+    {
+        int bytes = read(fd, buffer, SIZE_BUFFER);
+            
+        if (bytes < 0)
+            throw std::runtime_error("404 read file fail");
+
+        if (bytes == 0)
+            break;
+
+        std::string s;
+        s.assign(buffer, buffer + bytes);
+        contentFile.append(s);
+    }
+    
     std::cout << "\ncontentFile: " << contentFile << "\n";
 }
