@@ -25,7 +25,8 @@ HttpRequest::HttpRequest() : _keepAlive(false), _contentLength(0)
 {
 }
 
-HttpRequest::HttpRequest(Client *client) : _client(NULL), _server(NULL), _location(NULL), _keepAlive(false), _contentLength(0)
+HttpRequest::HttpRequest(Client *client)
+    : _client(NULL), _server(NULL), _location(NULL), _keepAlive(false), _contentLength(0)
 {
     try
     {
@@ -460,7 +461,7 @@ Location *HttpRequest::findLocation(void)
     while ((location = _client->getServerPtr()->getLocation(i)) != NULL)
     {
         score = longestPrefixMatch(_uri, location->getName());
-        
+
         if (score < best_score)
         {
             best_location = location;
@@ -485,7 +486,7 @@ void HttpRequest::readFile(void)
     std::string locationPath = getRoot();
     std::string contentFile = "";
     char buffer[SIZE_BUFFER];
-    
+
     if (getLocation() != NULL)
     {
         locationPath = getLocation()->getName();
@@ -493,24 +494,23 @@ void HttpRequest::readFile(void)
             path += '/';
         path += locationPath;
     }
-    path += '/';   
+    path += '/';
 
     path += "index.html";
     std::cout << "Path to read: " << path << "\n";
 
-    
     if (access(path.c_str(), F_OK) == -1)
         throw std::runtime_error("404 file not find");
 
     if (access(path.c_str(), R_OK) == -1)
         throw std::runtime_error("404 cannot read the file");
-    
+
     int fd = open(path.c_str(), O_RDONLY);
 
     while (1)
     {
         int bytes = read(fd, buffer, SIZE_BUFFER);
-            
+
         if (bytes < 0)
             throw std::runtime_error("404 read file fail");
 
@@ -521,6 +521,6 @@ void HttpRequest::readFile(void)
         s.assign(buffer, buffer + bytes);
         contentFile.append(s);
     }
-    
+
     std::cout << "\ncontentFile: " << contentFile << "\n";
 }

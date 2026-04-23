@@ -83,7 +83,7 @@ class HttpRequest
     Location *findLocation(void);
     void resolveRoot(void);
     void readFile(void);
-    
+
     // =====================
     // ==     Validity    ==
     // =====================

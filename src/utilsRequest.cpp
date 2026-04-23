@@ -16,7 +16,7 @@ int computeRemainingCost(const std::string &string, size_t min_len, int score)
 {
     for (size_t i = min_len; i < string.size(); ++i)
         score += 1;
-        
+
     return score;
 }
 
@@ -54,12 +54,11 @@ int longestPrefixMatch(std::string uri, std::string location)
         {
             if (s1[i] != s2[i])
                 score += 1;
-                
         }
-        
+
         score += computeRemainingCost(s1, min_len, score);
         score += computeRemainingCost(s2, min_len, score);
-        
+
         ++i;
         ++j;
     }
