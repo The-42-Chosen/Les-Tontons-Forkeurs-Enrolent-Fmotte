@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/23 12:30:18 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/23 16:27:27 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ HttpRequest::HttpRequest() : _keepAlive(false), _contentLength(0)
 {
 }
 
-HttpRequest::HttpRequest(Client *client) : _keepAlive(false), _contentLength(0)
+HttpRequest::HttpRequest(Client *client) : _client(NULL), _server(NULL), _location(NULL), _keepAlive(false), _contentLength(0)
 {
     try
     {
@@ -372,6 +372,7 @@ void HttpRequest::interpretation(void)
 
     resolveRoot();
     std::cout << "root: " << getRoot() << "\n";
+    readFile();
 }
 
 void HttpRequest::bodyInterpretation(void)
@@ -459,7 +460,7 @@ Location *HttpRequest::findLocation(void)
     while ((location = _client->getServerPtr()->getLocation(i)) != NULL)
     {
         score = longestPrefixMatch(_uri, location->getName());
-
+        
         if (score < best_score)
         {
             best_location = location;
@@ -472,8 +473,54 @@ Location *HttpRequest::findLocation(void)
 
 void HttpRequest::resolveRoot(void)
 {
-    if (getLocation()->getRoot() != "")
+    if (getLocation() != NULL && getLocation()->getRoot() != "")
         setRoot(getLocation()->getRoot());
     else
         setRoot(getServer()->getRoot());
+}
+
+void HttpRequest::readFile(void)
+{
+    std::string path = getRoot();
+    std::string locationPath = getRoot();
+    std::string contentFile = "";
+    char buffer[SIZE_BUFFER];
+    
+    if (getLocation() != NULL)
+    {
+        locationPath = getLocation()->getName();
+        if (path[path.length() - 1] != '/' && locationPath[0] != '/')
+            path += '/';
+        path += locationPath;
+    }
+    path += '/';   
+
+    path += "index.html";
+    std::cout << "Path to read: " << path << "\n";
+
+    
+    if (access(path.c_str(), F_OK) == -1)
+        throw std::runtime_error("404 file not find");
+
+    if (access(path.c_str(), R_OK) == -1)
+        throw std::runtime_error("404 cannot read the file");
+    
+    int fd = open(path.c_str(), O_RDONLY);
+
+    while (1)
+    {
+        int bytes = read(fd, buffer, SIZE_BUFFER);
+            
+        if (bytes < 0)
+            throw std::runtime_error("404 read file fail");
+
+        if (bytes == 0)
+            break;
+
+        std::string s;
+        s.assign(buffer, buffer + bytes);
+        contentFile.append(s);
+    }
+    
+    std::cout << "\ncontentFile: " << contentFile << "\n";
 }
