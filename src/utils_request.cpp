@@ -75,3 +75,33 @@ std::string toLowerString(const std::string &str)
         result[i] = static_cast<char>(std::tolower(static_cast<unsigned char>(result[i])));
     return result;
 }
+
+
+static std::string trimChunkSizeToken(const std::string &token)
+{
+    std::string::size_type begin = token.find_first_not_of(" \t");
+    if (begin == std::string::npos)
+        return ("");
+    std::string::size_type end = token.find_last_not_of(" \t");
+    return (token.substr(begin, end - begin + 1));
+}
+
+size_t parseChunkSize(const std::string &line)
+{
+    std::string sizeToken = line;
+    std::string::size_type semicolon = sizeToken.find(';');
+    if (semicolon != std::string::npos)
+        sizeToken = sizeToken.substr(0, semicolon);
+    sizeToken = trimChunkSizeToken(sizeToken);
+    if (sizeToken.empty())
+        throw std::runtime_error("400 Bad Request");
+
+    std::stringstream ss(sizeToken);
+    size_t chunkSize = 0;
+    ss >> std::hex >> chunkSize;
+    if (ss.fail())
+        throw std::runtime_error("400 Bad Request");
+    if (!ss.eof())
+        throw std::runtime_error("400 Bad Request");
+    return (chunkSize);
+}

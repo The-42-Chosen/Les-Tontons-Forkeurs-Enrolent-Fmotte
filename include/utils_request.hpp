@@ -17,3 +17,4 @@
 int computeRemainingCost(const std::string &string, size_t min_len, int score);
 int longestPrefixMatch(std::string string1, std::string string2);
 std::string toLowerString(const std::string &str);
+size_t parseChunkSize(const std::string &line);
