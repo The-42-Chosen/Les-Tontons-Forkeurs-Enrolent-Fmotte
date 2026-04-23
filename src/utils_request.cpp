@@ -76,7 +76,6 @@ std::string toLowerString(const std::string &str)
     return result;
 }
 
-
 static std::string trimChunkSizeToken(const std::string &token)
 {
     std::string::size_type begin = token.find_first_not_of(" \t");
