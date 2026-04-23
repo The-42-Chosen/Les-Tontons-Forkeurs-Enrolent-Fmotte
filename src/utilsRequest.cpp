@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utilsRequest.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 13:53:46 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/23 13:35:39 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/23 16:27:14 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,8 @@
 int computeRemainingCost(const std::string &string, size_t min_len, int score)
 {
     for (size_t i = min_len; i < string.size(); ++i)
-    {
-        if (islower(string[i]))
-            score += std::abs(string[i] - 'a') + 1;
-        else if (isupper(string[i]))
-            score += std::abs(string[i] - 'A') + 1;
-        else
-            score += string[i];
-    }
+        score += 1;
+        
     return score;
 }
 
@@ -57,11 +51,15 @@ int longestPrefixMatch(std::string uri, std::string location)
         size_t min_len = std::min(s1.size(), s2.size());
 
         for (size_t i = 0; i < min_len; ++i)
-            score += std::abs(s1[i] - s2[i]);
-
+        {
+            if (s1[i] != s2[i])
+                score += 1;
+                
+        }
+        
         score += computeRemainingCost(s1, min_len, score);
         score += computeRemainingCost(s2, min_len, score);
-
+        
         ++i;
         ++j;
     }
