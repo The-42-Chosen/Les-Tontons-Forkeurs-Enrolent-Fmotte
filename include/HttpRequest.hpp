@@ -94,7 +94,7 @@ class HttpRequest
     static std::string getHeaderValue(const std::string &request, const std::string &headerName);
     static bool isCompleteChunkedBody(const std::string &request, std::string::size_type bodyStart);
     void readFile(void);
-    
+
     // =====================
     // ==     Validity    ==
     // =====================
