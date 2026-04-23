@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/23 13:32:58 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/23 15:20:30 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,8 @@ class HttpRequest
     void linkToServer(void);
     Location *findLocation(void);
     void resolveRoot(void);
-
+    void readFile(void);
+    
     // =====================
     // ==     Validity    ==
     // =====================
