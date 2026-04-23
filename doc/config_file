@@ -5,7 +5,7 @@ server {
 
     server_name localhost mysite.com;
 
-    root /var/www/html;
+    root ./webPageFile/localhost;
     index index.html index.htm;
 
     autoindex off;
@@ -24,7 +24,7 @@ server {
 
     location /images {
 
-        root /var/www/assets;
+        root ./webPageFile;
 
 		#Commentaire ne pas lire
 		
@@ -34,14 +34,14 @@ server {
 
     location /images/cat {
 
-        root /var/www/assets;	
+        root ./webPageFile;
         autoindex on;
 
     }
 
     location /images/dog {
 
-        root /var/www/assets;
+        root ./webPageFile;
         autoindex on;
 
     }
@@ -58,7 +58,7 @@ server {
     }
 
     location /errors {
-        root /var/www/errors;
+        root ./webPageFile;
     }
 }
 
@@ -68,7 +68,7 @@ server {
 
     server_name test.com;
 
-    root /var/www/test;
+    root ./webPageFile/test.com;
 
     index index.html;
 
@@ -90,7 +90,9 @@ server {
     listen 8081;
     listen 8082;
     server_name x;
-	root /var/www/test;
+
+	root ./webPageFile/x;
+
     location /x {
         allowed_methods GET;
 		error_page 4242 /4242.html;
