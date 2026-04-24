@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/23 16:27:27 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/24 18:08:53 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ HttpRequest::HttpRequest() : _keepAlive(false), _contentLength(0)
 }
 
 HttpRequest::HttpRequest(Client *client)
-    : _client(NULL), _server(NULL), _location(NULL), _keepAlive(false), _contentLength(0)
+    : _client(NULL), _server(NULL), _keepAlive(false), _contentLength(0)
 {
     try
     {
@@ -121,30 +121,6 @@ Server *HttpRequest::getServer(void) const
     return _server;
 }
 
-void HttpRequest::setLocation(Location *location)
-{
-    if (location == NULL)
-        throw ExecptionErrorUninitializedVariable("*location", "HttpRequest");
-    _location = location;
-}
-
-Location *HttpRequest::getLocation(void) const
-{
-    return _location;
-}
-
-void HttpRequest::setRoot(std::string root)
-{
-    if (root == "")
-        throw ExecptionErrorUninitializedVariable("root", "HttpRequest");
-    _path_root = root;
-}
-
-std::string HttpRequest::getRoot(void) const
-{
-    return _path_root;
-}
-
 // =====================
 // == 	Validations   ==
 // =====================
@@ -191,12 +167,13 @@ static HttpMethod parseMethodToken(const std::string &method)
     throw std::runtime_error("501 Not Implemented");
 }
 
-void HttpRequest::checkAllowedMethods(void)
+void HttpRequest::checkAllowedMethods(Location *location)
 {
-    std::set<HttpMethod> set_allowed_methods = getLocation()->getAllowedMethods();
+    std::set<HttpMethod> set_allowed_methods = location->getAllowedMethods();
 
     if (set_allowed_methods.size() == 0)
         return;
+        
     std::set<HttpMethod>::iterator it = set_allowed_methods.begin();
     for (; it != set_allowed_methods.end(); ++it)
     {
@@ -204,6 +181,44 @@ void HttpRequest::checkAllowedMethods(void)
             return;
     }
     throw std::runtime_error("405 Method Not Allowed");
+}
+
+void HttpRequest::checkPermisionReadFile(std::string path)
+{
+    if (path.find("../") != std::string::npos)
+        throw std::runtime_error("403 Forbidden");
+        
+    if (access(path.c_str(), F_OK) == -1)
+        throw std::runtime_error("404 Not Found");
+
+    if (access(path.c_str(), R_OK) == -1)
+        throw std::runtime_error("403 Forbidden");
+}
+
+void HttpRequest::isFinishByFile(std::string path)
+{
+    struct stat	buff;
+    
+    std::cout << "Check " << path << "\n";
+    
+    if (access(path.c_str(), F_OK) == -1)
+    {
+        std::cout << "error acess\n";
+        return; // ❗ OBLIGATOIRE
+    }
+    
+    if (stat(path.c_str(), &buff) != 0)
+    {
+        std::cout << "error stat\n";
+        return; // ❗ OBLIGATOIRE
+    }
+    
+    if (S_ISREG(buff.st_mode))
+        std::cout << "Regular file\n";
+    else if (S_ISDIR(buff.st_mode))
+        std::cout << "Directory\n";
+    else
+        std::cout << "Other type\n";
 }
 
 // =====================
@@ -335,8 +350,6 @@ void HttpRequest::parseHttpRequest(const std::string &headerContent)
 
 void HttpRequest::interpretation(void)
 {
-    Location *location;
-    std::string path_root;
     std::cout << "Method : |" << this->getMethod() << "| - Uri |" << this->getUri() << "| - Protocol |"
               << this->getProtocol() << "|" << std::endl;
 
@@ -350,17 +363,20 @@ void HttpRequest::interpretation(void)
         std::cout << "Server close\n";
         return; // Server Close
     }
+    validateRequest();
+}
 
-    // Init varible for execution
-
-    // Implemente function
+void HttpRequest::validateRequest(void)
+{
+    Location *location;
+    std::string path_root;
+    
     location = findLocation();
     if (location == NULL)
-        std::cout << "No location look to index\n";
+        std::cout << "No location found\n";
 
     else
     {
-        setLocation(location);
         std::cout << "Location: " << location->getName() << "\n";
 
         if (location->getReturn()->code != 0)
@@ -368,12 +384,10 @@ void HttpRequest::interpretation(void)
             std::cout << "Server close\n";
             return; // Server Close
         }
-        checkAllowedMethods();
+        checkAllowedMethods(location);
     }
-
-    resolveRoot();
-    std::cout << "root: " << getRoot() << "\n";
-    readFile();
+    //Which method -> different behavior
+    readFile(location); //GET
 }
 
 void HttpRequest::bodyInterpretation(void)
@@ -472,55 +486,55 @@ Location *HttpRequest::findLocation(void)
     return best_location;
 }
 
-void HttpRequest::resolveRoot(void)
+std::string HttpRequest::resolveRoot(Location *location)
 {
-    if (getLocation() != NULL && getLocation()->getRoot() != "")
-        setRoot(getLocation()->getRoot());
+    if (location != NULL && location->getRoot() != "")
+        return(location->getRoot());
     else
-        setRoot(getServer()->getRoot());
+        return(getServer()->getRoot());
 }
 
-void HttpRequest::readFile(void)
+std::string HttpRequest::createPath(Location *location)
 {
-    std::string path = getRoot();
-    std::string locationPath = getRoot();
-    std::string contentFile = "";
-    char buffer[SIZE_BUFFER];
-
-    if (getLocation() != NULL)
+    std::string path = resolveRoot(location);
+    std::string locationPath;
+    
+    std::cout << "root: " << path << "\n";
+        
+    if (location != NULL)
     {
-        locationPath = getLocation()->getName();
+        locationPath = location->getName();
         if (path[path.length() - 1] != '/' && locationPath[0] != '/')
             path += '/';
         path += locationPath;
     }
-    path += '/';
-
+    
+    if (path[path.length() - 1] != '/')
+        path += '/';
+    
+    // Recuper le dernier path de l'uri est le append to path pour check if il fini par un fichier ?
+    isFinishByFile(path);
+    
+    // if not file, refer to index
     path += "index.html";
+
+    //if not index and if auto index on listing the file in folder 
+
+    //else throw 404 Not Found
+    
+    return path;
+}
+
+void HttpRequest::readFile(Location *location)
+{
+    std::string path;
+    std::string contentFile;
+    
+    path = createPath(location);
     std::cout << "Path to read: " << path << "\n";
-
-    if (access(path.c_str(), F_OK) == -1)
-        throw std::runtime_error("404 file not find");
-
-    if (access(path.c_str(), R_OK) == -1)
-        throw std::runtime_error("404 cannot read the file");
-
-    int fd = open(path.c_str(), O_RDONLY);
-
-    while (1)
-    {
-        int bytes = read(fd, buffer, SIZE_BUFFER);
-
-        if (bytes < 0)
-            throw std::runtime_error("404 read file fail");
-
-        if (bytes == 0)
-            break;
-
-        std::string s;
-        s.assign(buffer, buffer + bytes);
-        contentFile.append(s);
-    }
+    
+    checkPermisionReadFile(path);
+    parseConfigFile(path.c_str(), contentFile);
 
     std::cout << "\ncontentFile: " << contentFile << "\n";
 }
