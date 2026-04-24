@@ -234,9 +234,9 @@ void HttpRequest::parseHeaderMethod(const std::string &headerContent)
     std::string extraToken;
 
     if (!(ssMethod >> method >> _uri >> _protocol))
-        throw std::runtime_error("400 Bad Request");
+        throw std::runtime_error("400 Bad Request f");
     if (ssMethod >> extraToken)
-        throw std::runtime_error("400 Bad Request");
+        throw std::runtime_error("400 Bad Request g");
 
     _method = parseMethodToken(method);
     isValidURI();
@@ -267,7 +267,7 @@ void HttpRequest::parseHeader(const std::string &headerContent)
         {
             std::string::size_type colon = requestLine.find(':');
             if (colon == std::string::npos)
-                throw std::runtime_error("400 Bad Request");
+                throw std::runtime_error("400 Bad Request e");
 
             std::string key = requestLine.substr(0, colon);
             std::string value = requestLine.substr(colon + 1);
@@ -312,11 +312,11 @@ void HttpRequest::parseBody(const std::string &headerContent)
     {
         std::stringstream ssLength(contentLengthIt->second);
         if (!(ssLength >> _contentLength))
-            throw std::runtime_error("400 Bad Request");
+            throw std::runtime_error("400 Bad Request 1");
 
         std::string::size_type bodyStart = headerContent.find("\r\n\r\n");
         if (bodyStart == std::string::npos)
-            throw std::runtime_error("400 Bad Request");
+            throw std::runtime_error("400 Bad Request 2");
 
         bodyStart += 4;
         if (bodyStart + _contentLength > headerContent.size())
@@ -393,7 +393,8 @@ void HttpRequest::bodyInterpretation(void)
 void HttpRequest::appendBodyBytes(const std::string &data)
 {
     for (std::string::size_type i = 0; i < data.size(); ++i)
-        _body.push_back(static_cast<__uint8_t>(data[i]));
+		//if (data[i] != '\r' || data[i] != '\n')
+        	_body.push_back(static_cast<__uint8_t>(data[i]));
 }
 
 void HttpRequest::parseChunkedBody(const std::string &headerContent)
@@ -407,7 +408,7 @@ void HttpRequest::parseChunkedBody(const std::string &headerContent)
     {
         std::string::size_type lineEnd = headerContent.find("\r\n", current);
         if (lineEnd == std::string::npos)
-            throw std::runtime_error("400 Bad Request");
+            throw std::runtime_error("400 Bad Request c");
 
         size_t chunkSize = parseChunkSize(headerContent.substr(current, lineEnd - current));
         current = lineEnd + 2;
@@ -416,13 +417,13 @@ void HttpRequest::parseChunkedBody(const std::string &headerContent)
             return;
 
         if (current + chunkSize > headerContent.size())
-            throw std::runtime_error("400 Bad Request");
+            throw std::runtime_error("400 Bad Request a");
 
         appendBodyBytes(headerContent.substr(current, chunkSize));
         current += chunkSize;
 
         if (headerContent.substr(current, 2) != "\r\n")
-            throw std::runtime_error("400 Bad Request");
+            throw std::runtime_error("400 Bad Request b");
         current += 2;
     }
 }
