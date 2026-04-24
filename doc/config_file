@@ -18,9 +18,9 @@ server {
 
     #return 301 http://example.com;
 
-		#location / {
-        #index index.html;
-    #}
+		location / {
+        index index.html;
+    }
 
     location /images {
 
