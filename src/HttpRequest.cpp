@@ -25,8 +25,7 @@ HttpRequest::HttpRequest() : _keepAlive(false), _contentLength(0)
 {
 }
 
-HttpRequest::HttpRequest(Client *client)
-    : _client(NULL), _server(NULL), _keepAlive(false), _contentLength(0)
+HttpRequest::HttpRequest(Client *client) : _client(NULL), _server(NULL), _keepAlive(false), _contentLength(0)
 {
     try
     {
@@ -173,7 +172,7 @@ void HttpRequest::checkAllowedMethods(Location *location)
 
     if (set_allowed_methods.size() == 0)
         return;
-        
+
     std::set<HttpMethod>::iterator it = set_allowed_methods.begin();
     for (; it != set_allowed_methods.end(); ++it)
     {
@@ -187,7 +186,7 @@ void HttpRequest::checkPermisionReadFile(std::string path)
 {
     if (path.find("../") != std::string::npos)
         throw std::runtime_error("403 Forbidden");
-        
+
     if (access(path.c_str(), F_OK) == -1)
         throw std::runtime_error("404 Not Found");
 
@@ -197,22 +196,22 @@ void HttpRequest::checkPermisionReadFile(std::string path)
 
 void HttpRequest::isFinishByFile(std::string path)
 {
-    struct stat	buff;
-    
+    struct stat buff;
+
     std::cout << "Check " << path << "\n";
-    
+
     if (access(path.c_str(), F_OK) == -1)
     {
         std::cout << "error acess\n";
         return; // ❗ OBLIGATOIRE
     }
-    
+
     if (stat(path.c_str(), &buff) != 0)
     {
         std::cout << "error stat\n";
         return; // ❗ OBLIGATOIRE
     }
-    
+
     if (S_ISREG(buff.st_mode))
         std::cout << "Regular file\n";
     else if (S_ISDIR(buff.st_mode))
@@ -370,7 +369,7 @@ void HttpRequest::validateRequest(void)
 {
     Location *location;
     std::string path_root;
-    
+
     location = findLocation();
     if (location == NULL)
         std::cout << "No location found\n";
@@ -386,8 +385,8 @@ void HttpRequest::validateRequest(void)
         }
         checkAllowedMethods(location);
     }
-    //Which method -> different behavior
-    readFile(location); //GET
+    // Which method -> different behavior
+    readFile(location); // GET
 }
 
 void HttpRequest::bodyInterpretation(void)
@@ -489,18 +488,18 @@ Location *HttpRequest::findLocation(void)
 std::string HttpRequest::resolveRoot(Location *location)
 {
     if (location != NULL && location->getRoot() != "")
-        return(location->getRoot());
+        return (location->getRoot());
     else
-        return(getServer()->getRoot());
+        return (getServer()->getRoot());
 }
 
 std::string HttpRequest::createPath(Location *location)
 {
     std::string path = resolveRoot(location);
     std::string locationPath;
-    
+
     std::cout << "root: " << path << "\n";
-        
+
     if (location != NULL)
     {
         locationPath = location->getName();
@@ -508,20 +507,20 @@ std::string HttpRequest::createPath(Location *location)
             path += '/';
         path += locationPath;
     }
-    
+
     if (path[path.length() - 1] != '/')
         path += '/';
-    
+
     // Recuper le dernier path de l'uri est le append to path pour check if il fini par un fichier ?
     isFinishByFile(path);
-    
+
     // if not file, refer to index
     path += "index.html";
 
-    //if not index and if auto index on listing the file in folder 
+    // if not index and if auto index on listing the file in folder
 
-    //else throw 404 Not Found
-    
+    // else throw 404 Not Found
+
     return path;
 }
 
@@ -529,10 +528,10 @@ void HttpRequest::readFile(Location *location)
 {
     std::string path;
     std::string contentFile;
-    
+
     path = createPath(location);
     std::cout << "Path to read: " << path << "\n";
-    
+
     checkPermisionReadFile(path);
     parseConfigFile(path.c_str(), contentFile);
 
