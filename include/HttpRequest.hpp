@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/28 20:57:05 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/28 20:59:45 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,10 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <unistd.h>
 #include <vector>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
 
 class Client;
 class Server;
@@ -98,7 +95,7 @@ class HttpRequest
     void readFile(Location *location);
     std::string resolveRoot(Location *location);
     std::string createPath(Location *location);
-    
+
     // =====================
     // ==     Validity    ==
     // =====================

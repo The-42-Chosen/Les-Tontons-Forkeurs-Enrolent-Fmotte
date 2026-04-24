@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/28 20:56:03 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/28 21:00:16 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -719,9 +719,9 @@ std::string HttpRequest::createPath(Location *location)
 {
     std::string path = resolveRoot(location);
     std::string locationPath;
-    
+
     std::cout << "root: " << path << "\n";
-        
+
     if (location != NULL)
     {
         locationPath = location->getName();
@@ -729,20 +729,20 @@ std::string HttpRequest::createPath(Location *location)
             path += '/';
         path += locationPath;
     }
-    
+
     if (path[path.length() - 1] != '/')
         path += '/';
-    
+
     // Recuper le dernier path de l'uri est le append to path pour check if il fini par un fichier ?
     isFinishByFile(path);
-    
+
     // if not file, refer to index
     path += "index.html";
 
-    //if not index and if auto index on listing the file in folder 
+    // if not index and if auto index on listing the file in folder
 
-    //else throw 404 Not Found
-    
+    // else throw 404 Not Found
+
     return path;
 }
 
@@ -750,10 +750,10 @@ void HttpRequest::readFile(Location *location)
 {
     std::string path;
     std::string contentFile;
-    
+
     path = createPath(location);
     std::cout << "Path to read: " << path << "\n";
-    
+
     checkPermisionReadFile(path);
     parseConfigFile(path.c_str(), contentFile);
 
