@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   utilsParsing.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:21:25 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/23 13:35:39 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/24 17:02:10 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utilsParsing.hpp"
 #include "execption.hpp"
 
-int parseConfigFile(char *filename, std::string &content_file)
+int parseConfigFile(const char *filename, std::string &content_file)
 {
     // Reading
     std::ifstream f(filename);
