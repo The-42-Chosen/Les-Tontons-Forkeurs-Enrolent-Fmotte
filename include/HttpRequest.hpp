@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/28 20:50:50 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/28 20:57:05 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <vector>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 class Client;
 class Server;
@@ -79,7 +82,6 @@ class HttpRequest
     void interpretation(void);
     void bodyInterpretation(void);
     void linkToServer(void);
-
     void validateRequest(void);
     Location *findLocation(void);
 
@@ -93,8 +95,10 @@ class HttpRequest
     static std::string trimSpaces(const std::string &value);
     static std::string getHeaderValue(const std::string &request, const std::string &headerName);
     static bool isCompleteChunkedBody(const std::string &request, std::string::size_type bodyStart);
-    void readFile(void);
-
+    void readFile(Location *location);
+    std::string resolveRoot(Location *location);
+    std::string createPath(Location *location);
+    
     // =====================
     // ==     Validity    ==
     // =====================
