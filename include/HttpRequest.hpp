@@ -20,10 +20,10 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <vector>
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
+#include <vector>
 
 class Client;
 class Server;
@@ -77,14 +77,14 @@ class HttpRequest
     void interpretation(void);
     void bodyInterpretation(void);
     void linkToServer(void);
-    
+
     void validateRequest(void);
     Location *findLocation(void);
-    
+
     void readFile(Location *location);
     std::string resolveRoot(Location *location);
     std::string createPath(Location *location);
-    
+
     // =====================
     // ==     Validity    ==
     // =====================
@@ -94,7 +94,7 @@ class HttpRequest
     void checkAllowedMethods(Location *location);
     void checkPermisionReadFile(std::string path);
     void isFinishByFile(std::string path);
-    
+
     // Helper
     static const char *methodToString(HttpMethod method);
 };
