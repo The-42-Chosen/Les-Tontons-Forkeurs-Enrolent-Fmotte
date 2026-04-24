@@ -393,8 +393,8 @@ void HttpRequest::bodyInterpretation(void)
 void HttpRequest::appendBodyBytes(const std::string &data)
 {
     for (std::string::size_type i = 0; i < data.size(); ++i)
-		//if (data[i] != '\r' || data[i] != '\n')
-        	_body.push_back(static_cast<__uint8_t>(data[i]));
+        // if (data[i] != '\r' || data[i] != '\n')
+        _body.push_back(static_cast<__uint8_t>(data[i]));
 }
 
 void HttpRequest::parseChunkedBody(const std::string &headerContent)
