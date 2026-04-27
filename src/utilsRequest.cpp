@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 13:53:46 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/23 16:27:14 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/27 16:48:33 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ int longestPrefixMatch(std::string uri, std::string location)
     size_t i = 0, j = 0;
     while (i < token_str1.size() || j < token_str2.size())
     {
-        if (token_str1.size() == i + 1 && token_str1[i].find('.') != std::string::npos)
+        if (token_str1.size() == i + 1 && token_str1[i].find('.') != std::string::npos) //avoid to compare with the file if it exist
         {
             ++i;
             continue;
@@ -100,4 +100,15 @@ size_t parseChunkSize(const std::string &line)
     if (!ss.eof())
         throw std::runtime_error("400 Bad Request");
     return (chunkSize);
+}
+
+std::string returnLastElementPath(std::string path)
+{
+    std::string sub_string;
+    std::vector<std::string> token_str;
+
+    std::stringstream iss1(path);
+    while (getline(iss1, sub_string, '/'))
+        ;
+    return sub_string;
 }
