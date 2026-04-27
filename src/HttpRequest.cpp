@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/28 21:00:16 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/28 21:02:23 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,7 +210,6 @@ bool HttpRequest::isFinishByFile(std::string path)
 
     if (S_ISREG(buff.st_mode))
         return true;
-
     return false;
 }
 
@@ -515,6 +514,7 @@ void HttpRequest::validateRequest(void)
             return; // Server Close
         }
         checkAllowedMethods(location);
+        //check uri
     }
     // Which method -> different behavior
     if (_method == GET)
@@ -717,33 +717,10 @@ void HttpRequest::applyGetMethod(Location *location)
 
 std::string HttpRequest::createPath(Location *location)
 {
-    std::string path = resolveRoot(location);
-    std::string locationPath;
-
-    std::cout << "root: " << path << "\n";
-
-    if (location != NULL)
-    {
-        locationPath = location->getName();
-        if (path[path.length() - 1] != '/' && locationPath[0] != '/')
-            path += '/';
-        path += locationPath;
-    }
-
-    if (path[path.length() - 1] != '/')
-        path += '/';
-
-    // Recuper le dernier path de l'uri est le append to path pour check if il fini par un fichier ?
-    isFinishByFile(path);
-
-    // if not file, refer to index
-    path += "index.html";
-
-    // if not index and if auto index on listing the file in folder
-
-    // else throw 404 Not Found
-
-    return path;
+    if (location != NULL )
+        return createPathWithLocation(location);
+    
+    return createPathWithServer();
 }
 
 void HttpRequest::readFile(Location *location)
