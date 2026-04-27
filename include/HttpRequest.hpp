@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/23 13:32:58 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/27 18:39:10 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ class HttpRequest
     bool _keepAlive;
     size_t _contentLength;
     std::string _path_root;
+  	size_t _totalChunked;
 
   public:
     // =====================
@@ -83,6 +84,12 @@ class HttpRequest
     Location *findLocation(void);
     void resolveRoot(void);
 
+	static std::string toLowerCopy(const std::string &value);
+	static std::string trimSpaces(const std::string &value);
+	static std::string getHeaderValue(const std::string &request, const std::string &headerName);
+	static bool hasChunkedEncoding(const std::string &transferEncoding);
+	static bool isCompleteChunkedBody(const std::string &request, std::string::size_type bodyStart);
+
     // =====================
     // ==     Validity    ==
     // =====================
@@ -94,3 +101,7 @@ class HttpRequest
     // Helper
     static const char *methodToString(HttpMethod method);
 };
+
+bool isCompleteHttpRequest(const std::string &request);
+bool parseDecimalLength(const std::string &value, size_t &contentLength);
+

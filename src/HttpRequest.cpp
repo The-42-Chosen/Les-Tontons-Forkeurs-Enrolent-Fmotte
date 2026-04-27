@@ -6,11 +6,12 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/23 12:30:18 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/27 19:02:13 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
+#include "Webserv.hpp"
 #include "colors.hpp"
 
 #include <iostream>
@@ -21,11 +22,11 @@
 // == Canonical Form  ==
 // =====================
 
-HttpRequest::HttpRequest() : _keepAlive(false), _contentLength(0)
+HttpRequest::HttpRequest() : _keepAlive(false), _contentLength(0), _totalChunked(0)
 {
 }
 
-HttpRequest::HttpRequest(Client *client) : _keepAlive(false), _contentLength(0)
+HttpRequest::HttpRequest(Client *client) : _keepAlive(false), _contentLength(0), _totalChunked(0)
 {
     try
     {
@@ -43,7 +44,7 @@ HttpRequest::HttpRequest(Client *client) : _keepAlive(false), _contentLength(0)
 
 HttpRequest::HttpRequest(const HttpRequest &cpy)
     : _method(cpy._method), _uri(cpy._uri), _protocol(cpy._protocol), _headers(cpy._headers), _body(cpy._body),
-      _keepAlive(cpy._keepAlive), _contentLength(cpy._contentLength)
+    _keepAlive(cpy._keepAlive), _contentLength(cpy._contentLength), _totalChunked(cpy._totalChunked)
 {
 }
 
@@ -58,6 +59,7 @@ HttpRequest &HttpRequest::operator=(const HttpRequest &cpy)
         _body = cpy._body;
         _keepAlive = cpy._keepAlive;
         _contentLength = cpy._contentLength;
+        _totalChunked = cpy._totalChunked;
     }
     return (*this);
 }
@@ -332,6 +334,139 @@ void HttpRequest::parseHttpRequest(const std::string &headerContent)
     parseBody(headerContent);
 }
 
+std::string HttpRequest::toLowerCopy(const std::string &value)
+{
+    std::string lowered = value;
+    for (std::string::size_type i = 0; i < lowered.size(); ++i)
+        lowered[i] = static_cast<char>(std::tolower(static_cast<unsigned char>(lowered[i])));
+    return lowered;
+}
+
+std::string HttpRequest::trimSpaces(const std::string &value)
+{
+    std::string::size_type begin = value.find_first_not_of(" \t");
+    if (begin == std::string::npos)
+        return ("");
+    std::string::size_type end = value.find_last_not_of(" \t");
+    return (value.substr(begin, end - begin + 1));
+}
+
+std::string HttpRequest::getHeaderValue(const std::string &request, const std::string &headerName)
+{
+    std::string::size_type headerEnd = request.find("\r\n\r\n");
+    if (headerEnd == std::string::npos)
+        return ("");
+
+    std::string loweredHeaderName = toLowerCopy(headerName);
+    std::string::size_type current = request.find("\r\n");
+    if (current == std::string::npos)
+        return ("");
+    current += 2;
+
+    while (current < headerEnd)
+    {
+        std::string::size_type lineEnd = request.find("\r\n", current);
+        if (lineEnd == std::string::npos || lineEnd > headerEnd)
+            break;
+        std::string line = request.substr(current, lineEnd - current);
+        std::string::size_type colon = line.find(':');
+        if (colon != std::string::npos)
+        {
+            std::string key = toLowerCopy(trimSpaces(line.substr(0, colon)));
+            if (key == loweredHeaderName)
+                return (trimSpaces(line.substr(colon + 1)));
+        }
+        current = lineEnd + 2;
+    }
+    return ("");
+}
+
+bool parseDecimalLength(const std::string &value, size_t &contentLength)
+{
+    std::stringstream ss(value);
+    size_t parsed = 0;
+    if (!(ss >> parsed))
+        return (false);
+    if (!ss.eof())
+        return (false);
+    contentLength = parsed;
+    return (true);
+}
+
+bool HttpRequest::hasChunkedEncoding(const std::string &transferEncoding)
+{
+    std::string lowered = toLowerCopy(transferEncoding);
+    std::stringstream ss(lowered);
+    std::string token;
+
+    while (std::getline(ss, token, ','))
+    {
+        if (trimSpaces(token) == "chunked")
+            return (true);
+    }
+    return (false);
+}
+
+bool HttpRequest::isCompleteChunkedBody(const std::string &request, std::string::size_type bodyStart)
+{
+    std::string::size_type current = bodyStart;
+
+    while (current < request.size())
+    {
+        std::string::size_type lineEnd = request.find("\r\n", current);
+        if (lineEnd == std::string::npos)
+            return (false);
+
+        std::string sizeToken = request.substr(current, lineEnd - current);
+        std::string::size_type semicolon = sizeToken.find(';');
+        if (semicolon != std::string::npos)
+            sizeToken = sizeToken.substr(0, semicolon);
+        sizeToken = trimSpaces(sizeToken);
+
+        std::stringstream ss(sizeToken);
+        size_t chunkSize = 0;
+        ss >> std::hex >> chunkSize;
+        if (sizeToken.empty() || ss.fail() || !ss.eof())
+            return (true);
+
+        current = lineEnd + 2;
+        if (chunkSize == 0)
+            return (true);
+
+        if (current + chunkSize + 2 > request.size())
+            return (false);
+        if (request.substr(current + chunkSize, 2) != "\r\n")
+            return (true);
+
+        current += chunkSize + 2;
+    }
+    return (false);
+}
+
+bool isCompleteHttpRequest(const std::string &request)
+{
+    std::string::size_type headerEnd = request.find("\r\n\r\n");
+    if (headerEnd == std::string::npos)
+        return (false);
+
+    std::string::size_type bodyStart = headerEnd + 4;
+    std::string transferEncoding = HttpRequest::getHeaderValue(request, "transfer-encoding");
+    if (!transferEncoding.empty() && HttpRequest::hasChunkedEncoding(transferEncoding))
+        return (HttpRequest::isCompleteChunkedBody(request, bodyStart));
+
+    std::string contentLengthValue = HttpRequest::getHeaderValue(request, "content-length");
+    if (!contentLengthValue.empty())
+    {
+        size_t contentLength = 0;
+        if (!parseDecimalLength(contentLengthValue, contentLength))
+            return (true);
+        return ((request.size() - bodyStart) >= contentLength);
+    }
+    return (true);
+}
+
+// end of horrible chunked parsing
+
 void HttpRequest::interpretation(void)
 {
     Location *location;
@@ -395,6 +530,7 @@ void HttpRequest::parseChunkedBody(const std::string &headerContent)
     if (current == std::string::npos)
         return;
     current += 4;
+    // _totalChunked = 0;
 
     while (current < headerContent.size())
     {
@@ -404,6 +540,12 @@ void HttpRequest::parseChunkedBody(const std::string &headerContent)
 
         size_t chunkSize = parseChunkSize(headerContent.substr(current, lineEnd - current));
         current = lineEnd + 2;
+
+        _totalChunked += chunkSize;
+        std::cout << RED << "Total Chunked :" << _totalChunked << RESET << std::endl;
+
+        if (_totalChunked > _client->getServerPtr()->getClientMaxBodySize())
+			throw std::runtime_error("666 The chunked stuff if greater than 'Client Max Body Size value'");
 
         if (chunkSize == 0)
             return;
