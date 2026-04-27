@@ -93,7 +93,7 @@ serv: re
 	./$(NAME) doc/config_file
 
 nc:
-	nc -C 127.0.0.1 8080
+	nc -C 0.0.0.0 8080
 
 c:
 	curl localhost:8080 -H @doc/request
