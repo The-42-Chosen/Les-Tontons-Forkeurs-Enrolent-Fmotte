@@ -208,7 +208,7 @@ bool HttpRequest::isFinishByFile(std::string path)
 
     if (S_ISREG(buff.st_mode))
         return true;
-        
+
     return false;
 }
 
@@ -376,7 +376,7 @@ void HttpRequest::validateRequest(void)
             return; // Server Close
         }
         checkAllowedMethods(location);
-        //check uri
+        // check uri
     }
     // Which method -> different behavior
     readFile(location); // GET
@@ -462,7 +462,7 @@ Location *HttpRequest::findLocation(void)
     Location *best_location = NULL;
     int best_score = 100000;
     int score;
-    
+
     for (int i = 0; (location = _client->getServerPtr()->getLocation(i)) != NULL; ++i)
     {
         score = longestPrefixMatch(_uri, location->getName());
@@ -486,19 +486,19 @@ std::string HttpRequest::createPathWithLocation(Location *location)
         path_root = location->getRoot();
     else
         path_root = getServer()->getRoot();
-        
+
     path_loc = joinPath(path_root, location->getName());
     path_file = joinPath(path_loc, returnLastElementPath(_uri));
-    
+
     if (isFinishByFile(path_file))
         return path_file;
-    
+
     if (location->getIndex() != "")
         return joinPath(path_loc, location->getIndex());
-    
+
     if (location->getAutoIndex())
         return "";
-        
+
     return createPathWithServer();
 }
 
@@ -508,15 +508,15 @@ std::string HttpRequest::createPathWithServer()
     std::string check_path;
     std::string path_root;
     std::string index;
-    
+
     path_root = getServer()->getRoot();
     path_file = joinPath(path_root, returnLastElementPath(_uri));
-    
+
     if (isFinishByFile(path_file))
         return path_file;
 
     for (size_t i = 0; (index = getServer()->getIndex(i)) != ""; ++i)
-    {   
+    {
         check_path = joinPath(path_root, index);
         if (access(check_path.c_str(), F_OK) != -1 && access(check_path.c_str(), R_OK) != -1)
             return (check_path);
@@ -524,15 +524,15 @@ std::string HttpRequest::createPathWithServer()
 
     if (getServer()->getAutoIndex())
         return "";
-    
+
     throw std::runtime_error("404 Not Found");
 }
 
 std::string HttpRequest::createPath(Location *location)
 {
-    if (location != NULL )
+    if (location != NULL)
         return createPathWithLocation(location);
-    
+
     return createPathWithServer();
 }
 

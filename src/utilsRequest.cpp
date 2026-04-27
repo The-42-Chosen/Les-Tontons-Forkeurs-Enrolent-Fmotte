@@ -39,7 +39,8 @@ int longestPrefixMatch(std::string uri, std::string location)
     size_t i = 0, j = 0;
     while (i < token_str1.size() || j < token_str2.size())
     {
-        if (token_str1.size() == i + 1 && token_str1[i].find('.') != std::string::npos) //avoid to compare with the file if it exist
+        if (token_str1.size() == i + 1 &&
+            token_str1[i].find('.') != std::string::npos) // avoid to compare with the file if it exist
         {
             ++i;
             continue;
