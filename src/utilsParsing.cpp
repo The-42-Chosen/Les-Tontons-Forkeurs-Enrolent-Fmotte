@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:21:25 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/24 17:02:10 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/27 13:31:02 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,4 +98,14 @@ unsigned int countOccurrences(const std::string &string, const char occ)
         ++i;
     }
     return nb_occ;
+}
+
+std::string joinPath(const std::string &string1, const std::string &string2)
+{
+    std::string new_path = string1;
+    
+    if (new_path[new_path.length() - 1] != '/' && string2[0] != '/')
+        new_path += '/';
+    new_path += string2;
+    return new_path;
 }
