@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/24 17:40:53 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/27 16:59:32 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,13 +77,14 @@ class HttpRequest
     void interpretation(void);
     void bodyInterpretation(void);
     void linkToServer(void);
-
+    
     void validateRequest(void);
     Location *findLocation(void);
 
     void readFile(Location *location);
-    std::string resolveRoot(Location *location);
     std::string createPath(Location *location);
+    std::string createPathWithLocation(Location *location);
+    std::string createPathWithServer();
 
     // =====================
     // ==     Validity    ==
@@ -93,7 +94,7 @@ class HttpRequest
     void isHostPresentAndValid(void);
     void checkAllowedMethods(Location *location);
     void checkPermisionReadFile(std::string path);
-    void isFinishByFile(std::string path);
+    bool isFinishByFile(std::string path);
 
     // Helper
     static const char *methodToString(HttpMethod method);

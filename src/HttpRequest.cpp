@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/24 18:08:53 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/27 17:47:26 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,30 +194,22 @@ void HttpRequest::checkPermisionReadFile(std::string path)
         throw std::runtime_error("403 Forbidden");
 }
 
-void HttpRequest::isFinishByFile(std::string path)
+bool HttpRequest::isFinishByFile(std::string path)
 {
     struct stat buff;
 
     std::cout << "Check " << path << "\n";
 
     if (access(path.c_str(), F_OK) == -1)
-    {
-        std::cout << "error acess\n";
-        return; // ❗ OBLIGATOIRE
-    }
+        return false;
 
     if (stat(path.c_str(), &buff) != 0)
-    {
-        std::cout << "error stat\n";
-        return; // ❗ OBLIGATOIRE
-    }
+        return false;
 
     if (S_ISREG(buff.st_mode))
-        std::cout << "Regular file\n";
-    else if (S_ISDIR(buff.st_mode))
-        std::cout << "Directory\n";
-    else
-        std::cout << "Other type\n";
+        return true;
+        
+    return false;
 }
 
 // =====================
@@ -384,6 +376,7 @@ void HttpRequest::validateRequest(void)
             return; // Server Close
         }
         checkAllowedMethods(location);
+        //check uri
     }
     // Which method -> different behavior
     readFile(location); // GET
@@ -469,9 +462,8 @@ Location *HttpRequest::findLocation(void)
     Location *best_location = NULL;
     int best_score = 100000;
     int score;
-    int i = 0;
-
-    while ((location = _client->getServerPtr()->getLocation(i)) != NULL)
+    
+    for (int i = 0; (location = _client->getServerPtr()->getLocation(i)) != NULL; ++i)
     {
         score = longestPrefixMatch(_uri, location->getName());
 
@@ -480,48 +472,68 @@ Location *HttpRequest::findLocation(void)
             best_location = location;
             best_score = score;
         }
-        ++i;
     }
     return best_location;
 }
 
-std::string HttpRequest::resolveRoot(Location *location)
+std::string HttpRequest::createPathWithLocation(Location *location)
 {
-    if (location != NULL && location->getRoot() != "")
-        return (location->getRoot());
+    std::string path_file;
+    std::string path_loc;
+    std::string path_root;
+
+    if (location->getRoot() != "")
+        path_root = location->getRoot();
     else
-        return (getServer()->getRoot());
+        path_root = getServer()->getRoot();
+        
+    path_loc = joinPath(path_root, location->getName());
+    path_file = joinPath(path_loc, returnLastElementPath(_uri));
+    
+    if (isFinishByFile(path_file))
+        return path_file;
+    
+    if (location->getIndex() != "")
+        return joinPath(path_loc, location->getIndex());
+    
+    if (location->getAutoIndex())
+        return "";
+        
+    return createPathWithServer();
+}
+
+std::string HttpRequest::createPathWithServer()
+{
+    std::string path_file;
+    std::string check_path;
+    std::string path_root;
+    std::string index;
+    
+    path_root = getServer()->getRoot();
+    path_file = joinPath(path_root, returnLastElementPath(_uri));
+    
+    if (isFinishByFile(path_file))
+        return path_file;
+
+    for (size_t i = 0; (index = getServer()->getIndex(i)) != ""; ++i)
+    {   
+        check_path = joinPath(path_root, index);
+        if (access(check_path.c_str(), F_OK) != -1 && access(check_path.c_str(), R_OK) != -1)
+            return (check_path);
+    }
+
+    if (getServer()->getAutoIndex())
+        return "";
+    
+    throw std::runtime_error("404 Not Found");
 }
 
 std::string HttpRequest::createPath(Location *location)
 {
-    std::string path = resolveRoot(location);
-    std::string locationPath;
-
-    std::cout << "root: " << path << "\n";
-
-    if (location != NULL)
-    {
-        locationPath = location->getName();
-        if (path[path.length() - 1] != '/' && locationPath[0] != '/')
-            path += '/';
-        path += locationPath;
-    }
-
-    if (path[path.length() - 1] != '/')
-        path += '/';
-
-    // Recuper le dernier path de l'uri est le append to path pour check if il fini par un fichier ?
-    isFinishByFile(path);
-
-    // if not file, refer to index
-    path += "index.html";
-
-    // if not index and if auto index on listing the file in folder
-
-    // else throw 404 Not Found
-
-    return path;
+    if (location != NULL )
+        return createPathWithLocation(location);
+    
+    return createPathWithServer();
 }
 
 void HttpRequest::readFile(Location *location)
