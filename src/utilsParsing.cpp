@@ -103,7 +103,7 @@ unsigned int countOccurrences(const std::string &string, const char occ)
 std::string joinPath(const std::string &string1, const std::string &string2)
 {
     std::string new_path = string1;
-    
+
     if (new_path[new_path.length() - 1] != '/' && string2[0] != '/')
         new_path += '/';
     new_path += string2;

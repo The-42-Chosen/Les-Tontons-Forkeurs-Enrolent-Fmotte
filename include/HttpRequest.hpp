@@ -77,7 +77,7 @@ class HttpRequest
     void interpretation(void);
     void bodyInterpretation(void);
     void linkToServer(void);
-    
+
     void validateRequest(void);
     Location *findLocation(void);
 
