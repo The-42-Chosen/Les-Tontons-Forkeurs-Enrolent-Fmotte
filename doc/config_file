@@ -35,6 +35,7 @@ server {
     location /images/cat {
 
         root ./webPageFile;
+        index index.html;
         autoindex on;
 
     }
