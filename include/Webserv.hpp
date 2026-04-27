@@ -15,9 +15,9 @@
 #include "Client.hpp"
 #include "HttpRequest.hpp"
 #include "Server.hpp"
+#include "colors.hpp"
 #include "execption.hpp"
 #include "struct.hpp"
-#include "colors.hpp"
 #include "utilsConnection.hpp"
 #include <cstring>
 #include <errno.h>

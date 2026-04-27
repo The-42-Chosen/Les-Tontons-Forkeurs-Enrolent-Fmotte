@@ -13,7 +13,6 @@
 #include "Webserv.hpp"
 #include "HttpRequest.hpp"
 
-
 // =====================
 // == Canonical Form  ==
 // =====================
