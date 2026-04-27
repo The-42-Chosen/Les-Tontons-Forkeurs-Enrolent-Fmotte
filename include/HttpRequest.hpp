@@ -45,7 +45,7 @@ class HttpRequest
     bool _keepAlive;
     size_t _contentLength;
     std::string _path_root;
-  	size_t _totalChunked;
+    size_t _totalChunked;
 
   public:
     // =====================
@@ -89,11 +89,11 @@ class HttpRequest
     std::string createPathWithLocation(Location *location);
     std::string createPathWithServer();
 
-	static std::string toLowerCopy(const std::string &value);
-	static std::string trimSpaces(const std::string &value);
-	static std::string getHeaderValue(const std::string &request, const std::string &headerName);
-	static bool hasChunkedEncoding(const std::string &transferEncoding);
-	static bool isCompleteChunkedBody(const std::string &request, std::string::size_type bodyStart);
+    static std::string toLowerCopy(const std::string &value);
+    static std::string trimSpaces(const std::string &value);
+    static std::string getHeaderValue(const std::string &request, const std::string &headerName);
+    static bool hasChunkedEncoding(const std::string &transferEncoding);
+    static bool isCompleteChunkedBody(const std::string &request, std::string::size_type bodyStart);
 
     // =====================
     // ==     Validity    ==
@@ -111,4 +111,3 @@ class HttpRequest
 
 bool isCompleteHttpRequest(const std::string &request);
 bool parseDecimalLength(const std::string &value, size_t &contentLength);
-

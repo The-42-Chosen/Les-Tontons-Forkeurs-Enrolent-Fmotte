@@ -44,7 +44,7 @@ HttpRequest::HttpRequest(Client *client) : _client(NULL), _server(NULL), _keepAl
 
 HttpRequest::HttpRequest(const HttpRequest &cpy)
     : _method(cpy._method), _uri(cpy._uri), _protocol(cpy._protocol), _headers(cpy._headers), _body(cpy._body),
-    _keepAlive(cpy._keepAlive), _contentLength(cpy._contentLength), _totalChunked(cpy._totalChunked)
+      _keepAlive(cpy._keepAlive), _contentLength(cpy._contentLength), _totalChunked(cpy._totalChunked)
 {
 }
 
@@ -553,7 +553,7 @@ void HttpRequest::parseChunkedBody(const std::string &headerContent)
         std::cout << RED << "Total Chunked :" << _totalChunked << RESET << std::endl;
 
         if (_totalChunked > _client->getServerPtr()->getClientMaxBodySize())
-			throw std::runtime_error("666 The chunked stuff if greater than 'Client Max Body Size value'");
+            throw std::runtime_error("666 The chunked stuff if greater than 'Client Max Body Size value'");
 
         if (chunkSize == 0)
             return;
