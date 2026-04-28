@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/27 17:47:26 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/28 12:43:39 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -376,10 +376,10 @@ void HttpRequest::validateRequest(void)
             return; // Server Close
         }
         checkAllowedMethods(location);
-        // check uri
     }
     // Which method -> different behavior
-    readFile(location); // GET
+    if (_method == GET)
+        applyGetMethod(location); 
 }
 
 void HttpRequest::bodyInterpretation(void)
@@ -536,7 +536,7 @@ std::string HttpRequest::createPath(Location *location)
     return createPathWithServer();
 }
 
-void HttpRequest::readFile(Location *location)
+void HttpRequest::applyGetMethod(Location *location)
 {
     std::string path;
     std::string contentFile;
