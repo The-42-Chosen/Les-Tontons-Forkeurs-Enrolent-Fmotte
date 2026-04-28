@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/28 04:31:45 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/28 12:50:07 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -551,7 +551,9 @@ void HttpRequest::parseChunkedBody(const std::string &headerContent)
         current = lineEnd + 2;
 
         _totalChunked += chunkSize;
-        std::cout << RED << "Total Chunked :" << _totalChunked << RESET << std::endl;
+        std::cout	<< RED << "Total Chunked :" << _totalChunked 
+					<< GREEN << "Max Body Size: " << maxBodySize
+					<< RESET << std::endl;
 
         if (_totalChunked > maxBodySize)
             throw std::runtime_error("666 The chunked stuff if greater than 'Client Max Body Size value'");

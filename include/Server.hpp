@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:43:21 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/23 13:32:58 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/28 12:55:06 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,15 +23,13 @@
 
 #define DEFAULT_IP "0.0.0.0"
 #define DEFAULT_PORT 8080
-#define DEFAULT_CLIENT_MAX_BODY_SIZE 5000
+#define DEFAULT_CLIENT_MAX_BODY_SIZE 10
 
 class Webserv;
 
 class Server
 {
   private:
-    const Webserv *_webser;
-
     std::vector<Listen> _listens;
     std::vector<std::string> _name_servers;
     std::vector<Location> _locations;
@@ -50,7 +48,7 @@ class Server
     // =====================
 
     Server();
-    Server(const Webserv *webser);
+    Server(const Webserv *);
     ~Server();
     Server(const Server &other);
     Server &operator=(const Server &other);
