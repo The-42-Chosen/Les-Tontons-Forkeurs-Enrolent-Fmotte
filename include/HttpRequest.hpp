@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/28 20:48:55 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/28 20:50:26 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,6 @@ class HttpRequest
     static std::string toLowerCopy(const std::string &value);
     static std::string trimSpaces(const std::string &value);
     static std::string getHeaderValue(const std::string &request, const std::string &headerName);
-    static bool hasChunkedEncoding(const std::string &transferEncoding);
     static bool isCompleteChunkedBody(const std::string &request, std::string::size_type bodyStart);
 
     // =====================
