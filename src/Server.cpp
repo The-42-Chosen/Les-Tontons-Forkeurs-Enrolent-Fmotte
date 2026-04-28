@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:50:27 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/23 13:35:39 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/28 12:21:11 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,13 @@
 // =====================
 
 Server::Server()
-    : _webser(0), _listens(0), _name_servers(0), _locations(0), _root(""), _index_files(0), _auto_index(false),
+    : _listens(0), _name_servers(0), _locations(0), _root(""), _index_files(0), _auto_index(false),
       _error_page(0), _client_max_body_size(DEFAULT_CLIENT_MAX_BODY_SIZE), _ret(HttpReturn())
 {
 }
 
-Server::Server(const Webserv *webser)
-    : _webser(webser), _listens(0), _name_servers(0), _locations(0), _root(""), _index_files(0), _auto_index(false),
+Server::Server(const Webserv *)
+    : _listens(0), _name_servers(0), _locations(0), _root(""), _index_files(0), _auto_index(false),
       _error_page(0), _client_max_body_size(DEFAULT_CLIENT_MAX_BODY_SIZE), _ret(HttpReturn())
 {
 }
