@@ -379,7 +379,7 @@ void HttpRequest::validateRequest(void)
     }
     // Which method -> different behavior
     if (_method == GET)
-        applyGetMethod(location); 
+        applyGetMethod(location);
 }
 
 void HttpRequest::bodyInterpretation(void)

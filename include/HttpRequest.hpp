@@ -82,7 +82,7 @@ class HttpRequest
     Location *findLocation(void);
 
     void applyGetMethod(Location *location);
-    
+
     std::string createPath(Location *location);
     std::string createPathWithLocation(Location *location);
     std::string createPathWithServer();
