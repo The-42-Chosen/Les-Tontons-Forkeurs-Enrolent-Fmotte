@@ -547,14 +547,14 @@ void HttpRequest::parseChunkedBody(const std::string &headerContent)
     _totalChunked = 0;
 
     size_t maxBodySize = 0;
-	if (_location != NULL)
-    	maxBodySize = _location->getClientMaxBodySize();
+    if (_location != NULL)
+        maxBodySize = _location->getClientMaxBodySize();
 
-	if (maxBodySize == 0)
-		maxBodySize = _client->getServerPtr()->getClientMaxBodySize();
-	
-	if (maxBodySize == 0)
-		maxBodySize = DEFAULT_CLIENT_MAX_BODY_SIZE;
+    if (maxBodySize == 0)
+        maxBodySize = _client->getServerPtr()->getClientMaxBodySize();
+
+    if (maxBodySize == 0)
+        maxBodySize = DEFAULT_CLIENT_MAX_BODY_SIZE;
 
     while (current < headerContent.size())
     {
