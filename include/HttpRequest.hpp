@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/28 21:05:06 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/28 21:09:50 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,17 +82,13 @@ class HttpRequest
     void validateRequest(void);
     Location *findLocation(void);
 
-    void applyGetMethod(Location *location);
-
-    std::string createPath(Location *location);
-    std::string createPathWithLocation(Location *location);
-    std::string createPathWithServer();
-
     static std::string toLowerCopy(const std::string &value);
     static std::string trimSpaces(const std::string &value);
     static std::string getHeaderValue(const std::string &request, const std::string &headerName);
     static bool isCompleteChunkedBody(const std::string &request, std::string::size_type bodyStart);
+
     void applyGetMethod(Location *location);
+
     std::string createPath(Location *location);
     std::string createPathWithLocation(Location *location);
     std::string createPathWithServer();

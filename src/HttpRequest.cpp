@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/28 21:04:45 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/28 21:12:02 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -701,28 +701,6 @@ std::string HttpRequest::createPath(Location *location)
 }
 
 void HttpRequest::applyGetMethod(Location *location)
-{
-    std::string path;
-    std::string contentFile;
-
-    path = createPath(location);
-    std::cout << "Path to read: " << path << "\n";
-
-    checkPermisionReadFile(path);
-    parseConfigFile(path.c_str(), contentFile);
-
-    std::cout << "\ncontentFile: " << contentFile << "\n";
-}
-
-std::string HttpRequest::createPath(Location *location)
-{
-    if (location != NULL )
-        return createPathWithLocation(location);
-
-    return createPathWithServer();
-}
-
-void HttpRequest::readFile(Location *location)
 {
     std::string path;
     std::string contentFile;
