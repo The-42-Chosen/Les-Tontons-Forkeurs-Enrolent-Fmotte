@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/27 16:59:32 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/28 12:41:49 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,8 @@ class HttpRequest
     void validateRequest(void);
     Location *findLocation(void);
 
-    void readFile(Location *location);
+    void applyGetMethod(Location *location);
+    
     std::string createPath(Location *location);
     std::string createPathWithLocation(Location *location);
     std::string createPathWithServer();
