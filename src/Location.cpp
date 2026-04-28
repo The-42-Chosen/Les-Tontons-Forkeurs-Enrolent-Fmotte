@@ -21,7 +21,7 @@
 
 Location::Location()
     : _name(""), _allowed_methods(), _root(""), _index(""), _auto_index(false), _error_page(HttpReturn()),
-      _client_max_body_size(DEFAULT_CLIENT_MAX_BODY_SIZE), _ret(HttpReturn())
+      _client_max_body_size(0), _ret(HttpReturn())
 {
 }
 
