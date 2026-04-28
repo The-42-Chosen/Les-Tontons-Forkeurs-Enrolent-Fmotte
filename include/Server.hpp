@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:43:21 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/28 12:55:06 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/28 15:50:02 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 
 #define DEFAULT_IP "0.0.0.0"
 #define DEFAULT_PORT 8080
-#define DEFAULT_CLIENT_MAX_BODY_SIZE 10
+#define DEFAULT_CLIENT_MAX_BODY_SIZE 100
 
 class Webserv;
 

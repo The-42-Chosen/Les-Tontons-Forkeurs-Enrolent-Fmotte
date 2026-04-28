@@ -18,13 +18,13 @@
 
 Server::Server()
     : _listens(0), _name_servers(0), _locations(0), _root(""), _index_files(0), _auto_index(false), _error_page(0),
-      _client_max_body_size(DEFAULT_CLIENT_MAX_BODY_SIZE), _ret(HttpReturn())
+      _client_max_body_size(0), _ret(HttpReturn())
 {
 }
 
 Server::Server(const Webserv *)
     : _listens(0), _name_servers(0), _locations(0), _root(""), _index_files(0), _auto_index(false), _error_page(0),
-      _client_max_body_size(DEFAULT_CLIENT_MAX_BODY_SIZE), _ret(HttpReturn())
+      _client_max_body_size(0), _ret(HttpReturn())
 {
 }
 
