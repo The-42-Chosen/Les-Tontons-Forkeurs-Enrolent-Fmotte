@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/27 19:02:13 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/04/28 04:31:45 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -266,17 +266,12 @@ void HttpRequest::parseHeader(const std::string &headerContent)
 
             std::string key = requestLine.substr(0, colon);
             std::string value = requestLine.substr(colon + 1);
-            std::string::size_type first = value.find_first_not_of(" \t");
-            if (first != std::string::npos)
-                value = value.substr(first);
-            else
-                value.clear();
-
+            value = trimSpaces(value);
             _headers[toLowerString(key)] = toLowerString(value);
         }
         current = next + 2;
-        isHostPresentAndValid();
     }
+    isHostPresentAndValid();
 }
 
 // _body
@@ -290,6 +285,13 @@ void HttpRequest::parseBody(const std::string &headerContent)
 
     if (connectionIt != _headers.end() && connectionIt->second == "keep-alive")
         _keepAlive = true;
+
+    if (transferEncodingIt != _headers.end() && contentLengthIt != _headers.end())
+        throw std::runtime_error("400 Bad Request");
+
+    size_t maxBodySize = _client->getServerPtr()->getClientMaxBodySize();
+    if (_location != NULL)
+        maxBodySize = _location->getClientMaxBodySize();
 
     if (transferEncodingIt != _headers.end())
     {
@@ -308,6 +310,11 @@ void HttpRequest::parseBody(const std::string &headerContent)
         std::stringstream ssLength(contentLengthIt->second);
         if (!(ssLength >> _contentLength))
             throw std::runtime_error("400 Bad Request 1");
+        if (!ssLength.eof())
+            throw std::runtime_error("400 Bad Request 1");
+
+        if (_contentLength > maxBodySize)
+            throw std::runtime_error("413 Payload Too Large");
 
         std::string::size_type bodyStart = headerContent.find("\r\n\r\n");
         if (bodyStart == std::string::npos)
@@ -331,6 +338,10 @@ void HttpRequest::parseHttpRequest(const std::string &headerContent)
 {
     parseHeaderMethod(headerContent);
     parseHeader(headerContent);
+    linkToServer();
+    Location *location = findLocation();
+    if (location != NULL)
+        setLocation(location);
     parseBody(headerContent);
 }
 
@@ -393,20 +404,6 @@ bool parseDecimalLength(const std::string &value, size_t &contentLength)
     return (true);
 }
 
-bool HttpRequest::hasChunkedEncoding(const std::string &transferEncoding)
-{
-    std::string lowered = toLowerCopy(transferEncoding);
-    std::stringstream ss(lowered);
-    std::string token;
-
-    while (std::getline(ss, token, ','))
-    {
-        if (trimSpaces(token) == "chunked")
-            return (true);
-    }
-    return (false);
-}
-
 bool HttpRequest::isCompleteChunkedBody(const std::string &request, std::string::size_type bodyStart)
 {
     std::string::size_type current = bodyStart;
@@ -431,7 +428,14 @@ bool HttpRequest::isCompleteChunkedBody(const std::string &request, std::string:
 
         current = lineEnd + 2;
         if (chunkSize == 0)
-            return (true);
+        {
+            if (request.size() < current + 2)
+                return (false);
+            if (request.substr(current, 2) == "\r\n")
+                return (true);
+            std::string::size_type trailersEnd = request.find("\r\n\r\n", current);
+            return (trailersEnd != std::string::npos);
+        }
 
         if (current + chunkSize + 2 > request.size())
             return (false);
@@ -451,7 +455,8 @@ bool isCompleteHttpRequest(const std::string &request)
 
     std::string::size_type bodyStart = headerEnd + 4;
     std::string transferEncoding = HttpRequest::getHeaderValue(request, "transfer-encoding");
-    if (!transferEncoding.empty() && HttpRequest::hasChunkedEncoding(transferEncoding))
+    transferEncoding = HttpRequest::toLowerCopy(HttpRequest::trimSpaces(transferEncoding));
+    if (transferEncoding == "chunked")
         return (HttpRequest::isCompleteChunkedBody(request, bodyStart));
 
     std::string contentLengthValue = HttpRequest::getHeaderValue(request, "content-length");
@@ -530,7 +535,11 @@ void HttpRequest::parseChunkedBody(const std::string &headerContent)
     if (current == std::string::npos)
         return;
     current += 4;
-    // _totalChunked = 0;
+    _totalChunked = 0;
+
+    size_t maxBodySize = _client->getServerPtr()->getClientMaxBodySize();
+    if (_location != NULL)
+        maxBodySize = _location->getClientMaxBodySize();
 
     while (current < headerContent.size())
     {
@@ -544,11 +553,18 @@ void HttpRequest::parseChunkedBody(const std::string &headerContent)
         _totalChunked += chunkSize;
         std::cout << RED << "Total Chunked :" << _totalChunked << RESET << std::endl;
 
-        if (_totalChunked > _client->getServerPtr()->getClientMaxBodySize())
+        if (_totalChunked > maxBodySize)
             throw std::runtime_error("666 The chunked stuff if greater than 'Client Max Body Size value'");
 
         if (chunkSize == 0)
+        {
+            if (headerContent.substr(current, 2) == "\r\n")
+                return;
+            std::string::size_type trailersEnd = headerContent.find("\r\n\r\n", current);
+            if (trailersEnd == std::string::npos)
+                throw std::runtime_error("400 Bad Request");
             return;
+        }
 
         if (current + chunkSize > headerContent.size())
             throw std::runtime_error("400 Bad Request a");
