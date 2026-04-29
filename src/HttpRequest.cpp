@@ -23,7 +23,8 @@
 // == Canonical Form  ==
 // =====================
 
-HttpRequest::HttpRequest() : _keepAlive(false), _contentLength(0), _totalChunked(0)
+HttpRequest::HttpRequest()
+    : _client(NULL), _server(NULL), _location(NULL), _keepAlive(false), _contentLength(0), _totalChunked(0)
 {
 }
 
@@ -118,6 +119,13 @@ void HttpRequest::setServer(Server *server)
     if (server == NULL)
         throw ExecptionErrorUninitializedVariable("*server", "HttpRequest");
     _server = server;
+}
+
+void HttpRequest::setLocation(Location *location)
+{
+    if (location == NULL)
+        throw ExecptionErrorUninitializedVariable("*location", "HttpRequest");
+    _location = location;
 }
 Server *HttpRequest::getServer(void) const
 {

@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/28 21:09:50 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/04/29 05:12:06 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "Client.hpp"
+#include "Location.hpp"
 #include "execption.hpp"
 #include "struct.hpp"
 #include "utilsRequest.hpp"
@@ -27,6 +28,7 @@
 
 class Client;
 class Server;
+class Location;
 
 class HttpRequest
 {
@@ -37,6 +39,7 @@ class HttpRequest
     HttpRequest();
     Client *_client;
     Server *_server;
+    Location *_location;
     HttpMethod _method;
     std::string _uri;
     std::string _protocol;
@@ -64,6 +67,7 @@ class HttpRequest
     const std::string &getProtocol() const;
     void setClient(Client *client);
     void setServer(Server *server);
+    void setLocation(Location *location);
     Server *getServer(void) const;
 
     // =====================
