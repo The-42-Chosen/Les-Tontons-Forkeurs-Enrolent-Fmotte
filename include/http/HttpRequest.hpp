@@ -21,10 +21,10 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
 #include <vector>
-#include <sys/types.h>
-#include <sys/stat.h>
 
 class Client;
 class Server;
