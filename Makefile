@@ -6,7 +6,7 @@
 #    By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/11 16:36:16 by fmotte            #+#    #+#              #
-#    Updated: 2026/04/23 13:32:58 by erpascua         ###   ########.fr        #
+#    Updated: 2026/04/29 05:43:32 by erpascua         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,36 +22,41 @@ CXXFLAGS = -Wall -Wextra -Werror -MMD -MP -std=c++98 -g
 
 
 # =======================================
-#              FILE
-# =======================================
-FILE_NAMES =	main
-
-CLASS_FILE =	Webserv \
-				Server \
-				Location \
-				Client \
-				HttpRequest \
-				utilsConnection \
-				utilsDuplicate \
-				utilsParsing \
-				utilsRequest \
-				execption \
-				struct \
-
-ABSTR_FILE = 	
-
-TEMPL_FILE =
-
-# =======================================
-#              VARIABLE
+#              FILES
 # =======================================
 SRC_PATH = src
 OBJ_PATH = obj
 HEA_PATH = include
 
-SRC_FILES = $(FILE_NAMES:%=$(SRC_PATH)/%.cpp) $(CLASS_FILE:%=$(SRC_PATH)/%.cpp)
-OBJ_FILES = $(FILE_NAMES:%=$(OBJ_PATH)/%.o) $(CLASS_FILE:%=$(OBJ_PATH)/%.o)
-HEA_FILES = $(CLASS_FILE:%=$(HEA_PATH)/%.hpp) $(ABSTR_FILE:%=$(HEA_PATH)/%.hpp) $(TEMPL_FILE:%=$(HEA_PATH)/%.tpp) $(TEMPL_FILE:%=$(HEA_PATH)/%.hpp)
+SRC_FILES = \
+	$(SRC_PATH)/core/main.cpp \
+	$(SRC_PATH)/core/Webserv.cpp \
+	$(SRC_PATH)/core/execption.cpp \
+	$(SRC_PATH)/core/struct.cpp \
+	$(SRC_PATH)/config/Server.cpp \
+	$(SRC_PATH)/config/Location.cpp \
+	$(SRC_PATH)/config/utilsDuplicate.cpp \
+	$(SRC_PATH)/config/utilsParsing.cpp \
+	$(SRC_PATH)/network/Client.cpp \
+	$(SRC_PATH)/network/utilsConnection.cpp \
+	$(SRC_PATH)/http/HttpRequest.cpp \
+	$(SRC_PATH)/request/utilsRequest.cpp
+
+HEA_FILES = \
+	$(HEA_PATH)/common/colors.hpp \
+	$(HEA_PATH)/common/execption.hpp \
+	$(HEA_PATH)/core/Webserv.hpp \
+	$(HEA_PATH)/core/struct.hpp \
+	$(HEA_PATH)/config/Server.hpp \
+	$(HEA_PATH)/config/Location.hpp \
+	$(HEA_PATH)/config/utilsDuplicate.hpp \
+	$(HEA_PATH)/config/utilsParsing.hpp \
+	$(HEA_PATH)/network/Client.hpp \
+	$(HEA_PATH)/network/utilsConnection.hpp \
+	$(HEA_PATH)/http/HttpRequest.hpp \
+	$(HEA_PATH)/request/utilsRequest.hpp
+
+OBJ_FILES = $(SRC_FILES:$(SRC_PATH)/%.cpp=$(OBJ_PATH)/%.o)
 DEP_FILES = $(OBJ_FILES:.o=.d)
 
 NAME =  Webserv
@@ -68,7 +73,15 @@ $(OBJ_PATH) :
 	@mkdir -p $(OBJ_PATH)
 
 $(OBJ_PATH)/%.o: $(SRC_PATH)/%.cpp $(HEA_FILES) | $(OBJ_PATH)
-	@$(CXX) $(CXXFLAGS) -I $(HEA_PATH) -O3 -c $< -o $@
+	@mkdir -p $(dir $@)
+	@$(CXX) $(CXXFLAGS) -I $(HEA_PATH) \
+		-I $(HEA_PATH)/common \
+		-I $(HEA_PATH)/config \
+		-I $(HEA_PATH)/core \
+		-I $(HEA_PATH)/http \
+		-I $(HEA_PATH)/network \
+		-I $(HEA_PATH)/request \
+		-O3 -c $< -o $@
 
 
 $(NAME): $(OBJ_FILES) 

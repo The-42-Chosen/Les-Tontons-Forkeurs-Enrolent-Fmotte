@@ -8,6 +8,7 @@ Webserv
 *.d
 
 .vscode
+.DS_Store
 
 # nvim setup
 compile_commands.json
