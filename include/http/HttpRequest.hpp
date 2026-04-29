@@ -25,6 +25,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <vector>
+#include <cstdio>
 
 class Client;
 class Server;
@@ -92,6 +93,7 @@ class HttpRequest
     static bool isCompleteChunkedBody(const std::string &request, std::string::size_type bodyStart);
 
     void applyGetMethod(Location *location);
+    void applyDeleteMethod(Location *location);
 
     std::string createPath(Location *location);
     std::string createPathWithLocation(Location *location);

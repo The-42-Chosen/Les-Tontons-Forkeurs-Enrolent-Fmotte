@@ -526,6 +526,8 @@ void HttpRequest::validateRequest(void)
     // Which method -> different behavior
     if (_method == GET)
         applyGetMethod(location);
+    else if (_method == DELETE)
+	    applyDeleteMethod(location);
 }
 
 void HttpRequest::bodyInterpretation(void)
@@ -720,4 +722,24 @@ void HttpRequest::applyGetMethod(Location *location)
     parseConfigFile(path.c_str(), contentFile);
 
     std::cout << "\ncontentFile: " << contentFile << "\n";
+}
+
+void HttpRequest::applyDeleteMethod(Location *location)
+{
+	std::string path;
+	struct stat buff;
+
+	path = createPath(location);
+	std::cout << "Path to file to delete " << path << "\n";
+
+	if (access(path.c_str(), F_OK) == -1)
+        	throw std::runtime_error("404 Not Found");
+
+	if (stat(path.c_str(), &buff) != 0)
+        	throw std::runtime_error("500 Internal Server Error");
+
+	if (S_ISREG(buff.st_mode))
+        	rmdir(path.c_str());
+	else
+		std::remove(path.c_str());
 }
