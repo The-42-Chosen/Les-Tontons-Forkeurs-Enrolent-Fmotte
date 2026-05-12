@@ -6,18 +6,11 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/12 11:27:41 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/12 16:36:13 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
-#include "Server.hpp"
-#include "Webserv.hpp"
-#include "colors.hpp"
-
-#include <iostream>
-#include <sstream>
-#include <stdexcept>
 
 // =====================
 // == Canonical Form  ==
@@ -191,34 +184,6 @@ void HttpRequest::checkAllowedMethods(Location *location)
             return;
     }
     throw std::runtime_error("405 Method Not Allowed");
-}
-
-void HttpRequest::checkPermisionReadFile(std::string path)
-{
-    if (path.find("../") != std::string::npos)
-        throw std::runtime_error("403 Forbidden");
-    if (access(path.c_str(), F_OK) == -1)
-        throw std::runtime_error("404 Not Found");
-
-    if (access(path.c_str(), R_OK) == -1)
-        throw std::runtime_error("403 Forbidden");
-}
-
-bool HttpRequest::isFinishByFile(std::string path)
-{
-    struct stat buff;
-
-    std::cout << "Check " << path << "\n";
-
-    if (access(path.c_str(), F_OK) == -1)
-        return false;
-
-    if (stat(path.c_str(), &buff) != 0)
-        return false;
-
-    if (S_ISREG(buff.st_mode))
-        return true;
-    return false;
 }
 
 // =====================
@@ -525,9 +490,10 @@ void HttpRequest::validateRequest(void)
     }
     // Which method -> different behavior
     if (_method == GET)
-        applyGetMethod(location);
+        GetMethod method = GetMethod(this, location);
+        
     else if (_method == DELETE)
-	    applyDeleteMethod(location);
+	    DeleteMethod method = DeleteMethod(this, location);
 }
 
 void HttpRequest::bodyInterpretation(void)
@@ -650,96 +616,3 @@ Location *HttpRequest::findLocation(void)
     return best_location;
 }
 
-std::string HttpRequest::createPathWithLocation(Location *location)
-{
-    std::string path_file;
-    std::string path_loc;
-    std::string path_root;
-
-    if (location->getRoot() != "")
-        path_root = location->getRoot();
-    else
-        path_root = getServer()->getRoot();
-
-    path_loc = joinPath(path_root, location->getName());
-    path_file = joinPath(path_loc, returnLastElementPath(_uri));
-
-    if (isFinishByFile(path_file))
-        return path_file;
-
-    if (location->getIndex() != "")
-        return joinPath(path_loc, location->getIndex());
-
-    if (location->getAutoIndex())
-        return "";
-
-    return createPathWithServer();
-}
-
-std::string HttpRequest::createPathWithServer()
-{
-    std::string path_file;
-    std::string check_path;
-    std::string path_root;
-    std::string index;
-
-    path_root = getServer()->getRoot();
-    path_file = joinPath(path_root, returnLastElementPath(_uri));
-
-    if (isFinishByFile(path_file))
-        return path_file;
-
-    for (size_t i = 0; (index = getServer()->getIndex(i)) != ""; ++i)
-    {
-        check_path = joinPath(path_root, index);
-        if (access(check_path.c_str(), F_OK) != -1 && access(check_path.c_str(), R_OK) != -1)
-            return (check_path);
-    }
-
-    if (getServer()->getAutoIndex())
-        return "";
-
-    throw std::runtime_error("404 Not Found");
-}
-
-std::string HttpRequest::createPath(Location *location)
-{
-    if (location != NULL)
-        return createPathWithLocation(location);
-
-    return createPathWithServer();
-}
-
-void HttpRequest::applyGetMethod(Location *location)
-{
-    std::string path;
-    std::string contentFile;
-
-    path = createPath(location);
-    std::cout << "Path to read: " << path << "\n";
-
-    checkPermisionReadFile(path);
-    parseConfigFile(path.c_str(), contentFile);
-
-    std::cout << "\ncontentFile: " << contentFile << "\n";
-}
-
-void HttpRequest::applyDeleteMethod(Location *location)
-{
-	std::string path;
-	struct stat buff;
-
-	path = createPath(location);
-	std::cout << "Path to file to delete " << path << "\n";
-
-	if (access(path.c_str(), F_OK) == -1)
-        throw std::runtime_error("404 Not Found");
-
-	if (stat(path.c_str(), &buff) != 0)
-        throw std::runtime_error("500 Internal Server Error");
-    
-	if (S_ISREG(buff.st_mode))
-        std::remove(path.c_str());
-    else
-        rmdir(path.c_str());     
-}

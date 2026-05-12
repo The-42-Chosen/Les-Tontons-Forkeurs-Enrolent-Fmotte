@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 13:53:46 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/27 16:48:33 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/12 14:27:29 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,4 +112,34 @@ std::string returnLastElementPath(std::string path)
     while (getline(iss1, sub_string, '/'))
         ;
     return sub_string;
+}
+
+void checkPermisionReadFile(std::string path)
+{
+    if (path.find("../") != std::string::npos)
+        throw std::runtime_error("403 Forbidden");
+        
+    if (access(path.c_str(), F_OK) == -1)
+        throw std::runtime_error("404 Not Found");
+
+    if (access(path.c_str(), R_OK) == -1)
+        throw std::runtime_error("403 Forbidden");
+}
+
+bool isFinishByFile(std::string path)
+{
+    struct stat buff;
+
+    std::cout << "Check " << path << "\n";
+
+    if (access(path.c_str(), F_OK) == -1)
+        return false;
+
+    if (stat(path.c_str(), &buff) != 0)
+        return false;
+
+    if (S_ISREG(buff.st_mode))
+        return true;
+        
+    return false;
 }

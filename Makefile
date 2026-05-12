@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+         #
+#    By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/11 16:36:16 by fmotte            #+#    #+#              #
-#    Updated: 2026/04/29 05:43:32 by erpascua         ###   ########.fr        #
+#    Updated: 2026/05/12 14:55:34 by fmotte           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,33 +28,88 @@ SRC_PATH = src
 OBJ_PATH = obj
 HEA_PATH = include
 
-SRC_FILES = \
+# **************************************************************************** #
+# SOURCES
+# **************************************************************************** #
+
+CORE_SRC = \
 	$(SRC_PATH)/core/main.cpp \
 	$(SRC_PATH)/core/Webserv.cpp \
 	$(SRC_PATH)/core/execption.cpp \
-	$(SRC_PATH)/core/struct.cpp \
+	$(SRC_PATH)/core/struct.cpp
+
+CONFIG_SRC = \
 	$(SRC_PATH)/config/Server.cpp \
 	$(SRC_PATH)/config/Location.cpp \
 	$(SRC_PATH)/config/utilsDuplicate.cpp \
-	$(SRC_PATH)/config/utilsParsing.cpp \
+	$(SRC_PATH)/config/utilsParsing.cpp
+
+NETWORK_SRC = \
 	$(SRC_PATH)/network/Client.cpp \
-	$(SRC_PATH)/network/utilsConnection.cpp \
-	$(SRC_PATH)/http/HttpRequest.cpp \
+	$(SRC_PATH)/network/utilsConnection.cpp
+
+HTTP_SRC = \
+	$(SRC_PATH)/http/HttpRequest.cpp
+
+REQUEST_SRC = \
 	$(SRC_PATH)/request/utilsRequest.cpp
 
-HEA_FILES = \
+METHOD_SRC = \
+	$(SRC_PATH)/method/AMethod.cpp \
+	$(SRC_PATH)/method/GetMethod.cpp \
+	$(SRC_PATH)/method/DeleteMethod.cpp
+
+
+SRC_FILES = \
+	$(CORE_SRC) \
+	$(CONFIG_SRC) \
+	$(NETWORK_SRC) \
+	$(HTTP_SRC) \
+	$(REQUEST_SRC) \
+	$(METHOD_SRC)
+
+# **************************************************************************** #
+# HEADERS
+# **************************************************************************** #
+
+COMMON_HEA = \
 	$(HEA_PATH)/common/colors.hpp \
-	$(HEA_PATH)/common/execption.hpp \
+	$(HEA_PATH)/common/execption.hpp
+
+CORE_HEA = \
 	$(HEA_PATH)/core/Webserv.hpp \
-	$(HEA_PATH)/core/struct.hpp \
+	$(HEA_PATH)/core/struct.hpp
+
+CONFIG_HEA = \
 	$(HEA_PATH)/config/Server.hpp \
 	$(HEA_PATH)/config/Location.hpp \
 	$(HEA_PATH)/config/utilsDuplicate.hpp \
-	$(HEA_PATH)/config/utilsParsing.hpp \
+	$(HEA_PATH)/config/utilsParsing.hpp
+
+NETWORK_HEA = \
 	$(HEA_PATH)/network/Client.hpp \
-	$(HEA_PATH)/network/utilsConnection.hpp \
-	$(HEA_PATH)/http/HttpRequest.hpp \
+	$(HEA_PATH)/network/utilsConnection.hpp
+
+HTTP_HEA = \
+	$(HEA_PATH)/http/HttpRequest.hpp
+
+REQUEST_HEA = \
 	$(HEA_PATH)/request/utilsRequest.hpp
+
+METHOD_HEA = \
+	$(HEA_PATH)/method/AMethod.hpp \
+	$(HEA_PATH)/method/GetMethod.hpp \
+	$(HEA_PATH)/method/DeleteMethod.hpp
+
+
+HEA_FILES = \
+	$(COMMON_HEA) \
+	$(CORE_HEA) \
+	$(CONFIG_HEA) \
+	$(NETWORK_HEA) \
+	$(HTTP_HEA) \
+	$(REQUEST_HEA) \
+	$(METHOD_HEA)
 
 OBJ_FILES = $(SRC_FILES:$(SRC_PATH)/%.cpp=$(OBJ_PATH)/%.o)
 DEP_FILES = $(OBJ_FILES:.o=.d)
@@ -81,6 +136,7 @@ $(OBJ_PATH)/%.o: $(SRC_PATH)/%.cpp $(HEA_FILES) | $(OBJ_PATH)
 		-I $(HEA_PATH)/http \
 		-I $(HEA_PATH)/network \
 		-I $(HEA_PATH)/request \
+		-I $(HEA_PATH)/method \
 		-O3 -c $< -o $@
 
 
