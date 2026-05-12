@@ -19,7 +19,7 @@ server {
     #return 301 http://example.com;
 
 		location / {
-        index index.html;
+        index index.htm;
     }
 
     location /images {

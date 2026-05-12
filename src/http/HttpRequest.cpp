@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/12 16:36:13 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/12 19:19:42 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,7 +145,7 @@ void HttpRequest::isValidProtocol(void)
 
 void HttpRequest::isHostPresentAndValid(void)
 {
-    for (std::map<std::string, std::string>::const_iterator it = _headers.begin(); it != _headers.end(); it++)
+    for (Header::const_iterator it = _headers.begin(); it != _headers.end(); it++)
     {
         if (it->first == "host")
         {
@@ -258,9 +258,9 @@ void HttpRequest::parseBody(const std::string &headerContent)
 {
     _body.clear();
 
-    std::map<std::string, std::string>::const_iterator contentLengthIt = _headers.find("content-length");
-    std::map<std::string, std::string>::const_iterator transferEncodingIt = _headers.find("transfer-encoding");
-    std::map<std::string, std::string>::const_iterator connectionIt = _headers.find("connection");
+    Header::const_iterator contentLengthIt = _headers.find("content-length");
+    Header::const_iterator transferEncodingIt = _headers.find("transfer-encoding");
+    Header::const_iterator connectionIt = _headers.find("connection");
 
     if (connectionIt != _headers.end() && connectionIt->second == "keep-alive")
         _keepAlive = true;
@@ -456,7 +456,7 @@ void HttpRequest::interpretation(void)
     std::cout << "Method : |" << this->getMethod() << "| - Uri |" << this->getUri() << "| - Protocol |"
               << this->getProtocol() << "|" << std::endl;
 
-    for (std::map<std::string, std::string>::const_iterator it = _headers.begin(); it != _headers.end(); it++)
+    for (Header::const_iterator it = _headers.begin(); it != _headers.end(); it++)
         std::cout << it->first << " | " << it->second << std::endl;
 
     linkToServer();
