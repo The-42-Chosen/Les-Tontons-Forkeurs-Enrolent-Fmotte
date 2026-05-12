@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+         #
+#    By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/11 16:36:16 by fmotte            #+#    #+#              #
-#    Updated: 2026/05/12 14:55:34 by fmotte           ###   ########.fr        #
+#    Updated: 2026/05/12 20:14:15 by erpascua         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -50,6 +50,8 @@ NETWORK_SRC = \
 
 HTTP_SRC = \
 	$(SRC_PATH)/http/HttpRequest.cpp
+	$(HEA_PATH)/http/utilsResponse.hpp
+
 
 REQUEST_SRC = \
 	$(SRC_PATH)/request/utilsRequest.cpp
@@ -92,6 +94,8 @@ NETWORK_HEA = \
 
 HTTP_HEA = \
 	$(HEA_PATH)/http/HttpRequest.hpp
+	$(HEA_PATH)/http/utilsResponse.hpp
+
 
 REQUEST_HEA = \
 	$(HEA_PATH)/request/utilsRequest.hpp

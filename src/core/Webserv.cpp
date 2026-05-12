@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/27 18:42:11 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/12 20:00:34 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,8 +187,8 @@ void Webserv::receiveMessageFromClient(Client *client)
     HttpRequest request(client);
     client->clearRequest();
 
-    std::string reply = "Message received\n";
-    send(client->getClientFd(), reply.c_str(), reply.size(), 0);
+    // std::string reply = "Message received\n";
+    // send(client->getClientFd(), reply.c_str(), reply.size(), 0);
 }
 
 void Webserv::handleConnection(struct epoll_event &events)
