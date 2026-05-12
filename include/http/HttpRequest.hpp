@@ -13,27 +13,27 @@
 #pragma once
 
 #include "Client.hpp"
+#include "DeleteMethod.hpp"
+#include "GetMethod.hpp"
 #include "Location.hpp"
 #include "Server.hpp"
 #include "Webserv.hpp"
-#include "GetMethod.hpp"
-#include "DeleteMethod.hpp"
 
+#include "colors.hpp"
 #include "execption.hpp"
 #include "struct.hpp"
 #include "utilsRequest.hpp"
-#include "colors.hpp"
 
 #include <map>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 // #include <sys/stat.h>
+#include <cstdio>
+#include <iostream>
 #include <sys/types.h>
 #include <unistd.h>
 #include <vector>
-#include <cstdio>
-#include <iostream>
 
 class Client;
 class Server;

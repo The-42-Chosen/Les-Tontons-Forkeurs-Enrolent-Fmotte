@@ -12,30 +12,29 @@
 
 #pragma once
 
-# include "AMethod.hpp"
+#include "AMethod.hpp"
 
 class HttpRequest;
 
-class GetMethod: public AMethod
+class GetMethod : public AMethod
 {
-    private:
-        // =====================
-        // ==    Attributs    ==
-        // =====================
-        GetMethod();
-        
-    public:
-        // =====================
-        // ==       OCF       ==
-        // =====================
-        GetMethod(HttpRequest *http_request, Location *location);
-        ~GetMethod();
-        GetMethod(const GetMethod &other);
-        GetMethod& operator=(const GetMethod& other);
+  private:
+    // =====================
+    // ==    Attributs    ==
+    // =====================
+    GetMethod();
 
-        // =====================
-        // == 	  Member	  ==
-        // =====================
-        void applyMethod(void);
+  public:
+    // =====================
+    // ==       OCF       ==
+    // =====================
+    GetMethod(HttpRequest *http_request, Location *location);
+    ~GetMethod();
+    GetMethod(const GetMethod &other);
+    GetMethod &operator=(const GetMethod &other);
+
+    // =====================
+    // == 	  Member	  ==
+    // =====================
+    void applyMethod(void);
 };
-
