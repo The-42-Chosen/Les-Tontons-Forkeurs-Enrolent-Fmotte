@@ -50,6 +50,8 @@ NETWORK_SRC = \
 
 HTTP_SRC = \
 	$(SRC_PATH)/http/HttpRequest.cpp
+	$(HEA_PATH)/http/utilsResponse.hpp
+
 
 REQUEST_SRC = \
 	$(SRC_PATH)/request/utilsRequest.cpp
@@ -94,6 +96,8 @@ NETWORK_HEA = \
 
 HTTP_HEA = \
 	$(HEA_PATH)/http/HttpRequest.hpp
+	$(HEA_PATH)/http/utilsResponse.hpp
+
 
 REQUEST_HEA = \
 	$(HEA_PATH)/request/utilsRequest.hpp
