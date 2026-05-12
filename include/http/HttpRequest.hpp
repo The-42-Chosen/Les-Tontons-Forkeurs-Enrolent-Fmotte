@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/29 05:12:06 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/12 16:51:59 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,16 @@
 
 #include "Client.hpp"
 #include "Location.hpp"
+#include "Server.hpp"
+#include "Webserv.hpp"
+#include "GetMethod.hpp"
+#include "DeleteMethod.hpp"
+
 #include "execption.hpp"
 #include "struct.hpp"
 #include "utilsRequest.hpp"
+#include "colors.hpp"
+
 #include <map>
 #include <sstream>
 #include <stdexcept>
@@ -26,6 +33,7 @@
 #include <unistd.h>
 #include <vector>
 #include <cstdio>
+#include <iostream>
 
 class Client;
 class Server;
@@ -92,13 +100,6 @@ class HttpRequest
     static std::string getHeaderValue(const std::string &request, const std::string &headerName);
     static bool isCompleteChunkedBody(const std::string &request, std::string::size_type bodyStart);
 
-    void applyGetMethod(Location *location);
-    void applyDeleteMethod(Location *location);
-
-    std::string createPath(Location *location);
-    std::string createPathWithLocation(Location *location);
-    std::string createPathWithServer();
-
     // =====================
     // ==     Validity    ==
     // =====================
@@ -106,8 +107,6 @@ class HttpRequest
     void isValidProtocol(void);
     void isHostPresentAndValid(void);
     void checkAllowedMethods(Location *location);
-    void checkPermisionReadFile(std::string path);
-    bool isFinishByFile(std::string path);
 
     // Helper
     static const char *methodToString(HttpMethod method);
