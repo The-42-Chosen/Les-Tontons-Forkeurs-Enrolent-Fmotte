@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/12 16:51:59 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/12 18:59:46 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <sys/stat.h>
+// #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <vector>
@@ -38,6 +38,9 @@
 class Client;
 class Server;
 class Location;
+
+typedef std::map<std::string, std::string> Header;
+typedef std::vector<uint8_t> Body;
 
 class HttpRequest
 {
@@ -52,8 +55,8 @@ class HttpRequest
     HttpMethod _method;
     std::string _uri;
     std::string _protocol;
-    std::map<std::string, std::string> _headers;
-    std::vector<__uint8_t> _body;
+    Header _headers;
+    Body _body;
     bool _keepAlive;
     size_t _contentLength;
     std::string _path_root;
