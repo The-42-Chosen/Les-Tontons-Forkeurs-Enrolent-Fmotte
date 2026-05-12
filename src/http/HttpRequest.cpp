@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/04/28 21:12:02 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/12 11:27:41 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -733,13 +733,13 @@ void HttpRequest::applyDeleteMethod(Location *location)
 	std::cout << "Path to file to delete " << path << "\n";
 
 	if (access(path.c_str(), F_OK) == -1)
-        	throw std::runtime_error("404 Not Found");
+        throw std::runtime_error("404 Not Found");
 
 	if (stat(path.c_str(), &buff) != 0)
-        	throw std::runtime_error("500 Internal Server Error");
-
+        throw std::runtime_error("500 Internal Server Error");
+    
 	if (S_ISREG(buff.st_mode))
-        	rmdir(path.c_str());
-	else
-		std::remove(path.c_str());
+        std::remove(path.c_str());
+    else
+        rmdir(path.c_str());     
 }
