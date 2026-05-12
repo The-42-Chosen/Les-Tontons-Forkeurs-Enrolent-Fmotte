@@ -118,7 +118,7 @@ void checkPermisionReadFile(std::string path)
 {
     if (path.find("../") != std::string::npos)
         throw std::runtime_error("403 Forbidden");
-        
+
     if (access(path.c_str(), F_OK) == -1)
         throw std::runtime_error("404 Not Found");
 
@@ -140,6 +140,6 @@ bool isFinishByFile(std::string path)
 
     if (S_ISREG(buff.st_mode))
         return true;
-        
+
     return false;
 }

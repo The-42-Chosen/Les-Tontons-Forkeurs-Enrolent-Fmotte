@@ -491,9 +491,9 @@ void HttpRequest::validateRequest(void)
     // Which method -> different behavior
     if (_method == GET)
         GetMethod method = GetMethod(this, location);
-        
+
     else if (_method == DELETE)
-	    DeleteMethod method = DeleteMethod(this, location);
+        DeleteMethod method = DeleteMethod(this, location);
 }
 
 void HttpRequest::bodyInterpretation(void)
@@ -615,4 +615,3 @@ Location *HttpRequest::findLocation(void)
     }
     return best_location;
 }
-

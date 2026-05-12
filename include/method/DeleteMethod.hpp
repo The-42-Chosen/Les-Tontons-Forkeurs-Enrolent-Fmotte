@@ -12,30 +12,29 @@
 
 #pragma once
 
-# include "AMethod.hpp"
+#include "AMethod.hpp"
 
 class HttpRequest;
 
-class DeleteMethod: public AMethod
+class DeleteMethod : public AMethod
 {
-    private:
-        // =====================
-        // ==    Attributs    ==
-        // =====================
-        DeleteMethod();
-        
-    public:
-        // =====================
-        // ==       OCF       ==
-        // =====================
-        DeleteMethod(HttpRequest *http_request, Location *location);
-        ~DeleteMethod();
-        DeleteMethod(const DeleteMethod &other);
-        DeleteMethod& operator=(const DeleteMethod& other);
+  private:
+    // =====================
+    // ==    Attributs    ==
+    // =====================
+    DeleteMethod();
 
-        // =====================
-        // == 	  Member	  ==
-        // =====================
-        void applyMethod(void);
+  public:
+    // =====================
+    // ==       OCF       ==
+    // =====================
+    DeleteMethod(HttpRequest *http_request, Location *location);
+    ~DeleteMethod();
+    DeleteMethod(const DeleteMethod &other);
+    DeleteMethod &operator=(const DeleteMethod &other);
+
+    // =====================
+    // == 	  Member	  ==
+    // =====================
+    void applyMethod(void);
 };
-

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "GetMethod.hpp"
+#include "GetMethod.hpp"
 
 // =====================
 // ==       OCF       ==
@@ -24,15 +24,14 @@ GetMethod::GetMethod(HttpRequest *http_request, Location *location)
 
 GetMethod::~GetMethod()
 {
-
 }
 
-GetMethod::GetMethod(const GetMethod &other): AMethod(other)
+GetMethod::GetMethod(const GetMethod &other) : AMethod(other)
 {
     *this = other;
 }
 
-GetMethod& GetMethod::operator=(const GetMethod& other)
+GetMethod &GetMethod::operator=(const GetMethod &other)
 {
     AMethod::operator=(other);
     return (*this);

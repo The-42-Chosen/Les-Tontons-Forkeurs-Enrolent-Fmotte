@@ -10,32 +10,33 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "AMethod.hpp"
+#include "AMethod.hpp"
 
-#include "Location.hpp"
 #include "HttpRequest.hpp"
+#include "Location.hpp"
 
 // =====================
 // ==       OCF       ==
 // =====================
 AMethod::AMethod()
 {
-    
 }
 
-AMethod::AMethod(HttpRequest *http_request, Location *location): _http_request(NULL), _location(NULL)
+AMethod::AMethod(HttpRequest *http_request, Location *location) : _http_request(NULL), _location(NULL)
 {
     setHttpRequest(http_request);
     setLocation(location);
 }
 
-AMethod::~AMethod() {}
+AMethod::~AMethod()
+{
+}
 AMethod::AMethod(const AMethod &other)
 {
     *this = other;
 }
 
-AMethod& AMethod::operator=(const AMethod& other)
+AMethod &AMethod::operator=(const AMethod &other)
 {
     _http_request = other._http_request;
     _location = other._location;
@@ -62,12 +63,12 @@ HttpRequest *AMethod::getHttpRequest(void) const
     return _http_request;
 }
 
-void AMethod::setHttpRequest(HttpRequest* http_request)
+void AMethod::setHttpRequest(HttpRequest *http_request)
 {
     if (http_request == NULL)
         throw ExecptionErrorUninitializedVariable("*http_request", "AMethod");
     _http_request = http_request;
-}   
+}
 
 // =====================
 // == 	  Member	  ==
