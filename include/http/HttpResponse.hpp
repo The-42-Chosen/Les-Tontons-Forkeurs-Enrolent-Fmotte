@@ -19,35 +19,35 @@
 class HttpResponse
 {
   private:
-	// =====================
-	// ==    Attributs    ==
-	// =====================
-	int _statusCode;
-	std::string _statusMessage;
-	Header _headers;
-	Body _body;
+    // =====================
+    // ==    Attributs    ==
+    // =====================
+    int _statusCode;
+    std::string _statusMessage;
+    Header _headers;
+    Body _body;
 
-	HttpResponse();
+    HttpResponse();
 
   public:
-	// =====================
-	// == Canonical Form  ==
-	// =====================
-	HttpResponse(int code, Body &body, const std::string &contentType);
-	~HttpResponse();
+    // =====================
+    // == Canonical Form  ==
+    // =====================
+    HttpResponse(int code, Body &body, const std::string &contentType);
+    ~HttpResponse();
 
-	// =====================
-	// == 		Methods	  ==
-	// =====================
-	void addHeader(const std::string &key, const std::string &val);
-	std::string build() const;
-	void send(int fd) const;
+    // =====================
+    // == 		Methods	  ==
+    // =====================
+    void addHeader(const std::string &key, const std::string &val);
+    std::string build() const;
+    void send(int fd) const;
 
-	// =====================
-	// == 		Makers 	  ==
-	// =====================
-	static HttpResponse makeFile(const std::string &path);
-	static HttpResponse makeError(int code, const std::string &customPage = "");
-	static HttpResponse makeRedirect(int code, const std::string &location);
-	static HttpResponse makeAutoIndex(const std::string &dirPath, const std::string &uri);
+    // =====================
+    // == 		Makers 	  ==
+    // =====================
+    static HttpResponse makeFile(const std::string &path);
+    static HttpResponse makeError(int code, const std::string &customPage = "");
+    static HttpResponse makeRedirect(int code, const std::string &location);
+    static HttpResponse makeAutoIndex(const std::string &dirPath, const std::string &uri);
 };
