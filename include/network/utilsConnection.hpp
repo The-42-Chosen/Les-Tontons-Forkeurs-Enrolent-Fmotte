@@ -20,7 +20,7 @@ extern int stop_webserv;
 class Client;
 
 void handleSigint(int sig);
-void initializeSignal(struct sigaction &sa);
+void initializeSignal(void);
 int setNonblocking(int fd);
 
 sockaddr_in createSocketAddress(std::string ip_address, unsigned int port_number);
