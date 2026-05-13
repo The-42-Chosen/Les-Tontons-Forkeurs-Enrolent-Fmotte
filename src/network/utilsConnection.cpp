@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 14:55:37 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/23 13:35:39 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/13 18:43:47 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,20 +19,16 @@ void handleSigint(int sig)
     stop_webserv = 1;
 }
 
-void initializeSignal(struct sigaction &sa)
+void initializeSignal(void)
 {
-    sa.sa_handler = handleSigint;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = 0;
+    signal(SIGINT, handleSigint);
 }
 
 int setNonblocking(int fd)
 {
-    int flags;
-    if ((flags = fcntl(fd, F_GETFL, 0)) == -1)
+    if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1)
         throw ExecptionErrorFunction("fcntl");
-
-    return fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+    return 0;
 }
 
 sockaddr_in createSocketAddress(std::string ip_address, unsigned int port_number)
@@ -41,8 +37,25 @@ sockaddr_in createSocketAddress(std::string ip_address, unsigned int port_number
 
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_port = htons(port_number);
-    serverAddress.sin_addr.s_addr = inet_addr(ip_address.c_str());
+    serverAddress.sin_addr.s_addr = inet_addr(ip_address.c_str()); // ❌ A SUPPR
     return serverAddress;
+
+    // === 	❌ WAAAAAIIIT FCTION INTERDITE❌===
+    // sockaddr_in        serverAddress;
+    // struct addrinfo    hints;
+    // struct addrinfo   *res;
+    //
+    // std::memset(&hints, 0, sizeof(hints));
+    // hints.ai_family   = AF_INET;
+    // hints.ai_socktype = SOCK_STREAM;
+    //
+    // if (getaddrinfo(ip_address.c_str(), NULL, &hints, &res) != 0)
+    //     throw ExecptionErrorFunction("getaddrinfo");
+    //
+    // serverAddress = *(struct sockaddr_in *)res->ai_addr;
+    // serverAddress.sin_port = htons(port_number);
+    // freeaddrinfo(res);
+    // return serverAddress;
 }
 
 void addSocketToEvent(int epoll_fd, int socket_fd, Client *client)
