@@ -6,7 +6,7 @@
 #    By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/11 16:36:16 by fmotte            #+#    #+#              #
-#    Updated: 2026/05/12 14:55:34 by fmotte           ###   ########.fr        #
+#    Updated: 2026/05/13 15:32:47 by fmotte           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -57,7 +57,8 @@ REQUEST_SRC = \
 METHOD_SRC = \
 	$(SRC_PATH)/method/AMethod.cpp \
 	$(SRC_PATH)/method/GetMethod.cpp \
-	$(SRC_PATH)/method/DeleteMethod.cpp
+	$(SRC_PATH)/method/DeleteMethod.cpp \
+	$(SRC_PATH)/method/PostMethod.cpp
 
 
 SRC_FILES = \
@@ -99,7 +100,8 @@ REQUEST_HEA = \
 METHOD_HEA = \
 	$(HEA_PATH)/method/AMethod.hpp \
 	$(HEA_PATH)/method/GetMethod.hpp \
-	$(HEA_PATH)/method/DeleteMethod.hpp
+	$(HEA_PATH)/method/DeleteMethod.hpp \
+	$(HEA_PATH)/method/PostMethod.hpp \
 
 
 HEA_FILES = \

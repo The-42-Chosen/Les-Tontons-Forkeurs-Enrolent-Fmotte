@@ -1,39 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   GetMethod.cpp                                      :+:      :+:    :+:   */
+/*   PostMethod.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/12 14:13:06 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/13 15:35:43 by fmotte           ###   ########.fr       */
+/*   Created: 2026/05/12 19:46:04 by fmotte            #+#    #+#             */
+/*   Updated: 2026/05/13 15:35:53 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "GetMethod.hpp"
+#include "PostMethod.hpp"
+#include "HttpRequest.hpp"
 
 // =====================
 // ==       OCF       ==
 // =====================
-GetMethod::GetMethod(HttpRequest *http_request, Location *location)
+PostMethod::PostMethod(HttpRequest *http_request, Location *location)
 {
     setHttpRequest(http_request);
     setLocation(location);
-    setMethod(GET);
+    setMethod(POST);
     
     applyMethod();
 }
 
-GetMethod::~GetMethod()
+PostMethod::~PostMethod()
 {
 }
 
-GetMethod::GetMethod(const GetMethod &other) : AMethod(other)
+PostMethod::PostMethod(const PostMethod &other) : AMethod(other)
 {
     *this = other;
 }
 
-GetMethod &GetMethod::operator=(const GetMethod &other)
+PostMethod &PostMethod::operator=(const PostMethod &other)
 {
     AMethod::operator=(other);
     return (*this);
@@ -42,16 +43,24 @@ GetMethod &GetMethod::operator=(const GetMethod &other)
 // =====================
 // == 	  Member	  ==
 // =====================
-void GetMethod::applyMethod(void)
+void PostMethod::applyMethod(void)
 {
     std::string path;
     std::string contentFile;
 
     path = createPath();
-    std::cout << "Path to read: " << path << "\n";
+    std::cout << "Path to write: " << path << "\n";
 
-    checkPermisionReadFile(path);
-    parseConfigFile(path.c_str(), contentFile);
+    std::string filename = "PostContent";
+    path = joinPath(path, filename);
+    
+    std::string str;
+    std::vector<uint8_t> v = AMethod::getHttpRequest()->getBody();
+    str.assign(v.begin(), v.end());
 
-    std::cout << "\ncontentFile: " << contentFile << "\n";
+    //Writting
+    std::ofstream w(path.c_str());
+    if (w.is_open())
+        w << str;
+    w.close();
 }
