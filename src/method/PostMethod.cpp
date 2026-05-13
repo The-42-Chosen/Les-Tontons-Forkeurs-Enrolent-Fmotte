@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PostMethod.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:46:04 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/13 15:35:53 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/14 13:29:43 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ PostMethod::PostMethod(HttpRequest *http_request, Location *location)
     setHttpRequest(http_request);
     setLocation(location);
     setMethod(POST);
-
     applyMethod();
 }
 
@@ -53,7 +52,6 @@ void PostMethod::applyMethod(void)
 
     std::string filename = "PostContent";
     path = joinPath(path, filename);
-
     std::string str;
     std::vector<uint8_t> v = AMethod::getHttpRequest()->getBody();
     str.assign(v.begin(), v.end());

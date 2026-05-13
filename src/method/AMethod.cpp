@@ -109,6 +109,11 @@ std::string AMethod::createPathWithLocation()
 
     path_file = joinPath(path_loc, returnLastElementPath(_http_request->getUri()));
 
+    if (_method == POST)
+        return path_loc;
+
+    path_file = joinPath(path_loc, returnLastElementPath(_http_request->getUri()));
+     
     if (isFinishByFile(path_file))
         return path_file;
 
@@ -134,7 +139,6 @@ std::string AMethod::createPathWithServer()
 
     if (_method == POST)
         return path_root;
-
     path_file = joinPath(path_root, returnLastElementPath(_http_request->getUri()));
 
     if (isFinishByFile(path_file))

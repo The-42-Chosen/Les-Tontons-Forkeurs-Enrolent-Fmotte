@@ -15,6 +15,7 @@
 #include "Client.hpp"
 #include "DeleteMethod.hpp"
 #include "GetMethod.hpp"
+#include "PostMethod.hpp"
 #include "Location.hpp"
 #include "PostMethod.hpp"
 #include "HeadMethod.hpp"
