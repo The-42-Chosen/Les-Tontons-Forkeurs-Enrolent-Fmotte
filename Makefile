@@ -49,8 +49,9 @@ NETWORK_SRC = \
 	$(SRC_PATH)/network/utilsConnection.cpp
 
 HTTP_SRC = \
-	$(SRC_PATH)/http/HttpRequest.cpp
-	$(HEA_PATH)/http/utilsResponse.hpp
+	$(SRC_PATH)/http/HttpRequest.cpp \
+	$(SRC_PATH)/http/HttpResponse.cpp \
+	$(SRC_PATH)/http/utilsResponse.cpp
 
 
 REQUEST_SRC = \
@@ -94,7 +95,8 @@ NETWORK_HEA = \
 	$(HEA_PATH)/network/utilsConnection.hpp
 
 HTTP_HEA = \
-	$(HEA_PATH)/http/HttpRequest.hpp
+	$(HEA_PATH)/http/HttpRequest.hpp \
+	$(HEA_PATH)/http/HttpResponse.hpp \
 	$(HEA_PATH)/http/utilsResponse.hpp
 
 
