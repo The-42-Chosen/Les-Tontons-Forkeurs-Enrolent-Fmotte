@@ -12,14 +12,14 @@
 
 #pragma once
 
-# include "HttpRequest.hpp"
-# include "utilsResponse.hpp"
-# include <map>
-# include <string>
-# include <dirent.h>
-# include <sys/stat.h>
-# include <sstream>
-# include <fstream>
+#include "HttpRequest.hpp"
+#include "utilsResponse.hpp"
+#include <dirent.h>
+#include <fstream>
+#include <map>
+#include <sstream>
+#include <string>
+#include <sys/stat.h>
 
 class HttpResponse
 {

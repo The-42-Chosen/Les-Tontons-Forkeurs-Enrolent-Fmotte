@@ -20,7 +20,7 @@ GetMethod::GetMethod(HttpRequest *http_request, Location *location)
     setHttpRequest(http_request);
     setLocation(location);
     setMethod(GET);
-    
+
     applyMethod();
 }
 

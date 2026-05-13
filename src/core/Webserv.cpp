@@ -186,7 +186,6 @@ void Webserv::receiveMessageFromClient(Client *client)
     std::cout << "Final Message from client: " << client->getRequest() << "\n";
     HttpRequest request(client);
     client->clearRequest();
-
 }
 
 void Webserv::handleConnection(struct epoll_event &events)
