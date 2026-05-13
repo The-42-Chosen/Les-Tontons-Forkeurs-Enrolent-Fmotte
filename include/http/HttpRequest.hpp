@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/13 15:39:35 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/13 18:14:43 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include "DeleteMethod.hpp"
 #include "GetMethod.hpp"
 #include "PostMethod.hpp"
+#include "HeadMethod.hpp"
 #include "Location.hpp"
 #include "Server.hpp"
 #include "Webserv.hpp"

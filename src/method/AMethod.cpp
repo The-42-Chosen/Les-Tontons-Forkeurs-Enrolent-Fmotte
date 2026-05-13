@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 12:54:14 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/13 15:48:06 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/13 18:16:03 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,12 +113,14 @@ std::string AMethod::createPathWithLocation()
     if (isFinishByFile(path_file))
         return path_file;
 
-    if (_location->getIndex() != "")
-        return joinPath(path_loc, _location->getIndex());
+    if (_method != GET)
+    {
+        if (_location->getIndex() != "")
+            return joinPath(path_loc, _location->getIndex());
 
-    if (_location->getAutoIndex())
-        return "";
-
+        if (_location->getAutoIndex())
+            return "";  
+    }
     return createPathWithServer();
 }
 
@@ -139,16 +141,18 @@ std::string AMethod::createPathWithServer()
     if (isFinishByFile(path_file))
         return path_file;
 
-    for (size_t i = 0; (index = _http_request->getServer()->getIndex(i)) != ""; ++i)
+    if (_method != GET)
     {
-        check_path = joinPath(path_root, index);
-        if (access(check_path.c_str(), F_OK) != -1 && access(check_path.c_str(), R_OK) != -1)
-            return (check_path);
+        for (size_t i = 0; (index = _http_request->getServer()->getIndex(i)) != ""; ++i)
+        {
+            check_path = joinPath(path_root, index);
+            if (access(check_path.c_str(), F_OK) != -1 && access(check_path.c_str(), R_OK) != -1)
+                return (check_path);
+        }
+
+        if (_http_request->getServer()->getAutoIndex())
+            return "";
     }
-
-    if (_http_request->getServer()->getAutoIndex())
-        return "";
-
     throw std::runtime_error("404 Not Found");
 }
 
