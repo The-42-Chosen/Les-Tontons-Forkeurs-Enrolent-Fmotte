@@ -15,8 +15,8 @@
 #include "Client.hpp"
 #include "DeleteMethod.hpp"
 #include "GetMethod.hpp"
-#include "PostMethod.hpp"
 #include "Location.hpp"
+#include "PostMethod.hpp"
 #include "Server.hpp"
 #include "Webserv.hpp"
 
@@ -82,9 +82,9 @@ class HttpRequest
     void setServer(Server *server);
     void setLocation(Location *location);
     Server *getServer(void) const;
-    
+
     Body getBody(void);
-    
+
     // =====================
     // == 	  Member	  ==
     // =====================

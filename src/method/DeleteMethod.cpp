@@ -20,7 +20,7 @@ DeleteMethod::DeleteMethod(HttpRequest *http_request, Location *location)
     setHttpRequest(http_request);
     setLocation(location);
     setMethod(DELETE);
-    
+
     applyMethod();
 }
 

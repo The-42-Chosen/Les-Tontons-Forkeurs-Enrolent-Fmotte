@@ -21,7 +21,7 @@ PostMethod::PostMethod(HttpRequest *http_request, Location *location)
     setHttpRequest(http_request);
     setLocation(location);
     setMethod(POST);
-    
+
     applyMethod();
 }
 
@@ -53,12 +53,12 @@ void PostMethod::applyMethod(void)
 
     std::string filename = "PostContent";
     path = joinPath(path, filename);
-    
+
     std::string str;
     std::vector<uint8_t> v = AMethod::getHttpRequest()->getBody();
     str.assign(v.begin(), v.end());
 
-    //Writting
+    // Writting
     std::ofstream w(path.c_str());
     if (w.is_open())
         w << str;

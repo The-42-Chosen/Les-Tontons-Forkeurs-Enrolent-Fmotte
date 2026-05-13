@@ -28,7 +28,7 @@ class AMethod
     HttpRequest *_http_request;
     Location *_location;
     HttpMethod _method;
-    
+
     AMethod();
 
   public:
@@ -49,7 +49,7 @@ class AMethod
     void setHttpRequest(HttpRequest *http_request);
     HttpMethod getMethod(void);
     void setMethod(HttpMethod method);
-    
+
     // =====================
     // == 	  Member	  ==
     // =====================

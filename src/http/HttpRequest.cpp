@@ -502,7 +502,6 @@ void HttpRequest::validateRequest(void)
 
     else if (_method == POST)
         PostMethod method = PostMethod(this, location);
-    
 }
 
 void HttpRequest::bodyInterpretation(void)
