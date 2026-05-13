@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 12:54:14 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/12 17:02:19 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/13 15:48:06 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,17 @@ AMethod &AMethod::operator=(const AMethod &other)
     _location = other._location;
     return (*this);
 }
+
+HttpMethod AMethod::getMethod(void)
+{
+    return _method;
+}
+
+void AMethod::setMethod(HttpMethod method)
+{
+    _method = method;
+}
+
 
 // =====================
 // ==     Getters     ==
@@ -93,8 +104,12 @@ std::string AMethod::createPathWithLocation()
         path_root = _http_request->getServer()->getRoot();
 
     path_loc = joinPath(path_root, _location->getName());
-    path_file = joinPath(path_loc, returnLastElementPath(_http_request->getUri()));
 
+    if (_method == POST)
+        return path_loc;
+
+    path_file = joinPath(path_loc, returnLastElementPath(_http_request->getUri()));
+     
     if (isFinishByFile(path_file))
         return path_file;
 
@@ -115,6 +130,10 @@ std::string AMethod::createPathWithServer()
     std::string index;
 
     path_root = _http_request->getServer()->getRoot();
+
+    if (_method == POST)
+        return path_root;
+        
     path_file = joinPath(path_root, returnLastElementPath(_http_request->getUri()));
 
     if (isFinishByFile(path_file))

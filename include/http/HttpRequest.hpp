@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/12 18:59:46 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/13 15:39:35 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "Client.hpp"
 #include "DeleteMethod.hpp"
 #include "GetMethod.hpp"
+#include "PostMethod.hpp"
 #include "Location.hpp"
 #include "Server.hpp"
 #include "Webserv.hpp"
@@ -81,7 +82,9 @@ class HttpRequest
     void setServer(Server *server);
     void setLocation(Location *location);
     Server *getServer(void) const;
-
+    
+    Body getBody(void);
+    
     // =====================
     // == 	  Member	  ==
     // =====================

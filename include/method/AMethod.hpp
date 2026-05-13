@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 12:50:28 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/12 17:09:32 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/13 15:33:34 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ class AMethod
     // =====================
     HttpRequest *_http_request;
     Location *_location;
-
+    HttpMethod _method;
+    
     AMethod();
 
   public:
@@ -46,7 +47,9 @@ class AMethod
     void setLocation(Location *location);
     HttpRequest *getHttpRequest(void) const;
     void setHttpRequest(HttpRequest *http_request);
-
+    HttpMethod getMethod(void);
+    void setMethod(HttpMethod method);
+    
     // =====================
     // == 	  Member	  ==
     // =====================

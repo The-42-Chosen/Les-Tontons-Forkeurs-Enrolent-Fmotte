@@ -59,7 +59,8 @@ REQUEST_SRC = \
 METHOD_SRC = \
 	$(SRC_PATH)/method/AMethod.cpp \
 	$(SRC_PATH)/method/GetMethod.cpp \
-	$(SRC_PATH)/method/DeleteMethod.cpp
+	$(SRC_PATH)/method/DeleteMethod.cpp \
+	$(SRC_PATH)/method/PostMethod.cpp
 
 
 SRC_FILES = \
@@ -103,7 +104,8 @@ REQUEST_HEA = \
 METHOD_HEA = \
 	$(HEA_PATH)/method/AMethod.hpp \
 	$(HEA_PATH)/method/GetMethod.hpp \
-	$(HEA_PATH)/method/DeleteMethod.hpp
+	$(HEA_PATH)/method/DeleteMethod.hpp \
+	$(HEA_PATH)/method/PostMethod.hpp \
 
 
 HEA_FILES = \
