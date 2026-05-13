@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/12 19:19:42 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/13 15:39:59 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,6 +123,11 @@ void HttpRequest::setLocation(Location *location)
 Server *HttpRequest::getServer(void) const
 {
     return _server;
+}
+
+Body HttpRequest::getBody(void)
+{
+    return _body;
 }
 
 // =====================
@@ -494,6 +499,10 @@ void HttpRequest::validateRequest(void)
 
     else if (_method == DELETE)
         DeleteMethod method = DeleteMethod(this, location);
+
+    else if (_method == POST)
+        PostMethod method = PostMethod(this, location);
+    
 }
 
 void HttpRequest::bodyInterpretation(void)

@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 14:13:06 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/12 17:16:03 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/13 15:35:33 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ DeleteMethod::DeleteMethod(HttpRequest *http_request, Location *location)
 {
     setHttpRequest(http_request);
     setLocation(location);
+    setMethod(DELETE);
+    
     applyMethod();
 }
 
