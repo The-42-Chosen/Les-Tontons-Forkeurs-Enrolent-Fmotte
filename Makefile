@@ -6,7 +6,7 @@
 #    By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/11 16:36:16 by fmotte            #+#    #+#              #
-#    Updated: 2026/05/13 15:32:47 by fmotte           ###   ########.fr        #
+#    Updated: 2026/05/13 18:18:02 by fmotte           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,7 +42,7 @@ CONFIG_SRC = \
 	$(SRC_PATH)/config/Server.cpp \
 	$(SRC_PATH)/config/Location.cpp \
 	$(SRC_PATH)/config/utilsDuplicate.cpp \
-	$(SRC_PATH)/config/utilsParsing.cpp
+	$(SRC_PATH)/config/utilsParsing.cpp \
 
 NETWORK_SRC = \
 	$(SRC_PATH)/network/Client.cpp \
@@ -58,7 +58,8 @@ METHOD_SRC = \
 	$(SRC_PATH)/method/AMethod.cpp \
 	$(SRC_PATH)/method/GetMethod.cpp \
 	$(SRC_PATH)/method/DeleteMethod.cpp \
-	$(SRC_PATH)/method/PostMethod.cpp
+	$(SRC_PATH)/method/PostMethod.cpp \
+	$(SRC_PATH)/method/HeadMethod.cpp
 
 
 SRC_FILES = \
@@ -102,6 +103,7 @@ METHOD_HEA = \
 	$(HEA_PATH)/method/GetMethod.hpp \
 	$(HEA_PATH)/method/DeleteMethod.hpp \
 	$(HEA_PATH)/method/PostMethod.hpp \
+	$(HEA_PATH)/method/HeadMethod.hpp 
 
 
 HEA_FILES = \
