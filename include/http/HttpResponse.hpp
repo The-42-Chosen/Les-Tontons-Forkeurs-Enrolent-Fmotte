@@ -12,9 +12,14 @@
 
 #pragma once
 
-#include "HttpRequest.hpp"
-#include <map>
-#include <string>
+# include "HttpRequest.hpp"
+# include "utilsResponse.hpp"
+# include <map>
+# include <string>
+# include <dirent.h>
+# include <sys/stat.h>
+# include <sstream>
+# include <fstream>
 
 class HttpResponse
 {
@@ -23,9 +28,9 @@ class HttpResponse
     // ==    Attributs    ==
     // =====================
     int _statusCode;
-    std::string _statusMessage;
-    Header _headers;
     Body _body;
+    Header _headers;
+    std::string _statusMessage;
 
     HttpResponse();
 
@@ -37,14 +42,14 @@ class HttpResponse
     ~HttpResponse();
 
     // =====================
-    // == 		Methods	  ==
+    // == 	  Methods	  ==
     // =====================
     void addHeader(const std::string &key, const std::string &val);
     std::string build() const;
     void send(int fd) const;
 
     // =====================
-    // == 		Makers 	  ==
+    // == 	  Makers 	  ==
     // =====================
     static HttpResponse makeFile(const std::string &path);
     static HttpResponse makeError(int code, const std::string &customPage = "");
