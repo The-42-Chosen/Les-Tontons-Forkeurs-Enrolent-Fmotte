@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   AMethod.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 12:54:14 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/13 18:16:03 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/14 15:31:43 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ AMethod::AMethod()
 {
 }
 
-AMethod::AMethod(HttpRequest *http_request, Location *location) : _http_request(NULL), _location(NULL)
+AMethod::AMethod(HttpRequest *http_request, Location *location) : _request(NULL), _location(NULL)
 {
     setHttpRequest(http_request);
     setLocation(location);
@@ -38,7 +38,7 @@ AMethod::AMethod(const AMethod &other)
 
 AMethod &AMethod::operator=(const AMethod &other)
 {
-    _http_request = other._http_request;
+    _request = other._request;
     _location = other._location;
     return (*this);
 }
@@ -70,14 +70,14 @@ void AMethod::setLocation(Location *location)
 
 HttpRequest *AMethod::getHttpRequest(void) const
 {
-    return _http_request;
+    return _request;
 }
 
-void AMethod::setHttpRequest(HttpRequest *http_request)
+void AMethod::setHttpRequest(HttpRequest *request)
 {
-    if (http_request == NULL)
-        throw ExecptionErrorUninitializedVariable("*http_request", "AMethod");
-    _http_request = http_request;
+    if (request == NULL)
+        throw ExecptionErrorUninitializedVariable("*request", "AMethod");
+    _request = request;
 }
 
 // =====================
@@ -93,34 +93,34 @@ std::string AMethod::createPath()
 
 std::string AMethod::createPathWithLocation()
 {
-    std::string path_file;
-    std::string path_loc;
-    std::string path_root;
+    std::string pathFile;
+    std::string pathLoc;
+    std::string pathRoot;
 
     if (_location->getRoot() != "")
-        path_root = _location->getRoot();
+        pathRoot = _location->getRoot();
     else
-        path_root = _http_request->getServer()->getRoot();
+        pathRoot = _request->getServer()->getRoot();
 
-    path_loc = joinPath(path_root, _location->getName());
-
-    if (_method == POST)
-        return path_loc;
-
-    path_file = joinPath(path_loc, returnLastElementPath(_http_request->getUri()));
+    pathLoc = joinPath(pathRoot, _location->getName());
 
     if (_method == POST)
-        return path_loc;
+        return pathLoc;
 
-    path_file = joinPath(path_loc, returnLastElementPath(_http_request->getUri()));
+    pathFile = joinPath(pathLoc, returnLastElementPath(_request->getUri()));
 
-    if (isFinishByFile(path_file))
-        return path_file;
+    if (_method == POST)
+        return pathLoc;
 
-    if (_method != GET)
+    pathFile = joinPath(pathLoc, returnLastElementPath(_request->getUri()));
+
+    if (isFinishByFile(pathFile))
+        return pathFile;
+
+    if (_method == GET)
     {
         if (_location->getIndex() != "")
-            return joinPath(path_loc, _location->getIndex());
+            return joinPath(pathLoc, _location->getIndex());
 
         if (_location->getAutoIndex())
             return "";
@@ -130,30 +130,30 @@ std::string AMethod::createPathWithLocation()
 
 std::string AMethod::createPathWithServer()
 {
-    std::string path_file;
-    std::string check_path;
-    std::string path_root;
+    std::string pathFile;
+    std::string checkPath;
+    std::string pathRoot;
     std::string index;
 
-    path_root = _http_request->getServer()->getRoot();
+    pathRoot = _request->getServer()->getRoot();
 
     if (_method == POST)
-        return path_root;
-    path_file = joinPath(path_root, returnLastElementPath(_http_request->getUri()));
+        return pathRoot;
+    pathFile = joinPath(pathRoot, returnLastElementPath(_request->getUri()));
 
-    if (isFinishByFile(path_file))
-        return path_file;
+    if (isFinishByFile(pathFile))
+        return pathFile;
 
-    if (_method != GET)
+    if (_method == GET)
     {
-        for (size_t i = 0; (index = _http_request->getServer()->getIndex(i)) != ""; ++i)
+        for (size_t i = 0; (index = _request->getServer()->getIndex(i)) != ""; ++i)
         {
-            check_path = joinPath(path_root, index);
-            if (access(check_path.c_str(), F_OK) != -1 && access(check_path.c_str(), R_OK) != -1)
-                return (check_path);
+            checkPath = joinPath(pathRoot, index);
+            if (access(checkPath.c_str(), F_OK) != -1 && access(checkPath.c_str(), R_OK) != -1)
+                return (checkPath);
         }
 
-        if (_http_request->getServer()->getAutoIndex())
+        if (_request->getServer()->getAutoIndex())
             return "";
     }
     throw std::runtime_error("404 Not Found");
