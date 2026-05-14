@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 12:50:28 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/14 13:28:31 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/14 15:27:49 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ class AMethod
     // =====================
     // ==    Attributs    ==
     // =====================
-    HttpRequest *_http_request;
+    HttpRequest *_request;
     Location *_location;
     HttpMethod _method;
     AMethod();
