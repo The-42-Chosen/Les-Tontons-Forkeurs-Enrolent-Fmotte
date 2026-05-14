@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   HeadMethod.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:46:04 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/13 19:37:06 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/14 15:27:49 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HeadMethod.hpp"
 #include "HttpRequest.hpp"
+#include "HttpResponse.hpp"
 
 // =====================
 // ==       OCF       ==
@@ -47,22 +48,19 @@ void HeadMethod::applyMethod(void)
 {
     struct stat st;
     std::string path;
-    std::string contentFile;
 
     path = createPath();
     std::cout << "Path to contexte read: " << path << "\n";
 
     checkPermisionReadFile(path);
 
-    if (stat(path.c_str(), &st) == 0)
-    {
-        std::cout << "Taille : " << st.st_size << "\n";
+    if (stat(path.c_str(), &st) != 0)
+        throw std::runtime_error("500 Internal Server Error");
 
-        char buffer[100];
-
-        std::tm *timeinfo = std::localtime(&st.st_mtime);
-
-        std::strftime(buffer, sizeof(buffer), "%d/%m/%Y %H:%M:%S", timeinfo);
-        std::cout << "Derniere modification : " << buffer << "\n";
-    }
+    Body emptyBody;
+    HttpResponse response(200, emptyBody, "text/html");
+    std::stringstream ss;
+    ss << st.st_size;
+    response.addHeader("Content-Length", ss.str());
+    response.send(_request->getClient()->getClientFd());
 }

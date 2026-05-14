@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 16:52:26 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/13 20:11:18 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/14 17:56:47 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,18 +145,26 @@ std::string HttpResponse::build() const
     ss << _statusCode;
     std::string response = "HTTP/1.1 " + ss.str() + " " + _statusMessage + "\r\n";
 
+    bool hasContentLength = _headers.find("content-length") != _headers.end();
+
     for (Header::const_iterator it = _headers.begin(); it != _headers.end(); it++)
         response += it->first + ": " + it->second + "\r\n";
+
+    if (!hasContentLength)
+    {
+        std::stringstream lenSs;
+        lenSs << _body.size();
+        response += "Content-Length: " + lenSs.str() + "\r\n";
+    }
+
     response += "\r\n";
-    response += std::string(_body.begin(), _body.end());
+    response.append(_body.begin(), _body.end());
 
     return (response);
 }
 
 void HttpResponse::send(int fd) const
 {
-    std::string headers = build();
-    ::send(fd, headers.c_str(), headers.size(), 0);
-    if (!_body.empty())
-        ::send(fd, _body.data(), _body.size(), 0);
+    std::string response = build();
+    ::send(fd, response.c_str(), response.size(), 0);
 }

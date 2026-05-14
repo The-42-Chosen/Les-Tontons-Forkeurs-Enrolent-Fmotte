@@ -6,11 +6,13 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 14:13:06 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/14 13:59:43 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/14 15:27:49 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "DeleteMethod.hpp"
+#include "HttpRequest.hpp"
+#include "HttpResponse.hpp"
 
 // =====================
 // ==       OCF       ==
@@ -55,8 +57,15 @@ void DeleteMethod::applyMethod(void)
     if (stat(path.c_str(), &buff) != 0)
         throw std::runtime_error("500 Internal Server Error");
 
-    if (S_ISREG(buff.st_mode))
-        std::remove(path.c_str());
-    else
+    if (!S_ISREG(buff.st_mode))
         throw std::runtime_error("403 Forbidden");
+
+    if (std::remove(path.c_str()) != 0)
+        throw std::runtime_error("500 Internal Server Error");
+
+    Body responseBody;
+    std::string msg = "<html><body><h1>200 OK</h1><p>Resource deleted.</p></body></html>";
+    responseBody.assign(msg.begin(), msg.end());
+    HttpResponse response(200, responseBody, "text/html");
+    response.send(_request->getClient()->getClientFd());
 }

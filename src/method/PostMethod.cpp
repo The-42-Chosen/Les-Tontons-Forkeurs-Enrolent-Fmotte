@@ -6,12 +6,13 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:46:04 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/14 13:29:43 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/14 15:27:49 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "PostMethod.hpp"
 #include "HttpRequest.hpp"
+#include "HttpResponse.hpp"
 
 // =====================
 // ==       OCF       ==
@@ -45,7 +46,6 @@ PostMethod &PostMethod::operator=(const PostMethod &other)
 void PostMethod::applyMethod(void)
 {
     std::string path;
-    std::string contentFile;
 
     path = createPath();
     std::cout << "Path to write: " << path << "\n";
@@ -56,9 +56,15 @@ void PostMethod::applyMethod(void)
     std::vector<uint8_t> v = AMethod::getHttpRequest()->getBody();
     str.assign(v.begin(), v.end());
 
-    // Writting
     std::ofstream w(path.c_str());
-    if (w.is_open())
-        w << str;
+    if (!w.is_open())
+        throw std::runtime_error("500 Internal Server Error");
+    w << str;
     w.close();
+
+    Body responseBody;
+    std::string msg = "<html><body><h1>201 Created</h1><p>Resource stored.</p></body></html>";
+    responseBody.assign(msg.begin(), msg.end());
+    HttpResponse response(201, responseBody, "text/html");
+    response.send(_request->getClient()->getClientFd());
 }

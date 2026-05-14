@@ -6,11 +6,13 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 14:13:06 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/14 13:29:32 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/14 15:27:49 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "GetMethod.hpp"
+#include "HttpRequest.hpp"
+#include "HttpResponse.hpp"
 
 // =====================
 // ==       OCF       ==
@@ -44,13 +46,12 @@ GetMethod &GetMethod::operator=(const GetMethod &other)
 void GetMethod::applyMethod(void)
 {
     std::string path;
-    std::string contentFile;
 
     path = createPath();
     std::cout << "Path to read: " << path << "\n";
 
     checkPermisionReadFile(path);
-    parseConfigFile(path.c_str(), contentFile);
 
-    std::cout << "\ncontentFile: " << contentFile << "\n";
+    HttpResponse response = HttpResponse::makeFile(path);
+    response.send(_request->getClient()->getClientFd());
 }
