@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   AMethod.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 12:50:28 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/14 15:27:49 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/14 19:29:29 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "execption.hpp"
 #include "utilsParsing.hpp"
 #include "utilsRequest.hpp"
+#include <sys/wait.h>
 
 class HttpRequest;
 class Location;
@@ -56,5 +57,8 @@ class AMethod
     std::string createPathWithLocation();
     std::string createPathWithServer();
 
-    virtual void applyMethod(void) = 0;
+    virtual void applyMethod(void);
+    void applyCGI(std::string path);
 };
+
+void	manage_pipe(std::string path, int mypipe[2]);

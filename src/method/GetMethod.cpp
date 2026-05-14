@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   GetMethod.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 14:13:06 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/14 15:27:49 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/14 19:31:50 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,14 @@ void GetMethod::applyMethod(void)
 
     checkPermisionReadFile(path);
 
-    HttpResponse response = HttpResponse::makeFile(path);
-    response.send(_request->getClient()->getClientFd());
+
+    std::string extention = path.substr(path.find_last_of("."));
+
+    if (extention == ".py" || extention == ".php" )
+        applyCGI(path);
+    else
+    {
+        HttpResponse response = HttpResponse::makeFile(path);
+        response.send(_request->getClient()->getClientFd());     
+    }
 }
