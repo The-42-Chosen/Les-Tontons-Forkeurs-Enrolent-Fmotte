@@ -6,11 +6,12 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/14 13:36:34 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/14 13:52:11 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
+#include "HttpResponse.hpp"
 
 // =====================
 // == Canonical Form  ==
@@ -34,6 +35,25 @@ HttpRequest::HttpRequest(Client *client)
     catch (const std::exception &e)
     {
         std::cerr << e.what() << '\n';
+        std::string errorMsg = e.what();
+        int errorCode = 500;
+        if (errorMsg.find("400") != std::string::npos)
+            errorCode = 400;
+        else if (errorMsg.find("404") != std::string::npos)
+            errorCode = 404;
+        else if (errorMsg.find("405") != std::string::npos)
+            errorCode = 405;
+        else if (errorMsg.find("413") != std::string::npos)
+            errorCode = 413;
+        else if (errorMsg.find("414") != std::string::npos)
+            errorCode = 414;
+        else if (errorMsg.find("501") != std::string::npos)
+            errorCode = 501;
+        else if (errorMsg.find("505") != std::string::npos)
+            errorCode = 505;
+
+        HttpResponse errorResponse = HttpResponse::makeError(errorCode);
+        errorResponse.send(client->getClientFd());
         return;
     }
 }
@@ -123,6 +143,11 @@ void HttpRequest::setLocation(Location *location)
 Server *HttpRequest::getServer(void) const
 {
     return _server;
+}
+
+Client *HttpRequest::getClient(void) const
+{
+    return _client;
 }
 
 Body HttpRequest::getBody(void)

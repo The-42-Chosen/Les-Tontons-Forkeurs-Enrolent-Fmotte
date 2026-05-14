@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/14 13:36:25 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/14 13:51:39 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ class HttpRequest
     void setServer(Server *server);
     void setLocation(Location *location);
     Server *getServer(void) const;
+    Client *getClient(void) const;
 
     Body getBody(void);
 

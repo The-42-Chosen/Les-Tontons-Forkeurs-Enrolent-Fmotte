@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 14:13:06 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/14 13:29:24 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/14 13:59:43 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,5 +58,5 @@ void DeleteMethod::applyMethod(void)
     if (S_ISREG(buff.st_mode))
         std::remove(path.c_str());
     else
-        rmdir(path.c_str());
+		throw std::runtime_error("403 Forbidden");
 }

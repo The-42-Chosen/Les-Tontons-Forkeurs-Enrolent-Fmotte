@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/13 18:49:33 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/14 13:53:01 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,7 +193,7 @@ void Webserv::handleConnection(struct epoll_event &events)
     std::string reply = "Message received\n";
     int server_fd = events.data.fd;
 
-    if (server_fd < static_cast<int>(_map_fd_to_serv.size() + 4))
+    if (_map_fd_to_serv.find(server_fd) != _map_fd_to_serv.end())
         handleNewClient(server_fd);
 
     else
