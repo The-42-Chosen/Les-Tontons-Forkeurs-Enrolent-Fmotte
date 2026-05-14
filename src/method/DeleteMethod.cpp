@@ -58,5 +58,5 @@ void DeleteMethod::applyMethod(void)
     if (S_ISREG(buff.st_mode))
         std::remove(path.c_str());
     else
-		throw std::runtime_error("403 Forbidden");
+        throw std::runtime_error("403 Forbidden");
 }
