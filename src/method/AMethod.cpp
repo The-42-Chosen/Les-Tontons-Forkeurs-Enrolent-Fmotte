@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   AMethod.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 12:54:14 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/14 15:31:43 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/14 19:29:39 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,4 +161,62 @@ std::string AMethod::createPathWithServer()
 
 void AMethod::applyMethod(void)
 {
+}
+
+void AMethod::applyCGI(std::string path)
+{
+    int mypipe[2];
+
+    if (pipe(mypipe) == -1)
+    {
+        std::cerr << "Error pipe\n";
+        return;
+    }
+
+    pid_t pid = fork();
+
+    if (pid == -1)
+    {
+        std::cerr << "Error fork\n";
+        return;
+    }
+
+    if (pid == 0)
+        manage_pipe(path, mypipe);
+
+    close(mypipe[1]);
+
+    char buffer[1024];
+    int nb_read;
+
+    while ((nb_read = read(mypipe[0], buffer, sizeof(buffer))) > 0)
+        write(STDOUT_FILENO, buffer, nb_read);
+
+    close(mypipe[0]);
+    waitpid(pid, NULL, 0);
+}
+
+void manage_pipe(std::string path, int mypipe[2])
+{
+    close(mypipe[0]);
+
+    if (dup2(mypipe[1], STDOUT_FILENO) == -1)
+    {
+        std::cerr << "dup2 error\n";
+        exit(EXIT_FAILURE);
+    }
+
+    if (dup2(mypipe[1], STDERR_FILENO) == -1)
+    {
+        std::cerr << "dup2 error\n";
+        exit(EXIT_FAILURE);
+    }
+
+    close(mypipe[1]);
+
+    char *args[] = {const_cast<char *>("/usr/bin/python3"), const_cast<char *>(path.c_str()), NULL};
+    char *envp[] = {NULL};
+
+    if (execve(args[0], args, envp) == -1)
+        exit(EXIT_FAILURE);
 }
