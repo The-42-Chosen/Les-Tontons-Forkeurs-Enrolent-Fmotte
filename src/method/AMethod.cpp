@@ -113,7 +113,7 @@ std::string AMethod::createPathWithLocation()
         return path_loc;
 
     path_file = joinPath(path_loc, returnLastElementPath(_http_request->getUri()));
-     
+
     if (isFinishByFile(path_file))
         return path_file;
 
@@ -123,7 +123,7 @@ std::string AMethod::createPathWithLocation()
             return joinPath(path_loc, _location->getIndex());
 
         if (_location->getAutoIndex())
-            return "";  
+            return "";
     }
     return createPathWithServer();
 }

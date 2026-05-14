@@ -15,12 +15,9 @@
 #include "Client.hpp"
 #include "DeleteMethod.hpp"
 #include "GetMethod.hpp"
-#include "PostMethod.hpp"
 #include "HeadMethod.hpp"
 #include "Location.hpp"
 #include "PostMethod.hpp"
-#include "HeadMethod.hpp"
-#include "Location.hpp"
 #include "Server.hpp"
 #include "Webserv.hpp"
 
@@ -29,12 +26,12 @@
 #include "struct.hpp"
 #include "utilsRequest.hpp"
 
+#include <cstdio>
+#include <iostream>
 #include <map>
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <cstdio>
-#include <iostream>
 #include <sys/types.h>
 #include <unistd.h>
 #include <vector>

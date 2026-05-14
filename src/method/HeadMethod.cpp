@@ -21,7 +21,7 @@ HeadMethod::HeadMethod(HttpRequest *http_request, Location *location)
     setHttpRequest(http_request);
     setLocation(location);
     setMethod(HEAD);
-    
+
     applyMethod();
 }
 
@@ -44,7 +44,7 @@ HeadMethod &HeadMethod::operator=(const HeadMethod &other)
 // == 	  Member	  ==
 // =====================
 void HeadMethod::applyMethod(void)
-{   
+{
     struct stat st;
     std::string path;
     std::string contentFile;
@@ -56,11 +56,11 @@ void HeadMethod::applyMethod(void)
 
     if (stat(path.c_str(), &st) == 0)
     {
-        std::cout << "Taille : " <<  st.st_size << "\n";
-        
+        std::cout << "Taille : " << st.st_size << "\n";
+
         char buffer[100];
 
-        std::tm* timeinfo = std::localtime(&st.st_mtime);
+        std::tm *timeinfo = std::localtime(&st.st_mtime);
 
         std::strftime(buffer, sizeof(buffer), "%d/%m/%Y %H:%M:%S", timeinfo);
         std::cout << "Derniere modification : " << buffer << "\n";
