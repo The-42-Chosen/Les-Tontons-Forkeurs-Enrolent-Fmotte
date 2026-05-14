@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<title>The Tontons Forkers</title>
+	</head>
+	<style>
+		*
+		{
+			padding: 0;
+			margin: 0;
+			background-color: bisque;
+		}
+
+		.container
+		{
+			padding: 10px;
+		}
+
+		body
+		{
+			text-align: center;
+		}
+
+		h1
+		{
+			color: goldenrod;
+			padding: 10px;
+		}
+	</style>
+
+	<body>
+		<h1>The Tonton Webserv</h1>
+
+		<div class="container">
+			<h2>1. POST -> /upload/PostContent</h2>
+			<form method="POST" action="/upload" enctype="application/x-www-form-urlencoded">
+				<label for="content">Content to send :</label><br>
+				<textarea id="content" name="content" rows="5" cols="50" default=""></textarea><br>
+				<button type="submit">Send <span>(POST)</span> to PostContent</button>
+			</form>
+		</div>
+		
+		<div class="container">
+			<h2>2. GET /upload/PostContent</h2>
+			<p><a href="/upload/PostContent">Get /upload/PostContent <span>(GET)</span></a></p>
+		</div>
+
+		<div class="container">		
+			<h2>3. DELETE /upload/PostContent</h2>
+			<button id="del-btn">Delete /upload/PostContent</button>
+			<pre id="result">[result]</pre>
+		</div>
+
+		<div class="container">
+			<h2>4. Homepage</h2>
+			<p><a href="/">Reload</a></p>
+		</div>
+
+		<script>
+			document.getElementById('del-btn').addEventListener('click', function () {
+				let out = document.getElementById('result');
+				out.textContent = 'DELETING...';
+				fetch('/upload/PostContent', { method: 'DELETE' })
+					.then(function (r) {
+						return r.text().then(function (body) {
+							out.textContent = 'Status: ' + r.status + ' ' + r.statusText + '\n\n' + body;
+						});
+					})
+					.catch(function (err) {
+						out.textContent = 'Erreur reseau : ' + err;
+					});
+			});
+		</script>
+	</body>
+
+</html>
