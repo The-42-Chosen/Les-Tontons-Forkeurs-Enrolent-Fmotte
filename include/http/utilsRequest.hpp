@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 13:53:22 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/12 14:28:15 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/17 17:46:57 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,3 +23,4 @@ std::string returnLastElementPath(std::string path);
 
 void checkPermisionReadFile(std::string path);
 bool isFinishByFile(std::string path);
+std::string trimSpaces(const std::string &value);
