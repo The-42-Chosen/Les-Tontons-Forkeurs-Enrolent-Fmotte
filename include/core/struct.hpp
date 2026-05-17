@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   struct.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/03 17:58:55 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/23 12:26:05 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/17 17:57:25 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,8 @@ enum HttpMethod
     GET,
     POST,
     DELETE,
-    HEAD
+    HEAD,
+    NONE
 };
 
 struct Listen
