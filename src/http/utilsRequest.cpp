@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 13:53:46 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/12 14:27:29 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/17 19:47:30 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,4 +142,13 @@ bool isFinishByFile(std::string path)
         return true;
 
     return false;
+}
+
+std::string trimSpaces(const std::string &value)
+{
+    std::string::size_type begin = value.find_first_not_of(" \t");
+    if (begin == std::string::npos)
+        return ("");
+    std::string::size_type end = value.find_last_not_of(" \t");
+    return (value.substr(begin, end - begin + 1));
 }
