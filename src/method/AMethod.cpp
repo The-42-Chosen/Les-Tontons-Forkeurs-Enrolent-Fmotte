@@ -107,12 +107,12 @@ std::string AMethod::createPathWithLocation()
     if (_method == POST)
         return pathLoc;
 
-    pathFile = joinPath(pathLoc, returnLastElementPath(_request->getUri()));
+    pathFile = joinPath(pathLoc, returnLastElementPath(_request->getHeader()->getUri()));
 
     if (_method == POST)
         return pathLoc;
 
-    pathFile = joinPath(pathLoc, returnLastElementPath(_request->getUri()));
+    pathFile = joinPath(pathLoc, returnLastElementPath(_request->getHeader()->getUri()));
 
     if (isFinishByFile(pathFile))
         return pathFile;
@@ -139,7 +139,7 @@ std::string AMethod::createPathWithServer()
 
     if (_method == POST)
         return pathRoot;
-    pathFile = joinPath(pathRoot, returnLastElementPath(_request->getUri()));
+    pathFile = joinPath(pathRoot, returnLastElementPath(_request->getHeader()->getUri()));
 
     if (isFinishByFile(pathFile))
         return pathFile;
