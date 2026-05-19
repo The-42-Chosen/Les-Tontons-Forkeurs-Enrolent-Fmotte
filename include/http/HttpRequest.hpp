@@ -87,7 +87,7 @@ class HttpRequest
 // =====================
 // == 	  Fonction    ==
 // =====================
-bool isCompleteHttpRequest(Client *client);
+bool isCompleteHttpRequest(const std::string &request);
 bool isCompleteChunkedBody(const std::string &request, std::string::size_type bodyStart);
 bool isFinalChunkComplete(const std::string &request, std::string::size_type current);
 std::string initSizeToken(const std::string &request, const std::string::size_type &current, const std::string::size_type &lineEnd);
