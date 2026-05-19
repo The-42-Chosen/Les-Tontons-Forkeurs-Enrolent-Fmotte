@@ -91,15 +91,15 @@ size_t parseChunkSize(const std::string &line)
         sizeToken = sizeToken.substr(0, semicolon);
     sizeToken = trimChunkSizeToken(sizeToken);
     if (sizeToken.empty())
-        throw std::runtime_error("400 Bad Request");
+        throw std::runtime_error("400 Bad Request 14");
 
     std::stringstream ss(sizeToken);
     size_t chunkSize = 0;
     ss >> std::hex >> chunkSize;
     if (ss.fail())
-        throw std::runtime_error("400 Bad Request");
+        throw std::runtime_error("400 Bad Request 15");
     if (!ss.eof())
-        throw std::runtime_error("400 Bad Request");
+        throw std::runtime_error("400 Bad Request 16");
     return (chunkSize);
 }
 
