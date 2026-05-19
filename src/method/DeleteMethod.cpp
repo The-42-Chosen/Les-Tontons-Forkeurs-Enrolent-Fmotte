@@ -63,9 +63,9 @@ void DeleteMethod::applyMethod(void)
     if (std::remove(path.c_str()) != 0)
         throw std::runtime_error("500 Internal Server Error");
 
-    Body responseBody;
+    BodyContent responseBody;
     std::string msg = "<html><body><h1>200 OK</h1><p>Resource deleted.</p></body></html>";
     responseBody.assign(msg.begin(), msg.end());
-    HttpResponse response(200, responseBody, "text/html");
-    response.send(_request->getClient()->getClientFd());
+    //HttpResponse response(200, responseBody, "text/html");
+    //response.send(_request->getClient()->getClientFd());
 }

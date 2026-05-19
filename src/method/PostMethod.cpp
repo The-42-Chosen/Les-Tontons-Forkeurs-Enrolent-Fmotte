@@ -53,7 +53,7 @@ void PostMethod::applyMethod(void)
     std::string filename = "PostContent";
     path = joinPath(path, filename);
     std::string str;
-    std::vector<uint8_t> v = AMethod::getHttpRequest()->getBody();
+    std::vector<uint8_t> v = AMethod::getHttpRequest()->getBody()->getBodyContent();
     str.assign(v.begin(), v.end());
 
     std::ofstream w(path.c_str());
@@ -62,9 +62,9 @@ void PostMethod::applyMethod(void)
     w << str;
     w.close();
 
-    Body responseBody;
+    BodyContent responseBody;
     std::string msg = "<html><body><h1>201 Created</h1><p>Resource stored.</p></body></html>";
     responseBody.assign(msg.begin(), msg.end());
-    HttpResponse response(201, responseBody, "text/html");
-    response.send(_request->getClient()->getClientFd());
+    //HttpResponse response(201, responseBody, "text/html");
+    //response.send(_request->getClient()->getClientFd());
 }
