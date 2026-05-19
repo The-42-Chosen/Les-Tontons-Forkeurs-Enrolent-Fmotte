@@ -19,6 +19,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <map>
 
 #include <arpa/inet.h>
 #include <fcntl.h>
@@ -28,6 +29,9 @@
 
 #include <signal.h>
 #include <unistd.h>
+
+typedef std::vector<uint8_t> BodyContent;
+typedef std::map<std::string, std::string> HeaderContent;
 
 enum HttpMethod
 {
