@@ -184,7 +184,8 @@ void Webserv::receiveMessageFromClient(Client *client)
         return;
 
     std::cout << "Final Message from client: " << client->getRequest() << "\n";
-    HttpRequest request(client);
+    
+    HttpRequest httpRequest(client);
     client->clearRequest();
 }
 

@@ -337,11 +337,8 @@ Location *HttpRequest::findLocation(void)
 }
 
 
-bool isCompleteHttpRequest(Client *client)
+bool isCompleteHttpRequest(const std::string &request)
 {   
-    HttpRequest httpRequest(client);
-
-    const std::string &request = client->getRequest();
     std::string::size_type headerEnd = request.find("\r\n\r\n");
     if (headerEnd == std::string::npos)
         return (false);
