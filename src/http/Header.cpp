@@ -60,10 +60,10 @@ std::string Header::getUri(void) const
 
 void Header::setUri(std::string uri)
 {
-     if (_uri[0] != '/')
-        throw std::runtime_error("400 Bad Request");
+     if (uri[0] != '/')
+        throw std::runtime_error("400 Bad Request 10");
         
-    if (_uri.size() > 8192)
+    if (uri.size() > 8192)
         throw std::runtime_error("414 URI Too Long");
         
     _uri = uri;
@@ -75,7 +75,7 @@ std::string Header::getProtocol(void) const
 }
 void Header::setProtocol(std::string protocol)
 {
-    if (_protocol != "HTTP/1.1")
+    if (protocol != "HTTP/1.1")
         throw std::runtime_error("505 HTTP Version Not Supported");
 
     _protocol = protocol;
@@ -121,7 +121,7 @@ void Header::initialisationHeader(const std::string &headerContent)
     parseHeaderContent(headerContent);
 
     if (getHost() == "")
-        throw std::runtime_error("400 Bad Request");
+        throw std::runtime_error("400 Bad Request 11");
 }
 
 HttpMethod Header::parseMethodToken(const std::string &method)
@@ -156,7 +156,7 @@ void Header::parseHeaderInfo(const std::string &headerContent)
     std::string protocol;
     std::string extra;
     if (!(stream >> method >> uri >> protocol) || (stream >> extra))
-        throw std::runtime_error("400 Bad Request");
+        throw std::runtime_error("400 Bad Request 12");
     
     setMethod(method);
     setUri(uri);
@@ -190,7 +190,7 @@ void Header::parseHeaderContent(const std::string &headerContent)
         {
             std::string::size_type colon = requestLine.find(':');
             if (colon == std::string::npos)
-                throw std::runtime_error("400 Bad Request e");
+                throw std::runtime_error("400 Bad Request 13");
 
             std::string key = requestLine.substr(0, colon);
             std::string value = requestLine.substr(colon + 1);
