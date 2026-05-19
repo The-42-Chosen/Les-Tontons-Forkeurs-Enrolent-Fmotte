@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/14 13:52:11 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/17 20:36:38 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,121 +17,93 @@
 // == Canonical Form  ==
 // =====================
 
-HttpRequest::HttpRequest()
-    : _client(NULL), _server(NULL), _location(NULL), _keepAlive(false), _contentLength(0), _totalChunked(0)
+HttpRequest::HttpRequest(Client *client): _client(NULL), _header(NULL), _body(NULL), _location(NULL)
 {
-}
-
-HttpRequest::HttpRequest(Client *client)
-    : _client(NULL), _server(NULL), _location(NULL), _keepAlive(false), _contentLength(0), _totalChunked(0)
-{
-    try
-    {
-        setClient(client);
-        parseHttpRequest(client->getRequest());
-        interpretation();
-        bodyInterpretation();
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << e.what() << '\n';
-        std::string errorMsg = e.what();
-        int errorCode = 500;
-        if (errorMsg.find("400") != std::string::npos)
-            errorCode = 400;
-        else if (errorMsg.find("404") != std::string::npos)
-            errorCode = 404;
-        else if (errorMsg.find("405") != std::string::npos)
-            errorCode = 405;
-        else if (errorMsg.find("413") != std::string::npos)
-            errorCode = 413;
-        else if (errorMsg.find("414") != std::string::npos)
-            errorCode = 414;
-        else if (errorMsg.find("501") != std::string::npos)
-            errorCode = 501;
-        else if (errorMsg.find("505") != std::string::npos)
-            errorCode = 505;
-
-        HttpResponse errorResponse = HttpResponse::makeError(errorCode);
-        errorResponse.send(client->getClientFd());
-        return;
-    }
-}
-
-HttpRequest::HttpRequest(const HttpRequest &cpy)
-    : _method(cpy._method), _uri(cpy._uri), _protocol(cpy._protocol), _headers(cpy._headers), _body(cpy._body),
-      _keepAlive(cpy._keepAlive), _contentLength(cpy._contentLength), _totalChunked(cpy._totalChunked)
-{
-}
-
-HttpRequest &HttpRequest::operator=(const HttpRequest &cpy)
-{
-    if (this != &cpy)
-    {
-        _method = cpy._method;
-        _uri = cpy._uri;
-        _protocol = cpy._protocol;
-        _headers = cpy._headers;
-        _body = cpy._body;
-        _keepAlive = cpy._keepAlive;
-        _contentLength = cpy._contentLength;
-        _totalChunked = cpy._totalChunked;
-    }
-    return (*this);
+    initialisationHttpRequest(client);
 }
 
 HttpRequest::~HttpRequest()
 {
+    delete getHeader();
+    delete getBody();
+}
+
+HttpRequest::HttpRequest(const HttpRequest &other)
+{
+    *this = other;
+}
+
+HttpRequest &HttpRequest::operator=(const HttpRequest &other)
+{
+    if (this != &other)
+    {
+        _client = other._client;
+        _header = other._header;
+        _body = other._body;
+        _location = other._location;
+    }
+    return (*this);
 }
 
 // =====================
 // == Getter & Setter ==
 // =====================
 
-HttpMethod HttpRequest::getMethod() const
+Client *HttpRequest::getClient(void) const
 {
-    return (_method);
-}
-
-const std::string &HttpRequest::getUri() const
-{
-    return (_uri);
-}
-
-const std::string &HttpRequest::getProtocol() const
-{
-    return (_protocol);
+    return _client;
 }
 
 void HttpRequest::setClient(Client *client)
 {
     if (client == NULL)
         throw ExecptionErrorUninitializedVariable("*client", "HttpRequest");
-    else
-        _client = client;
+
+    _client = client;
 }
 
-const char *HttpRequest::methodToString(HttpMethod method)
+Server *HttpRequest::getServer(void) const
 {
-    switch (method)
-    {
-    case 0:
-        return ("GET");
-    case 1:
-        return ("POST");
-    case 2:
-        return ("DELETE");
-    case 3:
-        return ("HEAD");
-    }
-    return ("UNKNOWN");
+    return _server;
 }
 
 void HttpRequest::setServer(Server *server)
 {
     if (server == NULL)
         throw ExecptionErrorUninitializedVariable("*server", "HttpRequest");
+
     _server = server;
+}
+    
+Header *HttpRequest::getHeader(void) const
+{
+    return _header;
+}
+
+void HttpRequest::setHeader(Header *header)
+{
+    if (header == NULL)
+        throw ExecptionErrorUninitializedVariable("*header", "HttpRequest");
+
+    _header = header;
+}
+
+Body *HttpRequest::getBody(void) const
+{
+    return _body;
+}
+
+void HttpRequest::setBody(Body *body)
+{
+    if (body == NULL)
+        throw ExecptionErrorUninitializedVariable("*body", "HttpRequest");
+
+    _body = body;
+}
+
+Location *HttpRequest::getLocation(void) const
+{
+    return _location;
 }
 
 void HttpRequest::setLocation(Location *location)
@@ -140,66 +112,52 @@ void HttpRequest::setLocation(Location *location)
         throw ExecptionErrorUninitializedVariable("*location", "HttpRequest");
     _location = location;
 }
-Server *HttpRequest::getServer(void) const
-{
-    return _server;
-}
-
-Client *HttpRequest::getClient(void) const
-{
-    return _client;
-}
-
-Body HttpRequest::getBody(void)
-{
-    return _body;
-}
 
 // =====================
-// == 	Validations   ==
+// ==     Method      ==
 // =====================
 
-void HttpRequest::isValidURI(void)
+void HttpRequest::initialisationHttpRequest(Client *client)
 {
-    if (_uri[0] != '/')
-        throw std::runtime_error("400 Bad Request");
-    if (_uri.size() > 8192)
-        throw std::runtime_error("414 URI Too Long");
-}
-
-void HttpRequest::isValidProtocol(void)
-{
-    if (_protocol != "HTTP/1.1")
-        throw std::runtime_error("505 HTTP Version Not Supported");
-}
-
-void HttpRequest::isHostPresentAndValid(void)
-{
-    for (Header::const_iterator it = _headers.begin(); it != _headers.end(); it++)
-    {
-        if (it->first == "host")
-        {
-            if (!it->second.empty())
-                return;
-            else
-                throw std::runtime_error("400 Bad Request");
-        }
+    //Do function
+    try
+    {   
+        setClient(client);
+        parseHttpRequest(getClient()->getRequest());
+        interpretation();
     }
-    throw std::runtime_error("400 Bad Request");
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << '\n';
+        std::string errorMsg = e.what();
+        //handlingErrorCode(e);
+        return;
+    }
 }
 
-static HttpMethod parseMethodToken(const std::string &method)
-{
-    if (method == "GET")
-        return (GET);
-    if (method == "POST")
-        return (POST);
-    if (method == "DELETE")
-        return (DELETE);
-    if (method == "HEAD")
-        return (HEAD);
-    throw std::runtime_error("501 Not Implemented");
-}
+// void HttpRequest::handlingErrorCode(const std::exception &e)
+// {
+//     std::cerr << e.what() << '\n';
+//     std::string errorMsg = e.what();
+//     int errorCode = 500;
+//     if (errorMsg.find("400") != std::string::npos)
+//         errorCode = 400;
+//     else if (errorMsg.find("404") != std::string::npos)
+//         errorCode = 404;
+//     else if (errorMsg.find("405") != std::string::npos)
+//         errorCode = 405;
+//     else if (errorMsg.find("413") != std::string::npos)
+//         errorCode = 413;
+//     else if (errorMsg.find("414") != std::string::npos)
+//         errorCode = 414;
+//     else if (errorMsg.find("501") != std::string::npos)
+//         errorCode = 501;
+//     else if (errorMsg.find("505") != std::string::npos)
+//         errorCode = 505;
+
+//     //HttpResponse errorResponse = HttpResponse::makeError(errorCode);
+//     //errorResponse.send(getClient()->getClientFd());
+// }
 
 void HttpRequest::checkAllowedMethods(Location *location)
 {
@@ -207,168 +165,29 @@ void HttpRequest::checkAllowedMethods(Location *location)
 
     if (set_allowed_methods.size() == 0)
         return;
+        
     std::set<HttpMethod>::iterator it = set_allowed_methods.begin();
     for (; it != set_allowed_methods.end(); ++it)
     {
-        if (*it == _method)
+        if (*it == getHeader()->getMethod())
             return;
     }
     throw std::runtime_error("405 Method Not Allowed");
 }
 
-// =====================
-// ==     Method      ==
-// =====================
-
-// _method | _uri | _protocol
-void HttpRequest::parseHeaderMethod(const std::string &headerContent)
-{
-    _headers.clear();
-
-    std::string requestLine;
-    std::string::size_type lineEnd = headerContent.find("\r\n");
-
-    if (lineEnd == std::string::npos)
-        requestLine = headerContent;
-    else
-        requestLine = headerContent.substr(0, lineEnd);
-
-    std::stringstream ssMethod(requestLine);
-    std::string method;
-    std::string extraToken;
-
-    if (!(ssMethod >> method >> _uri >> _protocol))
-        throw std::runtime_error("400 Bad Request f");
-    if (ssMethod >> extraToken)
-        throw std::runtime_error("400 Bad Request g");
-
-    _method = parseMethodToken(method);
-    isValidURI();
-    isValidProtocol();
-}
-
-// _headers
-void HttpRequest::parseHeader(const std::string &headerContent)
-{
-    // _headers
-    std::string requestLine;
-    std::string::size_type headerEnd = headerContent.find("\r\n\r\n");
-    std::string::size_type lineEnd = headerContent.find("\r\n");
-    if (headerEnd == std::string::npos)
-        headerEnd = headerContent.size();
-    else
-        headerEnd += 2;
-
-    std::string::size_type current = (lineEnd == std::string::npos) ? headerContent.size() : lineEnd + 2;
-    while (current < headerEnd)
-    {
-        std::string::size_type next = headerContent.find("\r\n", current);
-        if (next == std::string::npos || next > headerEnd)
-            next = headerEnd;
-
-        requestLine = headerContent.substr(current, next - current);
-        if (!requestLine.empty())
-        {
-            std::string::size_type colon = requestLine.find(':');
-            if (colon == std::string::npos)
-                throw std::runtime_error("400 Bad Request e");
-
-            std::string key = requestLine.substr(0, colon);
-            std::string value = requestLine.substr(colon + 1);
-            value = trimSpaces(value);
-            _headers[toLowerString(key)] = toLowerString(value);
-        }
-        current = next + 2;
-    }
-    isHostPresentAndValid();
-}
-
-// _body
-void HttpRequest::parseBody(const std::string &headerContent)
-{
-    _body.clear();
-
-    Header::const_iterator contentLengthIt = _headers.find("content-length");
-    Header::const_iterator transferEncodingIt = _headers.find("transfer-encoding");
-    Header::const_iterator connectionIt = _headers.find("connection");
-
-    if (connectionIt != _headers.end() && connectionIt->second == "keep-alive")
-        _keepAlive = true;
-
-    if (transferEncodingIt != _headers.end() && contentLengthIt != _headers.end())
-        throw std::runtime_error("400 Bad Request");
-
-    size_t maxBodySize = _client->getServerPtr()->getClientMaxBodySize();
-    if (_location != NULL)
-        maxBodySize = _location->getClientMaxBodySize();
-
-    if (transferEncodingIt != _headers.end())
-    {
-        if (transferEncodingIt->second != "chunked")
-            throw std::runtime_error("501 Not Implemented");
-
-        std::cout << GREEN << "Body treatment method : " << transferEncodingIt->first << " | "
-                  << transferEncodingIt->second << RESET << std::endl;
-        parseChunkedBody(headerContent);
-        _contentLength = _body.size();
-        return;
-    }
-
-    if (contentLengthIt != _headers.end())
-    {
-        std::stringstream ssLength(contentLengthIt->second);
-        if (!(ssLength >> _contentLength))
-            throw std::runtime_error("400 Bad Request 1");
-        if (!ssLength.eof())
-            throw std::runtime_error("400 Bad Request 1");
-
-        if (_contentLength > maxBodySize)
-            throw std::runtime_error("413 Payload Too Large");
-
-        std::string::size_type bodyStart = headerContent.find("\r\n\r\n");
-        if (bodyStart == std::string::npos)
-            throw std::runtime_error("400 Bad Request 2");
-
-        bodyStart += 4;
-        if (bodyStart + _contentLength > headerContent.size())
-            throw std::runtime_error("400 Bad Request");
-
-        std::cout << GREEN << "Body treatment method : " << contentLengthIt->first << " | " << contentLengthIt->second
-                  << RESET << std::endl;
-        appendBodyBytes(headerContent.substr(bodyStart, _contentLength));
-        return;
-    }
-
-    if (headerContent.find("\r\n\r\n") != std::string::npos)
-        return;
-}
-
 void HttpRequest::parseHttpRequest(const std::string &headerContent)
 {
-    parseHeaderMethod(headerContent);
-    parseHeader(headerContent);
+    Header *header = new Header(headerContent);
+    setHeader(header);
+
     linkToServer();
+    
     Location *location = findLocation();
     if (location != NULL)
         setLocation(location);
-    parseBody(headerContent);
-}
-
-std::string HttpRequest::toLowerCopy(const std::string &value)
-{
-    std::string lowered = value;
-    for (std::string::size_type i = 0; i < lowered.size(); ++i)
-        lowered[i] = static_cast<char>(std::tolower(static_cast<unsigned char>(lowered[i])));
-    return lowered;
-}
-
-std::string HttpRequest::trimSpaces(const std::string &value)
-{
-    std::string::size_type begin = value.find_first_not_of(" \t");
-    if (begin == std::string::npos)
-        return ("");
-    std::string::size_type end = value.find_last_not_of(" \t");
-    return (value.substr(begin, end - begin + 1));
+    
+    Body *body = new Body(*this);
+    setBody(body);
 }
 
 std::string HttpRequest::getHeaderValue(const std::string &request, const std::string &headerName)
@@ -377,7 +196,7 @@ std::string HttpRequest::getHeaderValue(const std::string &request, const std::s
     if (headerEnd == std::string::npos)
         return ("");
 
-    std::string loweredHeaderName = toLowerCopy(headerName);
+    std::string loweredHeaderName = toLowerString(headerName);
     std::string::size_type current = request.find("\r\n");
     if (current == std::string::npos)
         return ("");
@@ -388,11 +207,12 @@ std::string HttpRequest::getHeaderValue(const std::string &request, const std::s
         std::string::size_type lineEnd = request.find("\r\n", current);
         if (lineEnd == std::string::npos || lineEnd > headerEnd)
             break;
+            
         std::string line = request.substr(current, lineEnd - current);
         std::string::size_type colon = line.find(':');
         if (colon != std::string::npos)
         {
-            std::string key = toLowerCopy(trimSpaces(line.substr(0, colon)));
+            std::string key = toLowerString(trimSpaces(line.substr(0, colon)));
             if (key == loweredHeaderName)
                 return (trimSpaces(line.substr(colon + 1)));
         }
@@ -405,93 +225,25 @@ bool parseDecimalLength(const std::string &value, size_t &contentLength)
 {
     std::stringstream ss(value);
     size_t parsed = 0;
+
     if (!(ss >> parsed))
         return (false);
+
     if (!ss.eof())
         return (false);
+        
     contentLength = parsed;
     return (true);
 }
 
-bool HttpRequest::isCompleteChunkedBody(const std::string &request, std::string::size_type bodyStart)
-{
-    std::string::size_type current = bodyStart;
-
-    while (current < request.size())
-    {
-        std::string::size_type lineEnd = request.find("\r\n", current);
-        if (lineEnd == std::string::npos)
-            return (false);
-
-        std::string sizeToken = request.substr(current, lineEnd - current);
-        std::string::size_type semicolon = sizeToken.find(';');
-        if (semicolon != std::string::npos)
-            sizeToken = sizeToken.substr(0, semicolon);
-        sizeToken = trimSpaces(sizeToken);
-
-        std::stringstream ss(sizeToken);
-        size_t chunkSize = 0;
-        ss >> std::hex >> chunkSize;
-        if (sizeToken.empty() || ss.fail() || !ss.eof())
-            return (true);
-
-        current = lineEnd + 2;
-        if (chunkSize == 0)
-        {
-            if (request.size() < current + 2)
-                return (false);
-            if (request.substr(current, 2) == "\r\n")
-                return (true);
-            std::string::size_type trailersEnd = request.find("\r\n\r\n", current);
-            return (trailersEnd != std::string::npos);
-        }
-
-        if (current + chunkSize + 2 > request.size())
-            return (false);
-        if (request.substr(current + chunkSize, 2) != "\r\n")
-            return (true);
-
-        current += chunkSize + 2;
-    }
-    return (false);
-}
-
-bool isCompleteHttpRequest(const std::string &request)
-{
-    std::string::size_type headerEnd = request.find("\r\n\r\n");
-    if (headerEnd == std::string::npos)
-        return (false);
-
-    std::string::size_type bodyStart = headerEnd + 4;
-    std::string transferEncoding = HttpRequest::getHeaderValue(request, "transfer-encoding");
-    transferEncoding = HttpRequest::toLowerCopy(HttpRequest::trimSpaces(transferEncoding));
-    if (transferEncoding == "chunked")
-        return (HttpRequest::isCompleteChunkedBody(request, bodyStart));
-
-    std::string contentLengthValue = HttpRequest::getHeaderValue(request, "content-length");
-    if (!contentLengthValue.empty())
-    {
-        size_t contentLength = 0;
-        if (!parseDecimalLength(contentLengthValue, contentLength))
-            return (true);
-        return ((request.size() - bodyStart) >= contentLength);
-    }
-    return (true);
-}
-
-// end of horrible chunked parsing
-
 void HttpRequest::interpretation(void)
-{
-    std::cout << "Method : |" << this->getMethod() << "| - Uri |" << this->getUri() << "| - Protocol |"
-              << this->getProtocol() << "|" << std::endl;
+{   
+    Header *header = getHeader();
+    std::cout << "Method : |" << header->getMethod() << "| - Uri |" << header->getUri() << "| - Protocol |"
+              << header->getProtocol() << "|" << std::endl;
 
-    for (Header::const_iterator it = _headers.begin(); it != _headers.end(); it++)
-        std::cout << it->first << " | " << it->second << std::endl;
-
-    linkToServer();
-    std::cout << "\nServer select: " << _client->getServerPtr()->getNameServer(0) << "\n";
-    if (_client->getServerPtr()->getReturn()->code != 0)
+    std::cout << "\nServer select: " << getClient()->getServerPtr()->getNameServer(0) << "\n";
+    if (getClient()->getServerPtr()->getReturn()->code != 0)
     {
         std::cout << "Server close\n";
         return; // Server Close
@@ -518,96 +270,28 @@ void HttpRequest::validateRequest(void)
         }
         checkAllowedMethods(location);
     }
+
     // Which method -> different behavior
-    if (_method == GET)
+    HttpMethod method = getHeader()->getMethod();
+    if (method == GET)
         GetMethod method = GetMethod(this, location);
 
-    else if (_method == DELETE)
+    else if (method == DELETE)
         DeleteMethod method = DeleteMethod(this, location);
 
-    else if (_method == POST)
+    else if (method == POST)
         PostMethod method = PostMethod(this, location);
 
-    else if (_method == HEAD)
+    else if (method == HEAD)
         HeadMethod method = HeadMethod(this, location);
 }
 
-void HttpRequest::bodyInterpretation(void)
-{
-    std::cout << YELLOW << "_body content |";
-    for (std::vector<__uint8_t>::const_iterator it = _body.begin(); it != _body.end(); it++)
-        std::cout << *it;
-    std::cout << "|" << RESET << std::endl;
-}
-
-void HttpRequest::appendBodyBytes(const std::string &data)
-{
-    for (std::string::size_type i = 0; i < data.size(); ++i)
-        // if (data[i] != '\r' || data[i] != '\n')
-        _body.push_back(static_cast<__uint8_t>(data[i]));
-}
-
-void HttpRequest::parseChunkedBody(const std::string &headerContent)
-{
-    std::string::size_type current = headerContent.find("\r\n\r\n");
-    if (current == std::string::npos)
-        return;
-    current += 4;
-    _totalChunked = 0;
-
-    size_t maxBodySize = 0;
-    if (_location != NULL)
-        maxBodySize = _location->getClientMaxBodySize();
-
-    if (maxBodySize == 0)
-        maxBodySize = _client->getServerPtr()->getClientMaxBodySize();
-
-    if (maxBodySize == 0)
-        maxBodySize = DEFAULT_CLIENT_MAX_BODY_SIZE;
-
-    while (current < headerContent.size())
-    {
-        std::string::size_type lineEnd = headerContent.find("\r\n", current);
-        if (lineEnd == std::string::npos)
-            throw std::runtime_error("400 Bad Request c");
-
-        size_t chunkSize = parseChunkSize(headerContent.substr(current, lineEnd - current));
-        current = lineEnd + 2;
-
-        _totalChunked += chunkSize;
-        std::cout << RED << "Total Chunked :" << _totalChunked << GREEN << "Max Body Size: " << maxBodySize << RESET
-                  << std::endl;
-
-        if (_totalChunked > maxBodySize)
-            throw std::runtime_error("666 The chunked stuff if greater than 'Client Max Body Size value'");
-
-        if (chunkSize == 0)
-        {
-            if (headerContent.substr(current, 2) == "\r\n")
-                return;
-            std::string::size_type trailersEnd = headerContent.find("\r\n\r\n", current);
-            if (trailersEnd == std::string::npos)
-                throw std::runtime_error("400 Bad Request");
-            return;
-        }
-
-        if (current + chunkSize > headerContent.size())
-            throw std::runtime_error("400 Bad Request a");
-
-        appendBodyBytes(headerContent.substr(current, chunkSize));
-        current += chunkSize;
-
-        if (headerContent.substr(current, 2) != "\r\n")
-            throw std::runtime_error("400 Bad Request b");
-        current += 2;
-    }
-}
 
 void HttpRequest::linkToServer(void)
 {
-    int fd_server = _client->getServerFd();
+    int fd_server = getClient()->getServerFd();
     std::set<Server *>::iterator it;
-    std::set<Server *> set_server = _client->getWebserv()->getFdToServersMap().find(fd_server)->second;
+    std::set<Server *> set_server = getClient()->getWebserv()->getFdToServersMap().find(fd_server)->second;
 
     for (it = set_server.begin(); it != set_server.end(); ++it)
     {
@@ -618,18 +302,18 @@ void HttpRequest::linkToServer(void)
 
             std::cout << "\n";
             std::cout << "Name: " << (*it)->getNameServer(i) << "\n";
-            std::cout << "HOST: " << _headers.find("host")->second << "\n";
+            std::cout << "HOST: " << getHeader()->getHeaderContent().find("host")->second << "\n";
 
-            if ((*it)->getNameServer(i) == _headers.find("host")->second)
+            if ((*it)->getNameServer(i) == getHeader()->getHeaderContent().find("host")->second)
             {
                 setServer(*it);
-                _client->setServerPtr(*it);
+                getClient()->setServerPtr(*it);
                 return;
             }
         }
     }
     setServer(*(set_server.begin()));
-    _client->setServerPtr(*(set_server.begin()));
+    getClient()->setServerPtr(*(set_server.begin()));
 }
 
 Location *HttpRequest::findLocation(void)
@@ -641,7 +325,7 @@ Location *HttpRequest::findLocation(void)
 
     for (int i = 0; (location = _client->getServerPtr()->getLocation(i)) != NULL; ++i)
     {
-        score = longestPrefixMatch(_uri, location->getName());
+        score = longestPrefixMatch(getHeader()->getUri(), location->getName());
 
         if (score < best_score)
         {
@@ -650,4 +334,88 @@ Location *HttpRequest::findLocation(void)
         }
     }
     return best_location;
+}
+
+
+bool isCompleteHttpRequest(Client *client)
+{   
+    HttpRequest httpRequest(client);
+
+    const std::string &request = client->getRequest();
+    std::string::size_type headerEnd = request.find("\r\n\r\n");
+    if (headerEnd == std::string::npos)
+        return (false);
+
+    std::string::size_type bodyStart = headerEnd + 4;
+    std::string transferEncoding = HttpRequest::getHeaderValue(request, "transfer-encoding");
+    transferEncoding = toLowerString(trimSpaces(transferEncoding));
+    if (transferEncoding == "chunked")
+        return (isCompleteChunkedBody(request, bodyStart));
+
+    std::string contentLengthValue = HttpRequest::getHeaderValue(request, "content-length");
+    if (!contentLengthValue.empty())
+    {
+        size_t contentLength = 0;
+        if (!parseDecimalLength(contentLengthValue, contentLength))
+            return (true);
+        return ((request.size() - bodyStart) >= contentLength);
+    }
+    return (true);
+}
+
+bool isCompleteChunkedBody(const std::string &request, std::string::size_type bodyStart)
+{
+    std::string::size_type current = bodyStart;
+
+    while (current < request.size())
+    {
+        std::string::size_type lineEnd = request.find("\r\n", current);
+        if (lineEnd == std::string::npos)
+            return (false);
+
+        std::string sizeToken = initSizeToken(request, current, lineEnd);
+
+        std::stringstream ss(sizeToken);
+        size_t chunkSize = 0;
+        ss >> std::hex >> chunkSize;
+        if (sizeToken.empty() || ss.fail() || !ss.eof())
+            return (true);
+
+        current = lineEnd + 2;
+        if (chunkSize == 0)
+            return(isFinalChunkComplete(request, current));
+
+        if (current + chunkSize + 2 > request.size())
+            return (false);
+
+        if (request.substr(current + chunkSize, 2) != "\r\n")
+            return (true);
+
+        current += chunkSize + 2;
+    }
+    return (false);
+}
+
+bool isFinalChunkComplete(const std::string &request, std::string::size_type current)
+{
+    if (request.size() < current + 2)
+        return (false);
+
+    if (request.substr(current, 2) == "\r\n")
+        return (true);
+
+    std::string::size_type trailersEnd = request.find("\r\n\r\n", current);
+    return (trailersEnd != std::string::npos);
+}
+
+std::string initSizeToken(const std::string &request, const std::string::size_type &current, const std::string::size_type &lineEnd)
+{
+    std::string sizeToken = request.substr(current, lineEnd - current);
+    std::string::size_type semicolon = sizeToken.find(';');
+
+    if (semicolon != std::string::npos)
+        sizeToken = sizeToken.substr(0, semicolon);
+
+    sizeToken = trimSpaces(sizeToken);
+    return sizeToken;
 }
