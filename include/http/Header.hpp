@@ -14,8 +14,6 @@
 
 #include "HttpRequest.hpp"
 
-typedef std::map<std::string, std::string> HeaderContent;
-
 class Header
 {
     private:
