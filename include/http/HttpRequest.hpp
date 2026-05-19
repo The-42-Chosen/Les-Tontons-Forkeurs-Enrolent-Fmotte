@@ -3,16 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/14 13:51:39 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/17 20:36:29 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "Client.hpp"
 #include "DeleteMethod.hpp"
 #include "GetMethod.hpp"
 #include "HeadMethod.hpp"
@@ -20,49 +19,28 @@
 #include "PostMethod.hpp"
 #include "Server.hpp"
 #include "Webserv.hpp"
-
-#include "colors.hpp"
-#include "execption.hpp"
-#include "struct.hpp"
-#include "utilsRequest.hpp"
-
-#include <cstdio>
-#include <iostream>
-#include <map>
-#include <sstream>
-#include <stdexcept>
-#include <string>
-#include <sys/types.h>
-#include <unistd.h>
-#include <vector>
+#include "Header.hpp"
+#include "Body.hpp"
 
 class Client;
 class Server;
+class Header;
+class Body;
 class Location;
-
-typedef std::map<std::string, std::string> Header;
-typedef std::vector<uint8_t> Body;
-
 class HttpRequest
 {
   private:
     // =====================
     // ==    Attributs    ==
     // =====================
-    HttpRequest();
     Client *_client;
     Server *_server;
+    Header *_header;
+    Body *_body;
     Location *_location;
-    HttpMethod _method;
-    std::string _uri;
-    std::string _protocol;
-    Header _headers;
-    Body _body;
-    bool _keepAlive;
-    size_t _contentLength;
-    std::string _path_root;
-    size_t _totalChunked;
-
+    
+    HttpRequest();
+    
   public:
     // =====================
     // ==       OCF       ==
@@ -75,49 +53,43 @@ class HttpRequest
     // =====================
     // ==     Getters     ==
     // =====================
-    HttpMethod getMethod() const;
-    const std::string &getUri() const;
-    const std::string &getProtocol() const;
-    void setClient(Client *client);
-    void setServer(Server *server);
-    void setLocation(Location *location);
-    Server *getServer(void) const;
     Client *getClient(void) const;
-
-    Body getBody(void);
+    void setClient(Client *client);
+    Server *getServer(void) const;
+    void setServer(Server *server);
+    Header *getHeader(void) const;
+    void setHeader(Header *header);
+    Body *getBody(void) const;
+    void setBody(Body *body);
+    Location *getLocation(void) const;
+    void setLocation(Location *location);
 
     // =====================
-    // == 	  Member	  ==
+    // == 	  Member	    ==
     // =====================
     void parseHttpRequest(const std::string &headerContent);
-    void parseHeader(const std::string &headerContent);
-    void parseHeaderMethod(const std::string &headerContent);
-    void parseBody(const std::string &headerContent);
-    void parseChunkedBody(const std::string &headerContent);
-    void appendBodyBytes(const std::string &data);
+    void initialisationHttpRequest(Client *client);
 
     void interpretation(void);
-    void bodyInterpretation(void);
     void linkToServer(void);
     void validateRequest(void);
     Location *findLocation(void);
+    //void handlingErrorCode(const std::exception &e);
 
-    static std::string toLowerCopy(const std::string &value);
-    static std::string trimSpaces(const std::string &value);
     static std::string getHeaderValue(const std::string &request, const std::string &headerName);
-    static bool isCompleteChunkedBody(const std::string &request, std::string::size_type bodyStart);
 
     // =====================
     // ==     Validity    ==
     // =====================
-    void isValidURI(void);
-    void isValidProtocol(void);
-    void isHostPresentAndValid(void);
     void checkAllowedMethods(Location *location);
+  };
+  
+// =====================
+// == 	  Fonction    ==
+// =====================
+bool isCompleteHttpRequest(Client *client);
+bool isCompleteChunkedBody(const std::string &request, std::string::size_type bodyStart);
+bool isFinalChunkComplete(const std::string &request, std::string::size_type current);
+std::string initSizeToken(const std::string &request, const std::string::size_type &current, const std::string::size_type &lineEnd);
 
-    // Helper
-    static const char *methodToString(HttpMethod method);
-};
-
-bool isCompleteHttpRequest(const std::string &request);
 bool parseDecimalLength(const std::string &value, size_t &contentLength);
