@@ -59,7 +59,7 @@ void GetMethod::applyMethod(void)
         applyCGI(path);
     else
     {
-        HttpResponse response = HttpResponse::makeFile(path);
-        response.send(_request->getClient()->getClientFd());     
+        //HttpResponse response = HttpResponse::makeFile(path);
+        //response.send(_request->getClient()->getClientFd());     
     }
 }

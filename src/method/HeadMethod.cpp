@@ -57,10 +57,10 @@ void HeadMethod::applyMethod(void)
     if (stat(path.c_str(), &st) != 0)
         throw std::runtime_error("500 Internal Server Error");
 
-    Body emptyBody;
-    HttpResponse response(200, emptyBody, "text/html");
+    BodyContent emptyBody;
+    //HttpResponse response(200, emptyBody, "text/html");
     std::stringstream ss;
     ss << st.st_size;
-    response.addHeader("Content-Length", ss.str());
-    response.send(_request->getClient()->getClientFd());
+    //response.addHeader("Content-Length", ss.str());
+    //response.send(_request->getClient()->getClientFd());
 }
