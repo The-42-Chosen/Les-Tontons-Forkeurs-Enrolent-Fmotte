@@ -50,10 +50,12 @@ NETWORK_SRC = \
 
 HTTP_SRC = \
 	$(SRC_PATH)/http/HttpRequest.cpp \
-	$(SRC_PATH)/http/HttpResponse.cpp \
-	$(SRC_PATH)/http/utilsResponse.cpp \
-	$(SRC_PATH)/http/utilsRequest.cpp
+	$(SRC_PATH)/http/utilsRequest.cpp \
+	$(SRC_PATH)/http/Header.cpp	\
+	$(SRC_PATH)/http/Body.cpp
 
+#$(SRC_PATH)/http/HttpResponse.cpp
+#$(SRC_PATH)/http/utilsResponse.cpp
 
 METHOD_SRC = \
 	$(SRC_PATH)/method/AMethod.cpp \
@@ -94,9 +96,12 @@ NETWORK_HEA = \
 
 HTTP_HEA = \
 	$(HEA_PATH)/http/HttpRequest.hpp \
-	$(HEA_PATH)/http/HttpResponse.hpp \
-	$(HEA_PATH)/http/utilsResponse.hpp \
-	$(HEA_PATH)/http/utilsRequest.hpp
+	$(HEA_PATH)/http/utilsRequest.hpp \
+	$(HEA_PATH)/http/Header.hpp \
+	$(HEA_PATH)/http/Body.hpp  
+
+#$(HEA_PATH)/http/HttpResponse.hpp
+#$(HEA_PATH)/http/utilsResponse.hpp
 
 METHOD_HEA = \
 	$(HEA_PATH)/method/AMethod.hpp \
