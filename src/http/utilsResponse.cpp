@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utilsResponse.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/13 19:11:36 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/13 20:02:07 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/25 11:28:54 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,13 @@ std::string getStatusMessage(int code)
 {
     switch (code)
     {
+
     // 1xx Informational
     case 100:
         return "Continue";
     case 101:
         return "Switching Protocols";
+
     // 2xx Success
     case 200:
         return "OK";
@@ -36,6 +38,7 @@ std::string getStatusMessage(int code)
         return "No Content";
     case 206:
         return "Partial Content";
+
     // 3xx Redirection
     case 300:
         return "Multiple Choices";
@@ -51,6 +54,7 @@ std::string getStatusMessage(int code)
         return "Temporary Redirect";
     case 308:
         return "Permanent Redirect";
+
     // 4xx Client Error
     case 400:
         return "Bad Request";
@@ -78,6 +82,7 @@ std::string getStatusMessage(int code)
         return "Unsupported Media Type";
     case 429:
         return "Too Many Requests";
+
     // 5xx Server Error
     case 500:
         return "Internal Server Error";
@@ -91,6 +96,7 @@ std::string getStatusMessage(int code)
         return "Gateway Timeout";
     case 505:
         return "HTTP Version Not Supported";
+
     default:
         return "Unknown";
     }
