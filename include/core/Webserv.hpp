@@ -3,24 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:20 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/23 13:48:15 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/25 10:29:26 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "Client.hpp"
-#include "HttpRequest.hpp"
-#include "Server.hpp"
-#include "colors.hpp"
-#include "execption.hpp"
 #include "struct.hpp"
-#include "utilsConnection.hpp"
-#include <cstring>
-#include <errno.h>
 #include <map>
 #include <set>
 
@@ -34,9 +26,10 @@ class Client;
 class Webserv
 {
   private:
-    std::vector<Server *> _vector_server;
-    std::map<int, std::set<Server *> > _map_fd_to_serv;
-    int _webser_epoll;
+    std::vector<Server *> _vectorServer;
+    std::vector<Client *> _vectorClient;
+    std::map<int, std::set<Server *> > _mapFdToServer;
+    int _webserEpoll;
 
   public:
     // =====================
@@ -54,6 +47,7 @@ class Webserv
 
     // SERVERS
     const std::vector<Server *> &getServers(void) const;
+    const std::vector<Client *> &getClients(void) const;
     const std::map<int, std::set<Server *> > &getFdToServersMap(void) const;
     void setEpollFd(const int epoll);
     int getEpollFd(void);
