@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 14:35:51 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/25 14:51:17 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/25 16:56:07 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,9 +136,9 @@ bool Request::initialisationRequest(Client *client)
         std::istringstream(e.what()) >> num;
         setStatusCode(num);
         
-        return true;
+        return false;
     }
-    return false;
+    return true;
 }
 
 std::string Request::processRequest()
