@@ -6,15 +6,17 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/17 17:37:08 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/17 21:02:05 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/25 11:04:18 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "Header.hpp"
-     
-Header::Header(const std::string &headerContent): _method(NONE), _uri(""), _protocol(""), _host("")
+#include "struct.hpp"
+#include "HttpRequest.hpp"
+#include "utilsRequest.hpp"
+
+Header::Header(): _method(NONE), _uri(""), _protocol(""), _host("")
 {
-    initialisationHeader(headerContent);
 }
 
 Header::~Header()
@@ -58,13 +60,13 @@ std::string Header::getUri(void) const
     return _uri;
 }
 
-void Header::setUri(std::string uri)
+void Header::setUri(const std::string &uri)
 {
      if (uri[0] != '/')
-        throw std::runtime_error("400 Bad Request 10");
+        throw std::runtime_error("400");
         
     if (uri.size() > 8192)
-        throw std::runtime_error("414 URI Too Long");
+        throw std::runtime_error("414");
         
     _uri = uri;
 }
@@ -73,10 +75,11 @@ std::string Header::getProtocol(void) const
 {
     return _protocol;
 }
-void Header::setProtocol(std::string protocol)
+
+void Header::setProtocol(const std::string &protocol)
 {
     if (protocol != "HTTP/1.1")
-        throw std::runtime_error("505 HTTP Version Not Supported");
+        throw std::runtime_error("505");
 
     _protocol = protocol;
 }
@@ -107,7 +110,7 @@ std::string Header::getHost(void) const
     return _host;
 }
 
-void Header::setHost(std::string host)
+void Header::setHost(const std::string &host)
 {
     _host = host;
 }
@@ -121,7 +124,7 @@ void Header::initialisationHeader(const std::string &headerContent)
     parseHeaderContent(headerContent);
 
     if (getHost() == "")
-        throw std::runtime_error("400 Bad Request 11");
+        throw std::runtime_error("400");
 }
 
 HttpMethod Header::parseMethodToken(const std::string &method)
@@ -134,8 +137,8 @@ HttpMethod Header::parseMethodToken(const std::string &method)
         return (DELETE);
     if (method == "HEAD")
         return (HEAD);
-        
-    throw std::runtime_error("501 Not Implemented");
+    
+    throw std::runtime_error("501");
 }
 
 void Header::parseHeaderInfo(const std::string &headerContent)
@@ -156,7 +159,7 @@ void Header::parseHeaderInfo(const std::string &headerContent)
     std::string protocol;
     std::string extra;
     if (!(stream >> method >> uri >> protocol) || (stream >> extra))
-        throw std::runtime_error("400 Bad Request 12");
+        throw std::runtime_error("400");
     
     setMethod(method);
     setUri(uri);
@@ -190,7 +193,7 @@ void Header::parseHeaderContent(const std::string &headerContent)
         {
             std::string::size_type colon = requestLine.find(':');
             if (colon == std::string::npos)
-                throw std::runtime_error("400 Bad Request 13");
+                throw std::runtime_error("400");
 
             std::string key = requestLine.substr(0, colon);
             std::string value = requestLine.substr(colon + 1);
