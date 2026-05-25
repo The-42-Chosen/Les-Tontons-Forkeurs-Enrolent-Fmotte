@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/25 11:36:50 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/25 14:45:53 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,12 +97,15 @@ void HttpRequest::setBody(Body *body)
 // =====================
 // ==     Method      ==
 // =====================
-void HttpRequest::parseHttpRequest(const std::string &headerContent)
+void HttpRequest::initHeader(const std::string &headerContent)
 {
     Header *header = new Header();
     setHeader(header);
     header->initialisationHeader(headerContent);
+}
 
+void HttpRequest::initBody()
+{
     Body *body = new Body(*this);
     setBody(body);
     body->initialisationBody();
@@ -110,26 +113,23 @@ void HttpRequest::parseHttpRequest(const std::string &headerContent)
 
 std::string HttpRequest::selectMethodHttp(Location *location)
 {
-    // Which method -> different behavior
     HttpMethod httpMethod = getHeader()->getMethod();
 
     AMethod *method = NULL;
-    std::string payload;
+
+    GetMethod get(this);
+    DeleteMethod del(this);
+    PostMethod post(this);
+    HeadMethod head(this);
 
     if (httpMethod == GET)
-        method = new GetMethod(this);
-
+        method = &get;
     else if (httpMethod == DELETE)
-        method = new DeleteMethod(this);
-
+        method = &del;
     else if (httpMethod == POST)
-        method = new PostMethod(this);
-
+        method = &post;
     else if (httpMethod == HEAD)
-        method = new HeadMethod(this);
-    
-    
-    payload = method->applyMethod(location);
-    delete method;
-    return payload;
+        method = &head;
+
+    return method->applyMethod(location);
 }

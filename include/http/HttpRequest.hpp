@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/24 17:22:22 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/25 14:45:58 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,9 @@ class HttpRequest
 		void setBody(Body *body);
 		
 		// =====================
-		// == 	  Member	    ==
+		// == 	  Member	  ==
 		// =====================
-		void parseHttpRequest(const std::string &headerContent);
+		void initHeader(const std::string &headerContent);
+		void initBody();
 		std::string selectMethodHttp(Location *location);
 };
