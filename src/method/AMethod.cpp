@@ -6,31 +6,42 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 12:54:14 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/14 19:29:39 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/25 11:32:57 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "AMethod.hpp"
 
-#include "HttpRequest.hpp"
 #include "Location.hpp"
+#include "HttpRequest.hpp"
+#include "Request.hpp"
+#include "Server.hpp"
+#include "Header.hpp"
+
+#include "execption.hpp"
+#include "utilsParsing.hpp"
+#include "utilsRequest.hpp"
+
+#include <sys/wait.h>
 
 // =====================
 // ==       OCF       ==
 // =====================
 AMethod::AMethod()
 {
-}
 
-AMethod::AMethod(HttpRequest *http_request, Location *location) : _request(NULL), _location(NULL)
+}
+  
+AMethod::AMethod(HttpRequest *httpRequest, HttpMethod method): _httpRequest(NULL), _method(NONE)
 {
-    setHttpRequest(http_request);
-    setLocation(location);
+    setHttpRequest(httpRequest);
+    setMethod(method);
 }
 
 AMethod::~AMethod()
 {
 }
+
 AMethod::AMethod(const AMethod &other)
 {
     *this = other;
@@ -38,8 +49,8 @@ AMethod::AMethod(const AMethod &other)
 
 AMethod &AMethod::operator=(const AMethod &other)
 {
-    _request = other._request;
-    _location = other._location;
+    _httpRequest = other._httpRequest;
+    _method = other._method;
     return (*this);
 }
 
@@ -56,73 +67,59 @@ void AMethod::setMethod(HttpMethod method)
 // =====================
 // ==     Getters     ==
 // =====================
-Location *AMethod::getLocation(void) const
-{
-    return _location;
-}
-
-void AMethod::setLocation(Location *location)
-{
-    if (location == NULL)
-        throw ExecptionErrorUninitializedVariable("*location", "AMethod");
-    _location = location;
-}
 
 HttpRequest *AMethod::getHttpRequest(void) const
 {
-    return _request;
+    return _httpRequest;
 }
 
-void AMethod::setHttpRequest(HttpRequest *request)
+void AMethod::setHttpRequest(HttpRequest *httpRequest)
 {
-    if (request == NULL)
-        throw ExecptionErrorUninitializedVariable("*request", "AMethod");
-    _request = request;
+    if (httpRequest == NULL)
+        throw ExecptionErrorUninitializedVariable("*httpRequest", "AMethod");
+
+    _httpRequest = httpRequest;
 }
 
 // =====================
 // == 	  Member	  ==
 // =====================
-std::string AMethod::createPath()
+std::string AMethod::createPath(Location *location)
 {
-    if (_location != NULL)
-        return createPathWithLocation();
+    if (location != NULL)
+        return createPathWithLocation(location);
 
     return createPathWithServer();
 }
 
-std::string AMethod::createPathWithLocation()
+std::string AMethod::createPathWithLocation(Location *location)
 {
     std::string pathFile;
     std::string pathLoc;
     std::string pathRoot;
 
-    if (_location->getRoot() != "")
-        pathRoot = _location->getRoot();
+    if (location->getRoot() != "")
+        pathRoot = location->getRoot();
     else
-        pathRoot = _request->getServer()->getRoot();
-
-    pathLoc = joinPath(pathRoot, _location->getName());
-
-    if (_method == POST)
-        return pathLoc;
-
-    pathFile = joinPath(pathLoc, returnLastElementPath(_request->getHeader()->getUri()));
+        pathRoot = getHttpRequest()->getRequest()->getServer()->getRoot();
+        
+    pathLoc = joinPath(pathRoot, location->getName());
 
     if (_method == POST)
         return pathLoc;
 
-    pathFile = joinPath(pathLoc, returnLastElementPath(_request->getHeader()->getUri()));
+    pathFile = joinPath(pathLoc, returnLastElementPath(getHttpRequest()->getHeader()->getUri()));
+
 
     if (isFinishByFile(pathFile))
         return pathFile;
 
     if (_method == GET)
     {
-        if (_location->getIndex() != "")
-            return joinPath(pathLoc, _location->getIndex());
+        if (location->getIndex() != "")
+            return joinPath(pathLoc, location->getIndex());
 
-        if (_location->getAutoIndex())
+        if (location->getAutoIndex())
             return "";
     }
     return createPathWithServer();
@@ -134,33 +131,30 @@ std::string AMethod::createPathWithServer()
     std::string checkPath;
     std::string pathRoot;
     std::string index;
-
-    pathRoot = _request->getServer()->getRoot();
+    
+    pathRoot = getHttpRequest()->getRequest()->getServer()->getRoot();
 
     if (_method == POST)
         return pathRoot;
-    pathFile = joinPath(pathRoot, returnLastElementPath(_request->getHeader()->getUri()));
+
+    pathFile = joinPath(pathRoot, returnLastElementPath(getHttpRequest()->getHeader()->getUri()));
 
     if (isFinishByFile(pathFile))
         return pathFile;
 
     if (_method == GET)
     {
-        for (size_t i = 0; (index = _request->getServer()->getIndex(i)) != ""; ++i)
+        for (size_t i = 0; (index = getHttpRequest()->getRequest()->getServer()->getIndex(i)) != ""; ++i)
         {
             checkPath = joinPath(pathRoot, index);
             if (access(checkPath.c_str(), F_OK) != -1 && access(checkPath.c_str(), R_OK) != -1)
                 return (checkPath);
         }
 
-        if (_request->getServer()->getAutoIndex())
+        if (getHttpRequest()->getRequest()->getServer()->getAutoIndex())
             return "";
     }
-    throw std::runtime_error("404 Not Found");
-}
-
-void AMethod::applyMethod(void)
-{
+    throw std::runtime_error("404");
 }
 
 void AMethod::applyCGI(std::string path)

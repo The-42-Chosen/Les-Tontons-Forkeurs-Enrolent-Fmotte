@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 12:55:49 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/12 16:44:21 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/25 11:35:19 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,14 @@ class GetMethod : public AMethod
     // =====================
     // ==    Attributs    ==
     // =====================
+
     GetMethod();
 
   public:
     // =====================
     // ==       OCF       ==
     // =====================
-    GetMethod(HttpRequest *http_request, Location *location);
+    GetMethod(HttpRequest *httpRequest);
     ~GetMethod();
     GetMethod(const GetMethod &other);
     GetMethod &operator=(const GetMethod &other);
@@ -36,5 +37,5 @@ class GetMethod : public AMethod
     // =====================
     // == 	  Member	  ==
     // =====================
-    void applyMethod(void);
+    std::string applyMethod(Location *location);
 };

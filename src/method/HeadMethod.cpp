@@ -3,27 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   HeadMethod.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:46:04 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/14 15:27:49 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/25 11:38:18 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HeadMethod.hpp"
+
 #include "HttpRequest.hpp"
-#include "HttpResponse.hpp"
+
+#include "utilsRequest.hpp"
+
+#include <ctime>
 
 // =====================
 // ==       OCF       ==
 // =====================
-HeadMethod::HeadMethod(HttpRequest *http_request, Location *location)
+HeadMethod::HeadMethod(HttpRequest *httpRequest): AMethod(httpRequest, HEAD)
 {
-    setHttpRequest(http_request);
-    setLocation(location);
-    setMethod(HEAD);
-
-    applyMethod();
 }
 
 HeadMethod::~HeadMethod()
@@ -44,23 +43,24 @@ HeadMethod &HeadMethod::operator=(const HeadMethod &other)
 // =====================
 // == 	  Member	  ==
 // =====================
-void HeadMethod::applyMethod(void)
+std::string HeadMethod::applyMethod(Location *location)
 {
     struct stat st;
     std::string path;
 
-    path = createPath();
+    path = createPath(location);
     std::cout << "Path to contexte read: " << path << "\n";
 
     checkPermisionReadFile(path);
 
     if (stat(path.c_str(), &st) != 0)
-        throw std::runtime_error("500 Internal Server Error");
+        throw std::runtime_error("500");
 
-    BodyContent emptyBody;
-    //HttpResponse response(200, emptyBody, "text/html");
-    std::stringstream ss;
-    ss << st.st_size;
-    //response.addHeader("Content-Length", ss.str());
-    //response.send(_request->getClient()->getClientFd());
+    std::cout << "Taille : " <<  st.st_size << "\n";
+    char buffer[100];
+    std::tm* timeinfo = std::localtime(&st.st_mtime);
+    std::strftime(buffer, sizeof(buffer), "%d/%m/%Y %H:%M:%S", timeinfo);
+    std::cout << "Derniere modification : " << buffer << "\n";
+
+    return buffer;
 }

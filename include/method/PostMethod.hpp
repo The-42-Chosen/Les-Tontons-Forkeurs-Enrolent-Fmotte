@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:46:40 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/12 19:47:09 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/25 11:35:25 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,14 @@ class PostMethod : public AMethod
     // =====================
     // ==    Attributs    ==
     // =====================
+
     PostMethod();
 
   public:
     // =====================
     // ==       OCF       ==
     // =====================
-    PostMethod(HttpRequest *http_request, Location *location);
+    PostMethod(HttpRequest *httpRequest);
     ~PostMethod();
     PostMethod(const PostMethod &other);
     PostMethod &operator=(const PostMethod &other);
@@ -36,5 +37,5 @@ class PostMethod : public AMethod
     // =====================
     // == 	  Member	  ==
     // =====================
-    void applyMethod(void);
+    std::string applyMethod(Location *location);
 };
