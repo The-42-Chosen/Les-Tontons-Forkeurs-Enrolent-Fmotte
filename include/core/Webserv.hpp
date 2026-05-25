@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:20 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/25 10:29:26 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/25 16:57:06 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,10 +61,14 @@ class Webserv
 
     bool initializeConnection();
     void initializeSocket();
+    void registerNewSocket(std::map<Listen, int> &map_socket_fd, Listen *listenConfig, Server *server);
+    void registerExistingSocket(int serverSocket, Server *server);
     void listenToWebserv();
     void handleConnection(struct epoll_event &events);
     void handleNewClient(int server_fd);
-    void receiveMessageFromClient(Client *client);
+    void processClientRequest(Client *client);
+    void processClientResponse(Client *client);
+    bool readAndCheckRequestCompletion(Client *client);
     void deleteClient(Client *client);
     void closeConnection();
 };

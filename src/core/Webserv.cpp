@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/25 11:35:51 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/25 17:02:04 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,14 +116,33 @@ bool Webserv::splitIntoServers(std::vector<std::string> &tokens)
     return (false);
 }
 
+void Webserv::registerNewSocket(std::map<Listen, int> &map_socket_fd, Listen *listenConfig, Server *server)
+{
+    int serverSocket = createServerSocket(listenConfig->ip, listenConfig->port, MAX_CLIENT);
+    addSocketToEvent(getEpollFd(), serverSocket, NULL);
+
+    map_socket_fd.insert(std::make_pair(*listenConfig, serverSocket));
+    
+    _mapFdToServer.insert(std::make_pair(serverSocket, std::set<Server *>()));
+    _mapFdToServer[serverSocket].insert(server);
+}
+
+void Webserv::registerExistingSocket(int serverSocket, Server *server)
+{
+    std::set<Server *> &set_server = _mapFdToServer[serverSocket];
+    
+    if (set_server.find(server) == set_server.end())
+        set_server.insert(server);
+}
+
 void Webserv::initializeSocket()
 {
-    int serverSocket;
     Listen *listenConfig;
     Server *server;
 
     std::map<Listen, int> map_socket_fd;
     std::map<Listen, int>::iterator it;
+
     std::vector<Server *> vector_server = getServers();
 
     for (size_t i = 0; i < vector_server.size(); ++i)
@@ -133,29 +152,17 @@ void Webserv::initializeSocket()
         for (size_t j = 0;; ++j)
         {
             listenConfig = server->getListen(j);
+
             if (!listenConfig)
                 break;
 
             it = map_socket_fd.find(*listenConfig);
 
             if (it == map_socket_fd.end())
-            {
-                serverSocket = createServerSocket(listenConfig->ip, listenConfig->port, MAX_CLIENT);
-                addSocketToEvent(getEpollFd(), serverSocket, NULL);
+                registerNewSocket(map_socket_fd, listenConfig, server);
 
-                map_socket_fd.insert(std::make_pair(*listenConfig, serverSocket));
-
-                // Création directe dans la map
-                _mapFdToServer.insert(std::make_pair(serverSocket, std::set<Server *>()));
-                _mapFdToServer[serverSocket].insert(server);
-            }
             else
-            {
-                serverSocket = it->second;
-                std::set<Server *> &set_server = _mapFdToServer[serverSocket];
-                if (set_server.find(server) == set_server.end())
-                    set_server.insert(server);
-            }
+                registerExistingSocket(it->second, server);
         }
     }
 }
@@ -170,7 +177,9 @@ void Webserv::handleNewClient(int server_fd)
     Client *client = new Client;
     
     _vectorClient.push_back(client);
+
     addSocketToEvent(getEpollFd(), clientSocket, client);
+    
     client->setClientFd(clientSocket);
     client->setServerFd(server_fd);
     client->setWebserv(this);
@@ -190,19 +199,18 @@ void Webserv::deleteClient(Client *client)
     std::cout << "Client is disconnected\n";
 }
 
-void Webserv::receiveMessageFromClient(Client *client)
+bool Webserv::readAndCheckRequestCompletion(Client *client)
 {
-    //Split funct between recived and interpretatoin
     int bytes;
     char buffer[SIZE_BUFFER];
 
     if ((bytes = recv(client->getClientFd(), buffer, sizeof(buffer), 0)) == -1)
-        return;
+        return true;
 
     if (bytes == 0)
     {
         deleteClient(client);
-        return;
+        return true;
     }
 
     std::string s;
@@ -210,19 +218,34 @@ void Webserv::receiveMessageFromClient(Client *client)
     client->appendContentRequest(s);
 
     if (!isCompleteRequest(client->getContentRequest()))
-        return;
+        return true;
+        
+    return false;
+}
 
+void Webserv::processClientRequest(Client *client)
+{
+    if (readAndCheckRequestCompletion(client))
+        return;
+        
     std::cout << "Final Message from client: " << client->getContentRequest() << "\n";
     
+    processClientResponse(client);
+}
+
+void Webserv::processClientResponse(Client *client)
+{
     std::string payload = "";
-    Request request = Request();
-    if (!request.initialisationRequest(client))
+    
+    Request request;
+    if (request.initialisationRequest(client))
         payload = request.processRequest();
 
-    HttpResponse response = HttpResponse(&request);
+    HttpResponse response(&request);
     response.initialisationHttpResponse(payload);
     response.sendToClient();
-    client->clearContentRequest();
+    
+    client->clearContentRequest(); 
 }
 
 void Webserv::handleConnection(struct epoll_event &events)
@@ -234,7 +257,7 @@ void Webserv::handleConnection(struct epoll_event &events)
         handleNewClient(server_fd);
 
     else
-        receiveMessageFromClient(static_cast<Client *>(events.data.ptr));
+        processClientRequest(static_cast<Client *>(events.data.ptr));
 }
 
 void Webserv::listenToWebserv()
