@@ -6,16 +6,13 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 12:50:28 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/14 19:29:29 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/25 11:34:40 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "execption.hpp"
-#include "utilsParsing.hpp"
-#include "utilsRequest.hpp"
-#include <sys/wait.h>
+#include "struct.hpp"
 
 class HttpRequest;
 class Location;
@@ -26,16 +23,17 @@ class AMethod
     // =====================
     // ==    Attributs    ==
     // =====================
-    HttpRequest *_request;
-    Location *_location;
+    HttpRequest *_httpRequest;
     HttpMethod _method;
-    AMethod();
 
+    AMethod();
+    
   public:
     // =====================
     // ==       OCF       ==
     // =====================
-    AMethod(HttpRequest *http_request, Location *location);
+
+    AMethod(HttpRequest *httpRequest, HttpMethod method);
     virtual ~AMethod() = 0;
     AMethod(const AMethod &other);
     AMethod &operator=(const AMethod &other);
@@ -43,21 +41,19 @@ class AMethod
     // =====================
     // ==     Getters     ==
     // =====================
-    Location *getLocation(void) const;
-    void setLocation(Location *location);
     HttpRequest *getHttpRequest(void) const;
-    void setHttpRequest(HttpRequest *http_request);
+    void setHttpRequest(HttpRequest *httpRequest);
     HttpMethod getMethod(void);
     void setMethod(HttpMethod method);
 
     // =====================
     // == 	  Member	  ==
     // =====================
-    std::string createPath();
-    std::string createPathWithLocation();
+    std::string createPath(Location *location);
+    std::string createPathWithLocation(Location *location);
     std::string createPathWithServer();
 
-    virtual void applyMethod(void);
+    virtual std::string applyMethod(Location *location) = 0;
     void applyCGI(std::string path);
 };
 
