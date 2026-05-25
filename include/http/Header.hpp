@@ -6,13 +6,13 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/17 17:37:05 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/17 21:01:33 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/25 10:18:37 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "HttpRequest.hpp"
+#include "struct.hpp"
 
 class Header
 {
@@ -26,13 +26,11 @@ class Header
         HeaderContent _headerContent;
         std::string _host;
         
-        Header();
-        
     public:
         // =====================
         // ==       OCF       ==
         // =====================
-        Header(const std::string &headerContent);
+        Header();
         ~Header();
         Header(const Header &other);
         Header &operator=(const Header &other);
@@ -43,14 +41,14 @@ class Header
         HttpMethod getMethod(void) const;
         void setMethod(const std::string &method);
         std::string getUri(void) const;
-        void setUri(std::string uri);
+        void setUri(const std::string &uri);
         std::string getProtocol(void) const;
-        void setProtocol(std::string protocol);
+        void setProtocol(const std::string &protocol);
         HeaderContent getHeaderContent(void) const;
         void setHeaderContent(HeaderContent headerContent);
         void addHeaderContent(std::string key, std::string value);
         std::string getHost(void) const;
-        void setHost(std::string host);
+        void setHost(const std::string &host);
            
         // =====================
         // == 	  Member	  ==
