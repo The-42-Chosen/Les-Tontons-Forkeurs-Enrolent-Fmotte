@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 14:35:51 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/25 11:02:57 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/25 14:51:17 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,8 +123,10 @@ bool Request::initialisationRequest(Client *client)
         setClient(client);
         HttpRequest *httpRequest = new HttpRequest(this);
         setHttpRequest(httpRequest);
-        getHttpRequest()->parseHttpRequest(getClient()->getContentRequest());
+        
+        getHttpRequest()->initHeader(getClient()->getContentRequest());
         linkToServer();
+        getHttpRequest()->initBody();
     }
     catch (const std::exception &e)
     {
