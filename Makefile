@@ -6,7 +6,7 @@
 #    By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/11 16:36:16 by fmotte            #+#    #+#              #
-#    Updated: 2026/05/14 19:39:40 by fmotte           ###   ########.fr        #
+#    Updated: 2026/05/22 15:27:49 by fmotte           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,16 +46,17 @@ CONFIG_SRC = \
 
 NETWORK_SRC = \
 	$(SRC_PATH)/network/Client.cpp \
-	$(SRC_PATH)/network/utilsConnection.cpp
-
+	$(SRC_PATH)/network/utilsConnection.cpp \
+	$(SRC_PATH)/network/Request.cpp
+	
 HTTP_SRC = \
 	$(SRC_PATH)/http/HttpRequest.cpp \
 	$(SRC_PATH)/http/utilsRequest.cpp \
+	$(SRC_PATH)/http/HttpResponse.cpp \
+	$(SRC_PATH)/http/utilsResponse.cpp \
 	$(SRC_PATH)/http/Header.cpp	\
 	$(SRC_PATH)/http/Body.cpp
 
-#$(SRC_PATH)/http/HttpResponse.cpp
-#$(SRC_PATH)/http/utilsResponse.cpp
 
 METHOD_SRC = \
 	$(SRC_PATH)/method/AMethod.cpp \
@@ -92,16 +93,17 @@ CONFIG_HEA = \
 
 NETWORK_HEA = \
 	$(HEA_PATH)/network/Client.hpp \
-	$(HEA_PATH)/network/utilsConnection.hpp
+	$(HEA_PATH)/network/utilsConnection.hpp \
+	$(HEA_PATH)/network/Request.hpp
 
 HTTP_HEA = \
 	$(HEA_PATH)/http/HttpRequest.hpp \
 	$(HEA_PATH)/http/utilsRequest.hpp \
+	$(HEA_PATH)/http/HttpResponse.hpp \
+	$(HEA_PATH)/http/utilsResponse.hpp \
 	$(HEA_PATH)/http/Header.hpp \
 	$(HEA_PATH)/http/Body.hpp  
 
-#$(HEA_PATH)/http/HttpResponse.hpp
-#$(HEA_PATH)/http/utilsResponse.hpp
 
 METHOD_HEA = \
 	$(HEA_PATH)/method/AMethod.hpp \
