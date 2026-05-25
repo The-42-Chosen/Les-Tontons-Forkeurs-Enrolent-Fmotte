@@ -3,56 +3,48 @@
 /*                                                        :::      ::::::::   */
 /*   HttpResponse.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 11:56:16 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/14 13:45:45 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/24 18:55:25 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "HttpRequest.hpp"
-#include "utilsResponse.hpp"
-#include <dirent.h>
-#include <fstream>
-#include <map>
-#include <sstream>
-#include <string>
-#include <sys/stat.h>
+#include "struct.hpp"
+
+class Request;
 
 class HttpResponse
 {
-  private:
-    // =====================
-    // ==    Attributs    ==
-    // =====================
-    int _statusCode;
-    Body _body;
-    Header _headers;
-    std::string _statusMessage;
+  	private:
+		std::string _responseContent;
+		Request *_request;
+		
+		HttpResponse();
 
-    HttpResponse();
-
-  public:
-    // =====================
-    // == Canonical Form  ==
-    // =====================
-    HttpResponse(int code, Body &body, const std::string &contentType);
-    ~HttpResponse();
-
-    // =====================
-    // == 	  Methods	  ==
-    // =====================
-    void addHeader(const std::string &key, const std::string &val);
-    std::string build() const;
-    void send(int fd) const;
-
-    // =====================
-    // == 	  Makers 	  ==
-    // =====================
-    static HttpResponse makeFile(const std::string &path);
-    static HttpResponse makeError(int code, const std::string &customPage = "");
-    static HttpResponse makeRedirect(int code, const std::string &location);
-    static HttpResponse makeAutoIndex(const std::string &dirPath, const std::string &uri);
+	public:
+		// =====================
+		// == Canonical Form  ==
+		// =====================
+		HttpResponse(Request *Request);
+		~HttpResponse();
+		
+		// =====================
+		// ==     Getters     ==
+		// =====================
+		std::string getResponseContent();
+		void setResponseContent(std::string responseContent);
+		Request *getRequest(void) const;
+        void setRequest(Request *Request);
+		
+		// =====================
+		// == 	  Methods	  ==
+		// =====================
+		void initialisationHttpResponse(std::string payload);
+		void handleError();
+		void handleRedirection();
+		void handleCorrect(HttpMethod method, std::string payload);
+		void sendToClient();
 };

@@ -3,168 +3,101 @@
 /*                                                        :::      ::::::::   */
 /*   HttpResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 16:52:26 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/14 17:56:47 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/25 11:37:12 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpResponse.hpp"
 
+#include "HttpRequest.hpp"
+#include "Request.hpp"
+#include "Header.hpp"
+#include "Client.hpp"
+
+#include "execption.hpp"
+
 // =====================
 // == Canonical Form  ==
 // =====================
-
-HttpResponse::HttpResponse(int code, Body &body, const std::string &contentType)
-    : _statusCode(code), _body(body), _statusMessage(getStatusMessage(code))
+   
+HttpResponse::HttpResponse(Request *request): _responseContent(""), _request(NULL)
 {
-    if (!contentType.empty())
-        _headers["content-type"] = contentType;
+    setRequest(request);
 }
 
 HttpResponse::~HttpResponse()
 {
+
 }
 
 // =====================
-// == 		Makers	  ==
+// ==     Getters     ==
 // =====================
-
-// OK 200
-HttpResponse HttpResponse::makeFile(const std::string &path)
+std::string HttpResponse::getResponseContent()
 {
-    std::ifstream file(path.c_str(), std::ios::binary);
-
-    if (!file.is_open())
-        return (makeError(404));
-
-    Body cpyBody;
-    std::stringstream ss;
-    ss << file.rdbuf();
-    std::string content = ss.str();
-    cpyBody.assign(content.begin(), content.end());
-
-    file.close();
-
-    return (HttpResponse(200, cpyBody, "text/html"));
+    return _responseContent;
 }
 
-// KO 400-500
-HttpResponse HttpResponse::makeError(int code, const std::string &customPage)
+void HttpResponse::setResponseContent(std::string responseContent)
 {
-    Body errorBody;
-    std::string errorHtml;
-
-    if (!customPage.empty())
-    {
-        std::ifstream file(customPage.c_str(), std::ios::binary);
-        if (file.is_open())
-        {
-            std::stringstream ss;
-            ss << file.rdbuf();
-            errorHtml = ss.str();
-            file.close();
-        }
-    }
-
-    if (errorHtml.empty())
-    {
-        std::stringstream ss;
-        ss << code;
-        errorHtml = "<html><body><h1>Error " + ss.str() + "</h1><p>" + getStatusMessage(code) + "</p></body></html>";
-    }
-
-    errorBody.assign(errorHtml.begin(), errorHtml.end());
-    return (HttpResponse(code, errorBody, "text/html"));
+    _responseContent = responseContent;
 }
 
-// OK 300
-HttpResponse HttpResponse::makeRedirect(int code, const std::string &location)
+Request *HttpResponse::getRequest(void) const
 {
-    Body redirectBody;
-    std::string html = "<html><body><a href=\"" + location + "\">Redirecting...</a></body></html>";
-    redirectBody.assign(html.begin(), html.end());
-
-    HttpResponse response(code, redirectBody, "text/html");
-    response.addHeader("Location", location);
-    return (response);
+    return _request;
 }
 
-HttpResponse HttpResponse::makeAutoIndex(const std::string &dirPath, const std::string &uri)
+void HttpResponse::setRequest(Request *request)
 {
-    Body indexBody;
-    std::string html;
+    if (request == NULL)
+        throw ExecptionErrorUninitializedVariable("*request", "HttpResponse");
 
-    html = "<html><head><title>Index of " + uri + "</title></head><body>";
-    html += "<h1>Index of " + uri + "</h1><ul>";
-
-    DIR *dir = opendir(dirPath.c_str());
-    if (!dir)
-        return (makeError(403));
-
-    struct dirent *entry;
-    while ((entry = readdir(dir)) != NULL)
-    {
-        if (entry->d_name[0] == '.')
-            continue;
-
-        std::string entryPath = uri;
-        if (uri[uri.length() - 1] != '/')
-            entryPath += "/";
-        entryPath += entry->d_name;
-
-        if (entry->d_type == DT_DIR)
-            entryPath += "/";
-
-        html += "<li><a href=\"" + entryPath + "\">" + entry->d_name;
-        if (entry->d_type == DT_DIR)
-            html += "/";
-        html += "</a></li>";
-    }
-    closedir(dir);
-
-    html += "</ul></body></html>";
-    indexBody.assign(html.begin(), html.end());
-
-    return (HttpResponse(200, indexBody, "text/html"));
+    _request = request;
 }
 
 // =====================
-// == 		Methods     ==
+// == 	  Methods	  ==
 // =====================
+void HttpResponse::initialisationHttpResponse(std::string payload)
+{   
+    int statusCode = getRequest()->getStatusCode();
 
-void HttpResponse::addHeader(const std::string &key, const std::string &val)
-{
-    _headers[key] = val;
-}
+    if (400 <= statusCode && statusCode <= 599)
+        handleError();
 
-std::string HttpResponse::build() const
-{
-    std::stringstream ss;
-    ss << _statusCode;
-    std::string response = "HTTP/1.1 " + ss.str() + " " + _statusMessage + "\r\n";
+    else if (300 <= statusCode && statusCode <= 399)
+        handleRedirection();
 
-    bool hasContentLength = _headers.find("content-length") != _headers.end();
-
-    for (Header::const_iterator it = _headers.begin(); it != _headers.end(); it++)
-        response += it->first + ": " + it->second + "\r\n";
-
-    if (!hasContentLength)
+    else
     {
-        std::stringstream lenSs;
-        lenSs << _body.size();
-        response += "Content-Length: " + lenSs.str() + "\r\n";
-    }
-
-    response += "\r\n";
-    response.append(_body.begin(), _body.end());
-
-    return (response);
+        HttpMethod method = getRequest()->getHttpRequest()->getHeader()->getMethod();
+        handleCorrect(method, payload);
+    }  
 }
 
-void HttpResponse::send(int fd) const
+void HttpResponse::handleError()
 {
-    std::string response = build();
-    ::send(fd, response.c_str(), response.size(), 0);
+    _responseContent = "Error";
+}
+
+void HttpResponse::handleRedirection()
+{
+    _responseContent = "Redirection";
+}
+
+void HttpResponse::handleCorrect(HttpMethod method, std::string payload)
+{
+    (void) method;
+    (void) payload;
+    _responseContent = "Correct";
+}
+
+void HttpResponse::sendToClient()
+{
+    int clientFd = getRequest()->getClient()->getClientFd();
+    send(clientFd, _responseContent.c_str(), _responseContent.size(), 0);
 }
