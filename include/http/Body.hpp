@@ -6,13 +6,15 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/14 19:53:54 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/17 21:02:44 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/24 17:52:23 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "HttpRequest.hpp"
+#include "struct.hpp"
+
+class HttpRequest;
 
 class Body
 {
@@ -56,12 +58,11 @@ class Body
         // =====================
         // == 	  Member	  ==
         // =====================
-        void initialisation();
+        void initialisationBody();
         void bodyprint(void);
         void parseBody(const std::string &headerContent);
         void parseChunkedBody(const std::string &headerContent);
         void appendBodyBytes(const std::string &data);
-        size_t maxBodySize();
         size_t initMaxBodySize();
         void configureKeepAlive(const HeaderContent& headers);
         bool handleTransferEncoding(const HeaderContent& header, const std::string &headerContent);

@@ -6,20 +6,27 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/14 19:53:56 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/17 21:09:03 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/25 11:36:04 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Body.hpp"
 
-    
+#include "HttpRequest.hpp"
+#include "Request.hpp"
+#include "Client.hpp"
+#include "Header.hpp"
+
+#include "execption.hpp"
+#include "utilsRequest.hpp"
+#include "colors.hpp"
+
 // =====================
 // ==       OCF       ==
 // =====================
 Body::Body(const HttpRequest &httpRequest): _bodyContent(0), _keepAlive(false), _contentLength(0), _totalChunked(0), _httpRequest(NULL)
 {
     setHttpRequest(const_cast<HttpRequest*>(&httpRequest));
-    initialisation();
 }
 
 Body::~Body()
@@ -113,9 +120,9 @@ void Body::setHttpRequest(HttpRequest *httpRequest)
 // =====================
 // == 	  Member	  ==
 // =====================
-void Body::initialisation()
+void Body::initialisationBody()
 {
-    parseBody(_httpRequest->getClient()->getRequest());
+    parseBody(getHttpRequest()->getRequest()->getClient()->getContentRequest());
 }
 
 void Body::bodyprint(void)
@@ -124,14 +131,6 @@ void Body::bodyprint(void)
     for (std::vector<__uint8_t>::const_iterator it = _bodyContent.begin(); it != _bodyContent.end(); it++)
         std::cout << *it;
     std::cout << "|" << RESET << std::endl;
-}
-
-size_t Body::maxBodySize()
-{
-    if (getHttpRequest()->getLocation() != NULL)
-        return getHttpRequest()->getLocation()->getClientMaxBodySize();
-    else
-        return getHttpRequest()->getClient()->getServerPtr()->getClientMaxBodySize();
 }
 
 void Body::configureKeepAlive(const HeaderContent& header)
@@ -150,13 +149,13 @@ bool Body::handleTransferEncoding(const HeaderContent& header, const std::string
     HeaderContent::const_iterator itEnd = header.end();
 
     if (itTransferEncoding != itEnd && itContentLength != itEnd)
-        throw std::runtime_error("400 Bad Request 1");
+        throw std::runtime_error("400");
     
     if (itTransferEncoding == itEnd)
         return false;
 
     if (itTransferEncoding->second != "chunked")
-        throw std::runtime_error("501 Not Implemented");
+        throw std::runtime_error("501");
 
     std::cout << GREEN << "Body treatment method : " << itTransferEncoding->first << " | "
                 << itTransferEncoding->second << RESET << std::endl;
@@ -175,18 +174,18 @@ bool Body::parseContentLengthBody(const HeaderContent& header, const std::string
     {
         std::stringstream stream(itContentLength->second);
         if (!(stream >> _contentLength) || !stream.eof())
-            throw std::runtime_error("400 Bad Request 3");
+            throw std::runtime_error("400");
             
-        if (getContentLenght() > maxBodySize())
-            throw std::runtime_error("413 Payload Too Large");
+        if (getContentLenght() > initMaxBodySize())
+            throw std::runtime_error("413");
 
         std::string::size_type bodyStart = headerContent.find("\r\n\r\n");
         if (bodyStart == std::string::npos)
-            throw std::runtime_error("400 Bad Request 4");
+            throw std::runtime_error("400");
 
         bodyStart += 4;
         if (bodyStart + _contentLength > headerContent.size())
-            throw std::runtime_error("400 Bad Request 5");
+            throw std::runtime_error("400");
 
         std::cout << GREEN << "Body treatment method : " << itContentLength->first << " | " << itContentLength->second
                   << RESET << std::endl;
@@ -224,12 +223,14 @@ void Body::appendBodyBytes(const std::string &data)
 size_t Body::initMaxBodySize()
 {
     size_t maxBodySize = 0;
-    if (getHttpRequest()->getLocation() != NULL)
-       return getHttpRequest()->getLocation()->getClientMaxBodySize();
+    Location *location = getHttpRequest()->getRequest()->getLocation();
+
+    if (location != NULL)
+       return location->getClientMaxBodySize();
 
     if (maxBodySize == 0)
-       return getHttpRequest()->getClient()->getServerPtr()->getClientMaxBodySize();
-
+       return getHttpRequest()->getRequest()->getClient()->getServerPtr()->getClientMaxBodySize();
+       
     return DEFAULT_CLIENT_MAX_BODY_SIZE;
 }
 
@@ -242,7 +243,7 @@ bool Body::handleLastChunk(const std::string &headerContent, size_t chunkSize, s
 
         std::string::size_type trailersEnd = headerContent.find("\r\n\r\n", current);
         if (trailersEnd == std::string::npos)
-            throw std::runtime_error("400 Bad Request 6");
+            throw std::runtime_error("400");
         return true;
     }
     return false;
@@ -263,7 +264,7 @@ void Body::updateTotalChunked(size_t chunkSize, size_t maxBodySize)
                 << std::endl;
 
     if (getTotalChunked() > maxBodySize)
-        throw std::runtime_error("666 The chunked stuff if greater than 'Client Max Body Size value'");
+        throw std::runtime_error("666");
 }
 
 void Body::parseChunkedBody(const std::string &headerContent)
@@ -279,7 +280,7 @@ void Body::parseChunkedBody(const std::string &headerContent)
     {
         std::string::size_type lineEnd = headerContent.find("\r\n", current);
         if (lineEnd == std::string::npos)
-            throw std::runtime_error("400 Bad Request 7");
+            throw std::runtime_error("400");
 
         size_t chunkSize = parseChunkSize(headerContent.substr(current, lineEnd - current));
 
@@ -290,13 +291,13 @@ void Body::parseChunkedBody(const std::string &headerContent)
             return ;
 
         if (current + chunkSize > headerContent.size())
-            throw std::runtime_error("400 Bad Request 8");
+            throw std::runtime_error("400");
 
         appendBodyBytes(headerContent.substr(current, chunkSize));
         current += chunkSize;
 
         if (headerContent.substr(current, 2) != "\r\n")
-            throw std::runtime_error("400 Bad Request 9");
+            throw std::runtime_error("400");
 
         current += 2;
     }
