@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 13:53:46 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/17 19:47:30 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/24 17:57:41 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,15 +91,15 @@ size_t parseChunkSize(const std::string &line)
         sizeToken = sizeToken.substr(0, semicolon);
     sizeToken = trimChunkSizeToken(sizeToken);
     if (sizeToken.empty())
-        throw std::runtime_error("400 Bad Request 14");
+        throw std::runtime_error("400");
 
     std::stringstream ss(sizeToken);
     size_t chunkSize = 0;
     ss >> std::hex >> chunkSize;
     if (ss.fail())
-        throw std::runtime_error("400 Bad Request 15");
+        throw std::runtime_error("400");
     if (!ss.eof())
-        throw std::runtime_error("400 Bad Request 16");
+        throw std::runtime_error("400");
     return (chunkSize);
 }
 
@@ -117,13 +117,13 @@ std::string returnLastElementPath(std::string path)
 void checkPermisionReadFile(std::string path)
 {
     if (path.find("../") != std::string::npos)
-        throw std::runtime_error("403 Forbidden");
+        throw std::runtime_error("403");
 
     if (access(path.c_str(), F_OK) == -1)
-        throw std::runtime_error("404 Not Found");
+        throw std::runtime_error("404");
 
     if (access(path.c_str(), R_OK) == -1)
-        throw std::runtime_error("403 Forbidden");
+        throw std::runtime_error("403");
 }
 
 bool isFinishByFile(std::string path)
