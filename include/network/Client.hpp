@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 14:43:11 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/21 14:24:55 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/22 15:37:40 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ class Client
     int _server_fd;
     Server *_server;
     Webserv *_webserv;
-    std::string _request;
+    std::string _contentRequest;
 
   public:
     // =====================
@@ -53,9 +53,9 @@ class Client
     void setServerPtr(Server *server);
 
     // REQUEST
-    std::string &getRequest(void);
-    void clearRequest(void);
-    void appendRequest(std::string &request);
+    std::string &getContentRequest(void);
+    void clearContentRequest(void);
+    void appendContentRequest(std::string &request);
 
     // WEBSERV
     Webserv *getWebserv(void);
