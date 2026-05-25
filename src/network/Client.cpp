@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 14:43:09 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/21 14:33:12 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/25 11:38:49 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 // == Canonical Form  ==
 // =====================
 
-Client::Client() : _client_fd(-1), _server_fd(-1), _server(0), _webserv(0), _request("")
+Client::Client() : _client_fd(-1), _server_fd(-1), _server(0), _webserv(0), _contentRequest("")
 {
 }
 
@@ -34,7 +34,7 @@ Client &Client::operator=(const Client &other)
     this->_client_fd = other._client_fd;
     this->_server_fd = other._server_fd;
     this->_server = other._server;
-    this->_request = other._request;
+    this->_contentRequest = other._contentRequest;
 
     return (*this);
 }
@@ -70,21 +70,24 @@ Server *Client::getServerPtr(void)
 }
 void Client::setServerPtr(Server *server)
 {
-    _server = server;
+    if (server == NULL)
+        throw ExecptionErrorUninitializedVariable("*server", "Client");
+
+    _server = server; 
 }
 
 // REQUEST
-std::string &Client::getRequest(void)
+std::string &Client::getContentRequest(void)
 {
-    return _request;
+    return _contentRequest;
 }
-void Client::clearRequest(void)
+void Client::clearContentRequest(void)
 {
-    _request.clear();
+    _contentRequest.clear();
 }
-void Client::appendRequest(std::string &request)
+void Client::appendContentRequest(std::string &request)
 {
-    _request.append(request);
+    _contentRequest.append(request);
 }
 
 Webserv *Client::getWebserv(void)
@@ -96,5 +99,6 @@ void Client::setWebserv(Webserv *webserv)
 {
     if (webserv == NULL)
         throw ExecptionErrorUninitializedVariable("*webserv", "Client");
+
     _webserv = webserv;
 }
