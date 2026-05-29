@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 14:35:51 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/25 16:56:07 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/29 15:10:11 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 // == Canonical Form  ==
 // =====================
 
-Request::Request(): _client(NULL), _httpRequest(NULL), _statusCode(200), _location(NULL)
+Request::Request(): _client(NULL), _httpRequest(NULL), _statusCode(200), _location(NULL), _payload("")
 {
 }
 
@@ -90,7 +90,7 @@ void Request::setHttpRequest(HttpRequest *httpRequest)
     _httpRequest = httpRequest;
 }  
 
-int Request::getStatusCode()
+int Request::getStatusCode() const
 {
     return _statusCode;
 }
@@ -113,6 +113,16 @@ void Request::setLocation(Location *location)
     _location = location;
 }
 
+std::string Request::getPayload() const
+{
+    return _payload;
+}
+
+void Request::setPayload(std::string payload)
+{
+    _payload = payload;
+}
+        
 // =====================
 // ==     Method      ==
 // =====================
@@ -141,15 +151,14 @@ bool Request::initialisationRequest(Client *client)
     return true;
 }
 
-std::string Request::processRequest()
+void Request::processRequest()
 {
-    std::string payload;
-    
     try
     {
         Location *location = findLocation();
         validateRequest(location);
-        payload = getHttpRequest()->selectMethodHttp(location);
+        std::string payload = getHttpRequest()->selectMethodHttp(location);
+        setPayload(payload);
     }
     catch (const std::exception &e)
     {
@@ -159,7 +168,6 @@ std::string Request::processRequest()
         std::istringstream(e.what()) >> num;
         setStatusCode(num);
     }
-    return payload;
 }
 
 void Request::checkAllowedMethods(Location *location)
@@ -183,23 +191,28 @@ void Request::checkAllowedMethods(Location *location)
 
 void Request::checkServerIsOpen()
 {
-    if (getClient()->getServerPtr()->getReturn()->code != 0)
+    int code = getClient()->getServerPtr()->getReturn()->code;
+    
+    if (code != 0)
     {
-        std::cout << "Server close\n";
-        throw std::runtime_error("503");
+        setPayload(getClient()->getServerPtr()->getReturn()->value);
+        throw std::runtime_error(intToString(code));
     }
+        
 }
 
 void Request::checkLocationIsOpen(Location *location)
 {
     if (location == NULL)
         return;
-        
+    
     std::cout << "Location: " << location->getName() << "\n";
-    if (location->getReturn()->code != 0)
+    
+    int code = location->getReturn()->code;
+    if (code != 0)
     {
-        std::cout << "Server close\n";
-        throw std::runtime_error("503");
+        setPayload(location->getReturn()->value);
+        throw std::runtime_error(intToString(code));
     }
 }
 

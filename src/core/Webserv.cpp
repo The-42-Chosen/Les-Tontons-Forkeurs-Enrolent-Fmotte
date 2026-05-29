@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/25 17:02:04 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/29 15:07:56 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,14 +235,12 @@ void Webserv::processClientRequest(Client *client)
 
 void Webserv::processClientResponse(Client *client)
 {
-    std::string payload = "";
-    
     Request request;
     if (request.initialisationRequest(client))
-        payload = request.processRequest();
+        request.processRequest();
 
     HttpResponse response(&request);
-    response.initialisationHttpResponse(payload);
+    response.initialisationHttpResponse();
     response.sendToClient();
     
     client->clearContentRequest(); 
