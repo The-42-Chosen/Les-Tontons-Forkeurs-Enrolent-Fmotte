@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:50:27 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/28 12:21:11 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/27 13:34:22 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,12 +132,12 @@ bool Server::getAutoIndex(void)
 }
 
 // ERROR-PAGE
-void Server::addErrorPage(HttpReturn error_page)
+void Server::addErrorPage(HttpErrorPage error_page)
 {
     _error_page.push_back(error_page);
 }
 
-HttpReturn *Server::getErrorPage(size_t i)
+HttpErrorPage *Server::getErrorPage(size_t i)
 {
     if (i < _error_page.size())
         return &_error_page[i];
@@ -336,7 +336,7 @@ void Server::initializeAutoIndex(std::vector<std::string> &tokens)
 void Server::initializeErrorPage(std::vector<std::string> &tokens)
 {
     bool is_init = false;
-    HttpReturn error_page = parseErrorPageDirective(tokens, is_init);
+    HttpErrorPage error_page = parseErrorPageDirective(tokens, is_init);
 
     if (is_init)
         addErrorPage(error_page);

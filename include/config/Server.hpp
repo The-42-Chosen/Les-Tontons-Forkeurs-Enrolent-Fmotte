@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:43:21 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/28 15:50:02 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/27 13:30:10 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ class Server
     std::vector<Server> _servers;
 
     bool _auto_index;
-    std::vector<HttpReturn> _error_page;
+    std::vector<HttpErrorPage> _error_page;
     unsigned int _client_max_body_size;
     HttpReturn _ret;
 
@@ -82,8 +82,8 @@ class Server
     bool getAutoIndex(void);
 
     // ERROR-PAGE
-    void addErrorPage(HttpReturn error_page);
-    HttpReturn *getErrorPage(size_t i);
+    void addErrorPage(HttpErrorPage error_page);
+    HttpErrorPage *getErrorPage(size_t i);
 
     // CLIENT-MAX-BODY-SIZE
     void setClientMaxBodySize(unsigned int client_max_body_size);

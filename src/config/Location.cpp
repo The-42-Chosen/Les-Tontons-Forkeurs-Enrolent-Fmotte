@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 15:45:46 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/23 13:35:39 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/27 13:33:49 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 // =====================
 
 Location::Location()
-    : _name(""), _allowed_methods(), _root(""), _index(""), _auto_index(false), _error_page(HttpReturn()),
+    : _name(""), _allowed_methods(), _root(""), _index(""), _auto_index(false), _error_page(HttpErrorPage()),
       _client_max_body_size(0), _ret(HttpReturn())
 {
 }
@@ -115,11 +115,11 @@ unsigned int Location::getClientMaxBodySize(void)
 }
 
 // ERROR-PAGE
-void Location::setErrorPage(HttpReturn error_page)
+void Location::setErrorPage(HttpErrorPage error_page)
 {
     _error_page = error_page;
 }
-HttpReturn *Location::getErrorPage(void)
+HttpErrorPage *Location::getErrorPage(void)
 {
     return &_error_page;
 }
@@ -249,7 +249,7 @@ void Location::initializeLocationClientMaxBodySize(std::vector<std::string> &tok
 void Location::initializeLocationErrorPage(std::vector<std::string> &tokens)
 {
     bool is_init = false;
-    HttpReturn error_page = parseErrorPageDirective(tokens, is_init);
+    HttpErrorPage error_page = parseErrorPageDirective(tokens, is_init);
 
     if (is_init)
         setErrorPage(error_page);

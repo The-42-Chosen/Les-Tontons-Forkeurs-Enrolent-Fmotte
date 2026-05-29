@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/03 17:58:55 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/17 17:57:25 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/27 13:58:16 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,5 +53,11 @@ struct Listen
 struct HttpReturn
 {
     int code;
-    std::string value; // URL ou message
+    std::string value; // URL
+};
+
+struct HttpErrorPage
+{
+    int code;
+    std::string path_page; // Absolute path to the page
 };
