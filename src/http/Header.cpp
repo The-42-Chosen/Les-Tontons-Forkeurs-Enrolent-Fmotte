@@ -6,14 +6,14 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/17 17:37:08 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/25 11:04:18 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/26 17:33:57 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "Header.hpp"
 #include "struct.hpp"
 #include "HttpRequest.hpp"
-#include "utilsRequest.hpp"
+#include "utilsDuplicate.hpp"
 
 Header::Header(): _method(NONE), _uri(""), _protocol(""), _host("")
 {

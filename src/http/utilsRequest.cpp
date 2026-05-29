@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 13:53:46 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/24 17:57:41 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/27 13:48:53 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,14 +64,6 @@ int longestPrefixMatch(std::string uri, std::string location)
         ++j;
     }
     return score;
-}
-
-std::string toLowerString(const std::string &str)
-{
-    std::string result = str;
-    for (std::string::size_type i = 0; i < result.size(); ++i)
-        result[i] = static_cast<char>(std::tolower(static_cast<unsigned char>(result[i])));
-    return result;
 }
 
 static std::string trimChunkSizeToken(const std::string &token)
@@ -144,11 +136,3 @@ bool isFinishByFile(std::string path)
     return false;
 }
 
-std::string trimSpaces(const std::string &value)
-{
-    std::string::size_type begin = value.find_first_not_of(" \t");
-    if (begin == std::string::npos)
-        return ("");
-    std::string::size_type end = value.find_last_not_of(" \t");
-    return (value.substr(begin, end - begin + 1));
-}

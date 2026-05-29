@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utilsDuplicate.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/08 12:58:24 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/23 13:35:39 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/28 11:35:14 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,9 +84,9 @@ unsigned int parseClientMaxBodySizeDirective(std::vector<std::string> &tokens)
     return 0;
 }
 
-HttpReturn parseErrorPageDirective(std::vector<std::string> &tokens, bool &is_init)
+HttpErrorPage parseErrorPageDirective(std::vector<std::string> &tokens, bool &is_init)
 {
-    HttpReturn error_page;
+    HttpErrorPage error_page;
 
     if (tokens[0] == "error_page")
     {
@@ -99,7 +99,7 @@ HttpReturn parseErrorPageDirective(std::vector<std::string> &tokens, bool &is_in
             throw ExecptionFailConvertion(tokens[0]);
 
         tokens.erase(tokens.begin());
-        error_page.value = tokens[0];
+        error_page.path_page = tokens[0];
         tokens.erase(tokens.begin());
 
         if (tokens[0] != ";")
@@ -138,4 +138,28 @@ HttpReturn parseReturnDirective(std::vector<std::string> &tokens, bool &is_init)
         return ret;
     }
     return ret;
+}
+
+std::string intToString(int value)
+{
+    std::stringstream ss;
+    ss << value;
+    return ss.str();
+}
+
+std::string toLowerString(const std::string &str)
+{
+    std::string result = str;
+    for (std::string::size_type i = 0; i < result.size(); ++i)
+        result[i] = static_cast<char>(std::tolower(static_cast<unsigned char>(result[i])));
+    return result;
+}
+
+std::string trimSpaces(const std::string &value)
+{
+    std::string::size_type begin = value.find_first_not_of(" \t");
+    if (begin == std::string::npos)
+        return ("");
+    std::string::size_type end = value.find_last_not_of(" \t");
+    return (value.substr(begin, end - begin + 1));
 }
