@@ -6,7 +6,7 @@
 #    By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/11 16:36:16 by fmotte            #+#    #+#              #
-#    Updated: 2026/05/22 15:27:49 by fmotte           ###   ########.fr        #
+#    Updated: 2026/05/29 15:51:04 by fmotte           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -66,12 +66,21 @@ METHOD_SRC = \
 	$(SRC_PATH)/method/HeadMethod.cpp
 
 
+RESPONSE_SRC = \
+	$(SRC_PATH)/response/AResponse.cpp  \
+	$(SRC_PATH)/response/ErrorResponse.cpp \
+	$(SRC_PATH)/response/RedirResponse.cpp \
+	$(SRC_PATH)/response/CorrectResponse.cpp
+
+
 SRC_FILES = \
 	$(CORE_SRC) \
 	$(CONFIG_SRC) \
 	$(NETWORK_SRC) \
 	$(HTTP_SRC) \
-	$(METHOD_SRC)
+	$(METHOD_SRC) \
+	$(RESPONSE_SRC)
+
 
 # **************************************************************************** #
 # HEADERS
@@ -113,13 +122,22 @@ METHOD_HEA = \
 	$(HEA_PATH)/method/HeadMethod.hpp 
 
 
+RESPONSE_HEA = \
+	$(HEA_PATH)/response/AResponse.hpp  \
+	$(HEA_PATH)/response/ErrorResponse.hpp \
+	$(HEA_PATH)/response/RedirResponse.hpp \
+	$(HEA_PATH)/response/CorrectResponse.hpp
+
+
 HEA_FILES = \
 	$(COMMON_HEA) \
 	$(CORE_HEA) \
 	$(CONFIG_HEA) \
 	$(NETWORK_HEA) \
 	$(HTTP_HEA) \
-	$(METHOD_HEA)
+	$(METHOD_HEA) \
+	$(RESPONSE_HEA)
+
 
 OBJ_FILES = $(SRC_FILES:$(SRC_PATH)/%.cpp=$(OBJ_PATH)/%.o)
 DEP_FILES = $(OBJ_FILES:.o=.d)
@@ -147,6 +165,7 @@ $(OBJ_PATH)/%.o: $(SRC_PATH)/%.cpp $(HEA_FILES) | $(OBJ_PATH)
 		-I $(HEA_PATH)/network \
 		-I $(HEA_PATH)/request \
 		-I $(HEA_PATH)/method \
+		-I $(HEA_PATH)/response \
 		-O3 -c $< -o $@
 
 
