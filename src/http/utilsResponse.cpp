@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/13 19:11:36 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/25 11:28:54 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/26 16:46:12 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 // == 	   Utils	  ==
 // =====================
 
-std::string getStatusMessage(int code)
+std::string httpStatusToString(int code)
 {
     switch (code)
     {

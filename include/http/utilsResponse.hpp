@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utilsResponse.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/13 19:17:20 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/13 20:02:38 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/05/26 16:46:17 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,4 +14,4 @@
 
 #include <string>
 
-std::string getStatusMessage(int code);
+std::string httpStatusToString(int code);
