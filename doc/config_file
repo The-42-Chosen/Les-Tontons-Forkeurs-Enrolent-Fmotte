@@ -11,12 +11,12 @@ server {
     autoindex off;
 
 	#Commentaire ne pas lire
-    client_max_body_size 10;
+    client_max_body_size 1024;
 
-    error_page 404 /errors/404.html;
-    error_page 500 /errors/500.html;
+    error_page 404 ./webPageFile/errors/404.html;
+    error_page 500 ./webPageFile/errors/500.html;
 
-    #return 301 http://example.com;
+    #return 302 https://profile.intra.42.fr/;
 
 		location / {
         index index.html;
@@ -58,8 +58,18 @@ server {
         return 403 "Forbidden";
     }
 
-    location /errors {
-        root ./webPageFile;
+    location /google {
+        return 301 https://www.google.com/;
+    }
+
+    location /wikipedia
+    {
+        return 301 https://fr.wikipedia.org/wiki/Xavier_Niel;
+    }
+
+    location /youtube
+    {
+        return 302 https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.youtube.com/watch%3Fv%3DdQw4w9WgXcQ;
     }
 }
 
