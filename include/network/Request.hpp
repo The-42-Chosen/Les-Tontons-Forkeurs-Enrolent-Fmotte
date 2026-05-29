@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 14:35:48 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/24 17:55:55 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/29 15:07:22 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ class Request
         HttpRequest *_httpRequest;
 		int _statusCode;
 		Location *_location;
+		std::string _payload;
 		
     public:
         // =====================
@@ -49,16 +50,18 @@ class Request
 		void setServer(Server *server);
         HttpRequest *getHttpRequest(void) const;
         void setHttpRequest(HttpRequest *httpRequest);
-		int getStatusCode();
+		int getStatusCode() const;
 		void setStatusCode(int statusCode);
 		Location *getLocation(void) const;
     	void setLocation(Location *location);
-	
+		std::string getPayload() const;
+		void setPayload(std::string payload);
+		
 		// =====================
 		// == 	  Member	  ==
 		// =====================
 		bool initialisationRequest(Client *client);
-		std::string processRequest();
+		void processRequest();
 		void linkToServer(void);
 		void validateRequest(Location *location);
 		Location *findLocation(void);
