@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 15:45:26 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/21 16:28:52 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/27 13:33:40 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ class Location
     std::string _root;
     std::string _index;
     bool _auto_index;
-    HttpReturn _error_page;
+    HttpErrorPage _error_page;
     unsigned int _client_max_body_size;
     HttpReturn _ret;
 
@@ -67,8 +67,8 @@ class Location
     unsigned int getClientMaxBodySize(void);
 
     // ERROR-PAGE
-    void setErrorPage(HttpReturn error_page);
-    HttpReturn *getErrorPage(void);
+    void setErrorPage(HttpErrorPage error_page);
+    HttpErrorPage *getErrorPage(void);
 
     // RETURN
     void setReturn(HttpReturn ret);
