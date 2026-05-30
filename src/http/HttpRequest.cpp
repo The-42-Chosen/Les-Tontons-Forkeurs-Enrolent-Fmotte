@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/25 14:45:53 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/30 18:40:40 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 // == Canonical Form  ==
 // =====================
 
-HttpRequest::HttpRequest(Request *request) : _header(NULL), _body(NULL)
+HttpRequest::HttpRequest(HandleRequest *request) : _header(NULL), _body(NULL)
 {
     setRequest(request);
 }
@@ -67,12 +67,12 @@ void HttpRequest::setHeader(Header *header)
     _header = header;
 }
 
-Request *HttpRequest::getRequest() const
+HandleRequest *HttpRequest::getRequest() const
 {
     return _request;
 }
 
-void HttpRequest::setRequest(Request *request)
+void HttpRequest::setRequest(HandleRequest *request)
 {
     if (request == NULL)
         throw ExecptionErrorUninitializedVariable("*request", "HttpRequest");

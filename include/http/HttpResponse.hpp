@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpResponse.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 11:56:16 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/29 15:49:36 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/30 18:40:40 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 #include "struct.hpp"
 
-class Request;
+class HandleRequest;
 
 class HttpResponse
 {
@@ -23,7 +23,7 @@ class HttpResponse
     // ==    Attributs    ==
     // =====================
     std::string _responseContent;
-    Request *_request;
+    HandleRequest *_request;
 
     HttpResponse();
 
@@ -31,7 +31,7 @@ class HttpResponse
     // =====================
     // == Canonical Form  ==
     // =====================
-    HttpResponse(Request *Request);
+    HttpResponse(HandleRequest *Request);
     ~HttpResponse();
 
     // =====================
@@ -40,8 +40,8 @@ class HttpResponse
     std::string getResponseContent();
     void setResponseContent(std::string responseContent);
     void addResponseContent(std::string responseContent);
-    Request *getRequest(void) const;
-    void setRequest(Request *Request);
+    HandleRequest *getRequest(void) const;
+    void setRequest(HandleRequest *Request);
 
     // =====================
     // == 	  Methods	  ==

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/29 15:07:56 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/30 18:40:40 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,7 +235,7 @@ void Webserv::processClientRequest(Client *client)
 
 void Webserv::processClientResponse(Client *client)
 {
-    Request request;
+    HandleRequest request;
     if (request.initialisationRequest(client))
         request.processRequest();
 

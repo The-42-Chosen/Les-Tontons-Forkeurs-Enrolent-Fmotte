@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 14:35:48 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/29 15:07:22 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/30 18:40:40 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ class HttpRequest;
 class Client;
 class Location;
 
-class Request
+class HandleRequest
 {
   private:
     // =====================
@@ -36,10 +36,10 @@ class Request
     // =====================
     // ==       OCF       ==
     // =====================
-    Request();
-    Request(const Request &cpy);
-    Request &operator=(const Request &cpy);
-    ~Request();
+    HandleRequest();
+    HandleRequest(const HandleRequest &cpy);
+    HandleRequest &operator=(const HandleRequest &cpy);
+    ~HandleRequest();
 
     // =====================
     // ==     Getters     ==

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 14:35:51 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/29 15:10:11 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/30 18:40:40 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,16 +22,16 @@
 // == Canonical Form  ==
 // =====================
 
-Request::Request() : _client(NULL), _httpRequest(NULL), _statusCode(200), _location(NULL), _payload("")
+HandleRequest::HandleRequest() : _client(NULL), _httpRequest(NULL), _statusCode(200), _location(NULL), _payload("")
 {
 }
 
-Request::Request(const Request &other)
+HandleRequest::HandleRequest(const HandleRequest &other)
 {
     *this = other;
 }
 
-Request &Request::operator=(const Request &other)
+HandleRequest &HandleRequest::operator=(const HandleRequest &other)
 {
     if (this != &other)
     {
@@ -42,7 +42,7 @@ Request &Request::operator=(const Request &other)
     return (*this);
 }
 
-Request::~Request()
+HandleRequest::~HandleRequest()
 {
     delete _httpRequest;
 }
@@ -51,12 +51,12 @@ Request::~Request()
 // == Getter & Setter ==
 // =====================
 
-Client *Request::getClient(void) const
+Client *HandleRequest::getClient(void) const
 {
     return _client;
 }
 
-void Request::setClient(Client *client)
+void HandleRequest::setClient(Client *client)
 {
     if (client == NULL)
         throw ExecptionErrorUninitializedVariable("*client", "Request");
@@ -64,12 +64,12 @@ void Request::setClient(Client *client)
     _client = client;
 }
 
-Server *Request::getServer(void) const
+Server *HandleRequest::getServer(void) const
 {
     return _server;
 }
 
-void Request::setServer(Server *server)
+void HandleRequest::setServer(Server *server)
 {
     if (server == NULL)
         throw ExecptionErrorUninitializedVariable("*server", "Request");
@@ -77,12 +77,12 @@ void Request::setServer(Server *server)
     _server = server;
 }
 
-HttpRequest *Request::getHttpRequest(void) const
+HttpRequest *HandleRequest::getHttpRequest(void) const
 {
     return _httpRequest;
 }
 
-void Request::setHttpRequest(HttpRequest *httpRequest)
+void HandleRequest::setHttpRequest(HttpRequest *httpRequest)
 {
     if (httpRequest == NULL)
         throw ExecptionErrorUninitializedVariable("*httpRequest", "Request");
@@ -90,22 +90,22 @@ void Request::setHttpRequest(HttpRequest *httpRequest)
     _httpRequest = httpRequest;
 }
 
-int Request::getStatusCode() const
+int HandleRequest::getStatusCode() const
 {
     return _statusCode;
 }
 
-void Request::setStatusCode(int statusCode)
+void HandleRequest::setStatusCode(int statusCode)
 {
     _statusCode = statusCode;
 }
 
-Location *Request::getLocation(void) const
+Location *HandleRequest::getLocation(void) const
 {
     return _location;
 }
 
-void Request::setLocation(Location *location)
+void HandleRequest::setLocation(Location *location)
 {
     if (location == NULL)
         throw ExecptionErrorUninitializedVariable("*location", "HttpRequest");
@@ -113,12 +113,12 @@ void Request::setLocation(Location *location)
     _location = location;
 }
 
-std::string Request::getPayload() const
+std::string HandleRequest::getPayload() const
 {
     return _payload;
 }
 
-void Request::setPayload(std::string payload)
+void HandleRequest::setPayload(std::string payload)
 {
     _payload = payload;
 }
@@ -126,7 +126,7 @@ void Request::setPayload(std::string payload)
 // =====================
 // ==     Method      ==
 // =====================
-bool Request::initialisationRequest(Client *client)
+bool HandleRequest::initialisationRequest(Client *client)
 {
     try
     {
@@ -151,7 +151,7 @@ bool Request::initialisationRequest(Client *client)
     return true;
 }
 
-void Request::processRequest()
+void HandleRequest::processRequest()
 {
     try
     {
@@ -170,7 +170,7 @@ void Request::processRequest()
     }
 }
 
-void Request::checkAllowedMethods(Location *location)
+void HandleRequest::checkAllowedMethods(Location *location)
 {
     if (location == NULL)
         return;
@@ -189,7 +189,7 @@ void Request::checkAllowedMethods(Location *location)
     throw std::runtime_error("405");
 }
 
-void Request::checkServerIsOpen()
+void HandleRequest::checkServerIsOpen()
 {
     int code = getClient()->getServerPtr()->getReturn()->code;
 
@@ -200,7 +200,7 @@ void Request::checkServerIsOpen()
     }
 }
 
-void Request::checkLocationIsOpen(Location *location)
+void HandleRequest::checkLocationIsOpen(Location *location)
 {
     if (location == NULL)
         return;
@@ -215,14 +215,14 @@ void Request::checkLocationIsOpen(Location *location)
     }
 }
 
-void Request::validateRequest(Location *location)
+void HandleRequest::validateRequest(Location *location)
 {
     checkServerIsOpen();
     checkLocationIsOpen(location);
     checkAllowedMethods(location);
 }
 
-void Request::linkToServer(void)
+void HandleRequest::linkToServer(void)
 {
     int fd_server = getClient()->getServerFd();
     std::set<Server *>::iterator it;
@@ -251,7 +251,7 @@ void Request::linkToServer(void)
     getClient()->setServerPtr(*(set_server.begin()));
 }
 
-Location *Request::findLocation(void)
+Location *HandleRequest::findLocation(void)
 {
     Location *location;
     Location *best_location = NULL;

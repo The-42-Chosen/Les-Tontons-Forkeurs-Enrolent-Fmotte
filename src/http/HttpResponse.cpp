@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 16:52:26 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/29 15:50:25 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/30 18:40:40 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 // == Canonical Form  ==
 // =====================
 
-HttpResponse::HttpResponse(Request *request) : _responseContent(""), _request(NULL)
+HttpResponse::HttpResponse(HandleRequest *request) : _responseContent(""), _request(NULL)
 {
     setRequest(request);
 }
@@ -53,12 +53,12 @@ void HttpResponse::addResponseContent(std::string responseContent)
     _responseContent += responseContent;
 }
 
-Request *HttpResponse::getRequest(void) const
+HandleRequest *HttpResponse::getRequest(void) const
 {
     return _request;
 }
 
-void HttpResponse::setRequest(Request *request)
+void HttpResponse::setRequest(HandleRequest *request)
 {
     if (request == NULL)
         throw ExecptionErrorUninitializedVariable("*request", "HttpResponse");

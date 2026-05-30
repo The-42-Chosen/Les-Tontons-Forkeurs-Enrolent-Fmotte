@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/25 14:45:58 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/05/30 18:40:40 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 class Header;
 class Body;
-class Request;
+class HandleRequest;
 class Location;
 
 class HttpRequest
@@ -27,7 +27,7 @@ class HttpRequest
     // =====================
     Header *_header;
     Body *_body;
-    Request *_request;
+    HandleRequest *_request;
 
     HttpRequest();
 
@@ -35,7 +35,7 @@ class HttpRequest
     // =====================
     // ==       OCF       ==
     // =====================
-    HttpRequest(Request *request);
+    HttpRequest(HandleRequest *request);
     ~HttpRequest();
     HttpRequest(const HttpRequest &cpy);
     HttpRequest &operator=(const HttpRequest &cpy);
@@ -45,8 +45,8 @@ class HttpRequest
     // =====================
     Header *getHeader() const;
     void setHeader(Header *header);
-    Request *getRequest() const;
-    void setRequest(Request *request);
+    HandleRequest *getRequest() const;
+    void setRequest(HandleRequest *request);
     Body *getBody() const;
     void setBody(Body *body);
 
