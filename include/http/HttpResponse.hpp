@@ -18,38 +18,37 @@ class Request;
 
 class HttpResponse
 {
-  	private:
-	    // =====================
-        // ==    Attributs    ==
-        // =====================
-		std::string _responseContent;
-		Request *_request;
-		
-		HttpResponse();
+  private:
+    // =====================
+    // ==    Attributs    ==
+    // =====================
+    std::string _responseContent;
+    Request *_request;
 
-	public:
-		// =====================
-		// == Canonical Form  ==
-		// =====================
-		HttpResponse(Request *Request);
-		~HttpResponse();
-		
-		
-		// =====================
-		// ==     Getters     ==
-		// =====================
-		std::string getResponseContent();
-		void setResponseContent(std::string responseContent);
-		void addResponseContent(std::string responseContent);
-		Request *getRequest(void) const;
-        void setRequest(Request *Request);
-		
-		// =====================
-		// == 	  Methods	  ==
-		// =====================
-		void initialisationHttpResponse();
-		void handleError(int statusCode);
-		void handleRedirection(int statusCode);
-		void handleCorrect(int statusCode);
-		void sendToClient();
+    HttpResponse();
+
+  public:
+    // =====================
+    // == Canonical Form  ==
+    // =====================
+    HttpResponse(Request *Request);
+    ~HttpResponse();
+
+    // =====================
+    // ==     Getters     ==
+    // =====================
+    std::string getResponseContent();
+    void setResponseContent(std::string responseContent);
+    void addResponseContent(std::string responseContent);
+    Request *getRequest(void) const;
+    void setRequest(Request *Request);
+
+    // =====================
+    // == 	  Methods	  ==
+    // =====================
+    void initialisationHttpResponse();
+    void handleError(int statusCode);
+    void handleRedirection(int statusCode);
+    void handleCorrect(int statusCode);
+    void sendToClient();
 };

@@ -14,13 +14,13 @@
 
 #include "HttpRequest.hpp"
 
-#include "utilsRequest.hpp"
 #include "utilsParsing.hpp"
+#include "utilsRequest.hpp"
 
 // =====================
 // ==       OCF       ==
 // =====================
-GetMethod::GetMethod(HttpRequest *httpRequest): AMethod(httpRequest, GET)
+GetMethod::GetMethod(HttpRequest *httpRequest) : AMethod(httpRequest, GET)
 {
 }
 
@@ -45,20 +45,20 @@ GetMethod &GetMethod::operator=(const GetMethod &other)
 std::string GetMethod::applyMethod(Location *location)
 {
     std::string path;
-     std::string contentFile;
-     
+    std::string contentFile;
+
     path = createPath(location);
     std::cout << "Path to read: " << path << "\n";
 
     checkPermisionReadFile(path);
     std::string extention = path.substr(path.find_last_of("."));
 
-    if (extention == ".py" || extention == ".php" )
+    if (extention == ".py" || extention == ".php")
         applyCGI(path);
     else
     {
         parseConfigFile(path.c_str(), contentFile);
-        std::cout << "\ncontentFile: " << contentFile << "\n";  
+        std::cout << "\ncontentFile: " << contentFile << "\n";
     }
 
     return contentFile;

@@ -12,27 +12,27 @@
 
 #pragma once
 
-#include "struct.hpp"
 #include "AResponse.hpp"
+#include "struct.hpp"
 
-class CorrectResponse: public AResponse
+class CorrectResponse : public AResponse
 {
-    private:
-        // =====================
-        // ==    Attributs    ==
-        // =====================
+  private:
+    // =====================
+    // ==    Attributs    ==
+    // =====================
 
-        CorrectResponse();
-        
-    public:
-    	// =====================
-		// == Canonical Form  ==
-		// =====================
-        CorrectResponse(HttpResponse *httpResponse, int statusCode);
-        ~CorrectResponse();
-        
-        // =====================
-		// ==     Member      ==
-		// =====================
-        std::string getCorrectPage();
+    CorrectResponse();
+
+  public:
+    // =====================
+    // == Canonical Form  ==
+    // =====================
+    CorrectResponse(HttpResponse *httpResponse, int statusCode);
+    ~CorrectResponse();
+
+    // =====================
+    // ==     Member      ==
+    // =====================
+    std::string getCorrectPage();
 };

@@ -12,12 +12,12 @@
 
 #include "Webserv.hpp"
 
-#include "Server.hpp"
 #include "Client.hpp"
-#include "Request.hpp"
-#include "HttpResponse.hpp"
-#include "HttpRequest.hpp"
 #include "Header.hpp"
+#include "HttpRequest.hpp"
+#include "HttpResponse.hpp"
+#include "Request.hpp"
+#include "Server.hpp"
 
 #include "colors.hpp"
 #include "execption.hpp"
@@ -30,7 +30,7 @@
 // == Canonical Form  ==
 // =====================
 
-Webserv::Webserv() : _vectorServer(0),  _vectorClient(0), _webserEpoll(-1)
+Webserv::Webserv() : _vectorServer(0), _vectorClient(0), _webserEpoll(-1)
 {
 }
 
@@ -122,7 +122,7 @@ void Webserv::registerNewSocket(std::map<Listen, int> &map_socket_fd, Listen *li
     addSocketToEvent(getEpollFd(), serverSocket, NULL);
 
     map_socket_fd.insert(std::make_pair(*listenConfig, serverSocket));
-    
+
     _mapFdToServer.insert(std::make_pair(serverSocket, std::set<Server *>()));
     _mapFdToServer[serverSocket].insert(server);
 }
@@ -130,7 +130,7 @@ void Webserv::registerNewSocket(std::map<Listen, int> &map_socket_fd, Listen *li
 void Webserv::registerExistingSocket(int serverSocket, Server *server)
 {
     std::set<Server *> &set_server = _mapFdToServer[serverSocket];
-    
+
     if (set_server.find(server) == set_server.end())
         set_server.insert(server);
 }
@@ -175,11 +175,11 @@ void Webserv::handleNewClient(int server_fd)
         throw ExecptionErrorFunction("accept");
 
     Client *client = new Client;
-    
+
     _vectorClient.push_back(client);
 
     addSocketToEvent(getEpollFd(), clientSocket, client);
-    
+
     client->setClientFd(clientSocket);
     client->setServerFd(server_fd);
     client->setWebserv(this);
@@ -219,7 +219,7 @@ bool Webserv::readAndCheckRequestCompletion(Client *client)
 
     if (!isCompleteRequest(client->getContentRequest()))
         return true;
-        
+
     return false;
 }
 
@@ -227,9 +227,9 @@ void Webserv::processClientRequest(Client *client)
 {
     if (readAndCheckRequestCompletion(client))
         return;
-        
+
     std::cout << "Final Message from client: " << client->getContentRequest() << "\n";
-    
+
     processClientResponse(client);
 }
 
@@ -242,8 +242,8 @@ void Webserv::processClientResponse(Client *client)
     HttpResponse response(&request);
     response.initialisationHttpResponse();
     response.sendToClient();
-    
-    client->clearContentRequest(); 
+
+    client->clearContentRequest();
 }
 
 void Webserv::handleConnection(struct epoll_event &events)
@@ -329,6 +329,6 @@ void Webserv::closeConnection()
     for (; it_client != _vectorClient.end(); ++it_client)
         delete (*it_client);
     _vectorClient.clear();
-    
+
     close(getEpollFd());
 }

@@ -14,20 +14,19 @@
 
 #include "AResponse.hpp"
 
-class RedirResponse: public AResponse
+class RedirResponse : public AResponse
 {
-    private:
-        // =====================
-        // ==    Attributs    ==
-        // =====================
-        
-        RedirResponse();
-        
-    public:
-        // =====================
-		// == Canonical Form  ==
-		// =====================
-        RedirResponse(HttpResponse *httpResponse, int statusCode);
-        ~RedirResponse();
-};
+  private:
+    // =====================
+    // ==    Attributs    ==
+    // =====================
 
+    RedirResponse();
+
+  public:
+    // =====================
+    // == Canonical Form  ==
+    // =====================
+    RedirResponse(HttpResponse *httpResponse, int statusCode);
+    ~RedirResponse();
+};

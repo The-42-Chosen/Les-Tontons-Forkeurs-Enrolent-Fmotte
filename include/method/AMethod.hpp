@@ -27,7 +27,7 @@ class AMethod
     HttpMethod _method;
 
     AMethod();
-    
+
   public:
     // =====================
     // ==       OCF       ==
@@ -57,4 +57,4 @@ class AMethod
     void applyCGI(std::string path);
 };
 
-void	manage_pipe(std::string path, int mypipe[2]);
+void manage_pipe(std::string path, int mypipe[2]);

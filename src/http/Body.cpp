@@ -12,26 +12,26 @@
 
 #include "Body.hpp"
 
-#include "HttpRequest.hpp"
-#include "Request.hpp"
 #include "Client.hpp"
 #include "Header.hpp"
+#include "HttpRequest.hpp"
+#include "Request.hpp"
 
+#include "colors.hpp"
 #include "execption.hpp"
 #include "utilsRequest.hpp"
-#include "colors.hpp"
 
 // =====================
 // ==       OCF       ==
 // =====================
-Body::Body(const HttpRequest &httpRequest): _bodyContent(0), _keepAlive(false), _contentLength(0), _totalChunked(0), _httpRequest(NULL)
+Body::Body(const HttpRequest &httpRequest)
+    : _bodyContent(0), _keepAlive(false), _contentLength(0), _totalChunked(0), _httpRequest(NULL)
 {
-    setHttpRequest(const_cast<HttpRequest*>(&httpRequest));
+    setHttpRequest(const_cast<HttpRequest *>(&httpRequest));
 }
 
 Body::~Body()
 {
-
 }
 
 Body::Body(const Body &other)
@@ -133,7 +133,7 @@ void Body::bodyprint(void)
     std::cout << "|" << RESET << std::endl;
 }
 
-void Body::configureKeepAlive(const HeaderContent& header)
+void Body::configureKeepAlive(const HeaderContent &header)
 {
     HeaderContent::const_iterator connectionIt = header.find("connection");
     HeaderContent::const_iterator itEnd = header.end();
@@ -142,7 +142,7 @@ void Body::configureKeepAlive(const HeaderContent& header)
         setKeepAlive(true);
 }
 
-bool Body::handleTransferEncoding(const HeaderContent& header, const std::string &headerContent)
+bool Body::handleTransferEncoding(const HeaderContent &header, const std::string &headerContent)
 {
     HeaderContent::const_iterator itTransferEncoding = header.find("transfer-encoding");
     HeaderContent::const_iterator itContentLength = header.find("content-length");
@@ -150,22 +150,22 @@ bool Body::handleTransferEncoding(const HeaderContent& header, const std::string
 
     if (itTransferEncoding != itEnd && itContentLength != itEnd)
         throw std::runtime_error("400");
-    
+
     if (itTransferEncoding == itEnd)
         return false;
 
     if (itTransferEncoding->second != "chunked")
         throw std::runtime_error("501");
 
-    std::cout << GREEN << "Body treatment method : " << itTransferEncoding->first << " | "
-                << itTransferEncoding->second << RESET << std::endl;
+    std::cout << GREEN << "Body treatment method : " << itTransferEncoding->first << " | " << itTransferEncoding->second
+              << RESET << std::endl;
 
     parseChunkedBody(headerContent);
     setContentLenght(getBodyContent().size());
     return true;
 }
 
-bool Body::parseContentLengthBody(const HeaderContent& header, const std::string &headerContent)
+bool Body::parseContentLengthBody(const HeaderContent &header, const std::string &headerContent)
 {
     HeaderContent::const_iterator itContentLength = header.find("content-length");
     HeaderContent::const_iterator itEnd = header.end();
@@ -175,7 +175,7 @@ bool Body::parseContentLengthBody(const HeaderContent& header, const std::string
         std::stringstream stream(itContentLength->second);
         if (!(stream >> _contentLength) || !stream.eof())
             throw std::runtime_error("400");
-            
+
         if (getContentLenght() > initMaxBodySize())
             throw std::runtime_error("413");
 
@@ -198,13 +198,13 @@ bool Body::parseContentLengthBody(const HeaderContent& header, const std::string
 void Body::parseBody(const std::string &headerContent)
 {
     _bodyContent.clear();
-    
+
     HeaderContent header = getHttpRequest()->getHeader()->getHeaderContent();
 
     configureKeepAlive(header);
 
     if (handleTransferEncoding(header, headerContent))
-        return ;
+        return;
 
     if (parseContentLengthBody(header, headerContent))
         return;
@@ -226,11 +226,11 @@ size_t Body::initMaxBodySize()
     Location *location = getHttpRequest()->getRequest()->getLocation();
 
     if (location != NULL)
-       return location->getClientMaxBodySize();
+        return location->getClientMaxBodySize();
 
     if (maxBodySize == 0)
-       return getHttpRequest()->getRequest()->getClient()->getServerPtr()->getClientMaxBodySize();
-       
+        return getHttpRequest()->getRequest()->getClient()->getServerPtr()->getClientMaxBodySize();
+
     return DEFAULT_CLIENT_MAX_BODY_SIZE;
 }
 
@@ -261,21 +261,21 @@ void Body::updateTotalChunked(size_t chunkSize, size_t maxBodySize)
 {
     addTotalChunked(chunkSize);
     std::cout << RED << "Total Chunked :" << getTotalChunked() << GREEN << "Max Body Size: " << maxBodySize << RESET
-                << std::endl;
+              << std::endl;
 
     if (getTotalChunked() > maxBodySize)
         throw std::runtime_error("666");
 }
 
 void Body::parseChunkedBody(const std::string &headerContent)
-{   
+{
     size_t current = initCurrent(headerContent);
 
     if (current == 0)
-        return ;
-    
+        return;
+
     size_t maxBodySize = initMaxBodySize();
-    
+
     while (current < headerContent.size())
     {
         std::string::size_type lineEnd = headerContent.find("\r\n", current);
@@ -285,10 +285,10 @@ void Body::parseChunkedBody(const std::string &headerContent)
         size_t chunkSize = parseChunkSize(headerContent.substr(current, lineEnd - current));
 
         updateTotalChunked(chunkSize, maxBodySize);
-        
+
         current = lineEnd + 2;
         if (handleLastChunk(headerContent, chunkSize, current))
-            return ;
+            return;
 
         if (current + chunkSize > headerContent.size())
             throw std::runtime_error("400");
@@ -302,4 +302,3 @@ void Body::parseChunkedBody(const std::string &headerContent)
         current += 2;
     }
 }
-

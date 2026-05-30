@@ -10,16 +10,17 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "AResponse.hpp"
+#include "AResponse.hpp"
 
+#include "execption.hpp"
 #include "utilsDuplicate.hpp"
 #include "utilsResponse.hpp"
-#include "execption.hpp"
 
 // =====================
 // == Canonical Form  ==
 // =====================
-AResponse::AResponse(HttpResponse *httpResponse, int statusCode): _httpResponse(NULL), _statusCode(-1), _statusMessage("")
+AResponse::AResponse(HttpResponse *httpResponse, int statusCode)
+    : _httpResponse(NULL), _statusCode(-1), _statusMessage("")
 {
     setHttpResponse(httpResponse);
     updateCodeError(statusCode);
@@ -27,10 +28,8 @@ AResponse::AResponse(HttpResponse *httpResponse, int statusCode): _httpResponse(
 
 AResponse::~AResponse()
 {
-
 }
 
-      
 // =====================
 // ==     Getters     ==
 // =====================
@@ -51,7 +50,7 @@ std::string AResponse::getStatusMessage() const
 
 void AResponse::setStatusMessage(const std::string &statusMessage)
 {
-    _statusMessage =  statusMessage;
+    _statusMessage = statusMessage;
 }
 
 HeaderContent AResponse::getHeaderContent(void) const
@@ -60,7 +59,7 @@ HeaderContent AResponse::getHeaderContent(void) const
 }
 
 void AResponse::addHeaderContent(std::string key, std::string value)
-{   
+{
     _headerContent[key] = value;
 }
 
@@ -81,7 +80,7 @@ void AResponse::setHttpResponse(HttpResponse *httpResponse)
 
     _httpResponse = httpResponse;
 }
-        
+
 // =====================
 // == 	  Methods	  ==
 // =====================
@@ -103,7 +102,7 @@ std::string AResponse::makeStatusLine()
     firstLine += " ";
     firstLine += getStatusMessage();
     firstLine += "\n";
-    
+
     return firstLine;
 }
 
@@ -126,7 +125,7 @@ std::string AResponse::makeHttpDate()
 std::string AResponse::headerToString()
 {
     std::string header;
-    
+
     HeaderContent headerContent = getHeaderContent();
     for (HeaderContent::iterator it = headerContent.begin(); it != headerContent.end(); ++it)
     {

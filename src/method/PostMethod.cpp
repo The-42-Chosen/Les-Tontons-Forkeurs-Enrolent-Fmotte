@@ -12,15 +12,15 @@
 
 #include "PostMethod.hpp"
 
-#include "HttpRequest.hpp"
 #include "Body.hpp"
+#include "HttpRequest.hpp"
 
 #include "utilsParsing.hpp"
 
 // =====================
 // ==       OCF       ==
 // =====================
-PostMethod::PostMethod(HttpRequest *httpRequest): AMethod(httpRequest, POST)
+PostMethod::PostMethod(HttpRequest *httpRequest) : AMethod(httpRequest, POST)
 {
 }
 

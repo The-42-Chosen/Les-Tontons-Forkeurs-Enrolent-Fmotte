@@ -135,4 +135,3 @@ bool isFinishByFile(std::string path)
 
     return false;
 }
-

@@ -12,11 +12,11 @@
 
 #include "AMethod.hpp"
 
-#include "Location.hpp"
+#include "Header.hpp"
 #include "HttpRequest.hpp"
+#include "Location.hpp"
 #include "Request.hpp"
 #include "Server.hpp"
-#include "Header.hpp"
 
 #include "execption.hpp"
 #include "utilsParsing.hpp"
@@ -29,10 +29,9 @@
 // =====================
 AMethod::AMethod()
 {
-
 }
-  
-AMethod::AMethod(HttpRequest *httpRequest, HttpMethod method): _httpRequest(NULL), _method(NONE)
+
+AMethod::AMethod(HttpRequest *httpRequest, HttpMethod method) : _httpRequest(NULL), _method(NONE)
 {
     setHttpRequest(httpRequest);
     setMethod(method);
@@ -102,14 +101,13 @@ std::string AMethod::createPathWithLocation(Location *location)
         pathRoot = location->getRoot();
     else
         pathRoot = getHttpRequest()->getRequest()->getServer()->getRoot();
-        
+
     pathLoc = joinPath(pathRoot, location->getName());
 
     if (_method == POST)
         return pathLoc;
 
     pathFile = joinPath(pathLoc, returnLastElementPath(getHttpRequest()->getHeader()->getUri()));
-
 
     if (isFinishByFile(pathFile))
         return pathFile;
@@ -131,7 +129,7 @@ std::string AMethod::createPathWithServer()
     std::string checkPath;
     std::string pathRoot;
     std::string index;
-    
+
     pathRoot = getHttpRequest()->getRequest()->getServer()->getRoot();
 
     if (_method == POST)

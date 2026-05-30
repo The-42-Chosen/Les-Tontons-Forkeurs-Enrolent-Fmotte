@@ -12,28 +12,27 @@
 
 #include "HttpResponse.hpp"
 
-#include "HttpRequest.hpp"
-#include "Request.hpp"
-#include "Header.hpp"
 #include "Client.hpp"
-#include "ErrorResponse.hpp"
-#include "RedirResponse.hpp"
 #include "CorrectResponse.hpp"
+#include "ErrorResponse.hpp"
+#include "Header.hpp"
+#include "HttpRequest.hpp"
+#include "RedirResponse.hpp"
+#include "Request.hpp"
 
 #include "execption.hpp"
 
 // =====================
 // == Canonical Form  ==
 // =====================
-   
-HttpResponse::HttpResponse(Request *request): _responseContent(""), _request(NULL)
+
+HttpResponse::HttpResponse(Request *request) : _responseContent(""), _request(NULL)
 {
     setRequest(request);
 }
 
 HttpResponse::~HttpResponse()
 {
-
 }
 
 // =====================
@@ -71,7 +70,7 @@ void HttpResponse::setRequest(Request *request)
 // == 	  Methods	  ==
 // =====================
 void HttpResponse::initialisationHttpResponse()
-{   
+{
     int statusCode = getRequest()->getStatusCode();
 
     if (400 <= statusCode && statusCode < 600)
@@ -87,17 +86,17 @@ void HttpResponse::initialisationHttpResponse()
 void HttpResponse::handleError(int statusCode)
 {
     ErrorResponse response(this, statusCode);
-    
+
     std::string statusLine = response.makeStatusLine();
     response.makeHeader();
     std::string body = response.makeErrorPage();
     response.addHeaderContent("Content-Length", intToString(static_cast<int>(body.size())));
-    
+
     addResponseContent(statusLine);
     addResponseContent(response.headerToString());
     addResponseContent("\n\n");
     addResponseContent(body);
-    
+
     std::cout << "\n\nRESPONSE\n";
     std::cout << getResponseContent() << "\n";
 }
@@ -105,7 +104,7 @@ void HttpResponse::handleError(int statusCode)
 void HttpResponse::handleRedirection(int statusCode)
 {
     RedirResponse response(this, statusCode);
-    
+
     std::string statusLine = response.makeStatusLine();
     response.makeHeader();
     response.addHeaderContent("Location", getRequest()->getPayload());
@@ -113,7 +112,7 @@ void HttpResponse::handleRedirection(int statusCode)
     addResponseContent(statusLine);
     addResponseContent(response.headerToString());
     addResponseContent("\n\n");
-    
+
     std::cout << "\n\nRESPONSE\n";
     std::cout << getResponseContent() << "\n";
 }

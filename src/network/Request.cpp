@@ -12,17 +12,17 @@
 
 #include "Request.hpp"
 
-#include "HttpRequest.hpp"
-#include "Location.hpp"
 #include "Client.hpp"
 #include "Header.hpp"
+#include "HttpRequest.hpp"
+#include "Location.hpp"
 #include "utilsRequest.hpp"
 
 // =====================
 // == Canonical Form  ==
 // =====================
 
-Request::Request(): _client(NULL), _httpRequest(NULL), _statusCode(200), _location(NULL), _payload("")
+Request::Request() : _client(NULL), _httpRequest(NULL), _statusCode(200), _location(NULL), _payload("")
 {
 }
 
@@ -88,7 +88,7 @@ void Request::setHttpRequest(HttpRequest *httpRequest)
         throw ExecptionErrorUninitializedVariable("*httpRequest", "Request");
 
     _httpRequest = httpRequest;
-}  
+}
 
 int Request::getStatusCode() const
 {
@@ -109,7 +109,7 @@ void Request::setLocation(Location *location)
 {
     if (location == NULL)
         throw ExecptionErrorUninitializedVariable("*location", "HttpRequest");
-        
+
     _location = location;
 }
 
@@ -122,18 +122,18 @@ void Request::setPayload(std::string payload)
 {
     _payload = payload;
 }
-        
+
 // =====================
 // ==     Method      ==
 // =====================
 bool Request::initialisationRequest(Client *client)
 {
     try
-    {   
+    {
         setClient(client);
         HttpRequest *httpRequest = new HttpRequest(this);
         setHttpRequest(httpRequest);
-        
+
         getHttpRequest()->initHeader(getClient()->getContentRequest());
         linkToServer();
         getHttpRequest()->initBody();
@@ -145,7 +145,7 @@ bool Request::initialisationRequest(Client *client)
         int num;
         std::istringstream(e.what()) >> num;
         setStatusCode(num);
-        
+
         return false;
     }
     return true;
@@ -171,15 +171,15 @@ void Request::processRequest()
 }
 
 void Request::checkAllowedMethods(Location *location)
-{   
+{
     if (location == NULL)
         return;
-        
+
     std::set<HttpMethod> set_allowed_methods = location->getAllowedMethods();
 
     if (set_allowed_methods.size() == 0)
         return;
-        
+
     std::set<HttpMethod>::iterator it = set_allowed_methods.begin();
     for (; it != set_allowed_methods.end(); ++it)
     {
@@ -192,22 +192,21 @@ void Request::checkAllowedMethods(Location *location)
 void Request::checkServerIsOpen()
 {
     int code = getClient()->getServerPtr()->getReturn()->code;
-    
+
     if (code != 0)
     {
         setPayload(getClient()->getServerPtr()->getReturn()->value);
         throw std::runtime_error(intToString(code));
     }
-        
 }
 
 void Request::checkLocationIsOpen(Location *location)
 {
     if (location == NULL)
         return;
-    
+
     std::cout << "Location: " << location->getName() << "\n";
-    
+
     int code = location->getReturn()->code;
     if (code != 0)
     {
@@ -258,7 +257,7 @@ Location *Request::findLocation(void)
     Location *best_location = NULL;
     int best_score = 100000;
     int score;
-  
+
     for (int i = 0; (location = getClient()->getServerPtr()->getLocation(i)) != NULL; ++i)
     {
         score = longestPrefixMatch(getHttpRequest()->getHeader()->getUri(), location->getName());
@@ -272,10 +271,10 @@ Location *Request::findLocation(void)
     return best_location;
 }
 
-//Code d'Eric
-//C'est pas le mien
+// Code d'Eric
+// C'est pas le mien
 bool isCompleteRequest(const std::string &request)
-{   
+{
     std::string::size_type headerEnd = request.find("\r\n\r\n");
     if (headerEnd == std::string::npos)
         return (false);
@@ -317,7 +316,7 @@ bool isCompleteChunkedBody(const std::string &request, std::string::size_type bo
 
         current = lineEnd + 2;
         if (chunkSize == 0)
-            return(isFinalChunkComplete(request, current));
+            return (isFinalChunkComplete(request, current));
 
         if (current + chunkSize + 2 > request.size())
             return (false);
@@ -342,7 +341,8 @@ bool isFinalChunkComplete(const std::string &request, std::string::size_type cur
     return (trailersEnd != std::string::npos);
 }
 
-std::string initSizeToken(const std::string &request, const std::string::size_type &current, const std::string::size_type &lineEnd)
+std::string initSizeToken(const std::string &request, const std::string::size_type &current,
+                          const std::string::size_type &lineEnd)
 {
     std::string sizeToken = request.substr(current, lineEnd - current);
     std::string::size_type semicolon = sizeToken.find(';');
@@ -364,7 +364,7 @@ bool parseDecimalLength(const std::string &value, size_t &contentLength)
 
     if (!ss.eof())
         return (false);
-        
+
     contentLength = parsed;
     return (true);
 }
@@ -386,7 +386,7 @@ std::string getHeaderValue(const std::string &request, const std::string &header
         std::string::size_type lineEnd = request.find("\r\n", current);
         if (lineEnd == std::string::npos || lineEnd > headerEnd)
             break;
-            
+
         std::string line = request.substr(current, lineEnd - current);
         std::string::size_type colon = line.find(':');
         if (colon != std::string::npos)

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "ErrorResponse.hpp"
+#include "ErrorResponse.hpp"
 
 #include "HttpResponse.hpp"
 #include "Request.hpp"
@@ -19,16 +19,14 @@
 // =====================
 // == Canonical Form  ==
 // =====================
-ErrorResponse::ErrorResponse(HttpResponse *httpResponse, int statusCode): AResponse(httpResponse, statusCode)
+ErrorResponse::ErrorResponse(HttpResponse *httpResponse, int statusCode) : AResponse(httpResponse, statusCode)
 {
-    
 }
 
 ErrorResponse::~ErrorResponse()
 {
-
 }
-    
+
 // =====================
 // == 	  Methods	  ==
 // =====================
@@ -36,28 +34,28 @@ ErrorResponse::~ErrorResponse()
 std::string ErrorResponse::builtErrorPage()
 {
     std::string errorMessage;
-    
+
     errorMessage += "<html><body><h1>";
 
     errorMessage += intToString(getStatusCode());
     errorMessage += " ";
     errorMessage += getStatusMessage();
-    
+
     errorMessage += "</h1></body></html>";
-    
+
     addHeaderContent("content-type", "text/html");
-    return  errorMessage;
+    return errorMessage;
 }
 
 std::string ErrorResponse::getRightPageError()
 {
-    for (size_t i = 0 ;; ++i)
-    { 
+    for (size_t i = 0;; ++i)
+    {
         HttpErrorPage *errorPage = getHttpResponse()->getRequest()->getServer()->getErrorPage(i);
-        
+
         if (errorPage == NULL)
-        return "";
-             
+            return "";
+
         if (errorPage->code == getStatusCode())
         {
             addHeaderContent("content-type", "text/html");

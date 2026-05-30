@@ -10,11 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Client.hpp"
 #include "HttpRequest.hpp"
-#include "Request.hpp"
-#include "Header.hpp"
 #include "Body.hpp"
+#include "Client.hpp"
+#include "Header.hpp"
+#include "Request.hpp"
 
 #include "DeleteMethod.hpp"
 #include "GetMethod.hpp"
@@ -25,7 +25,7 @@
 // == Canonical Form  ==
 // =====================
 
-HttpRequest::HttpRequest(Request *request): _header(NULL), _body(NULL)
+HttpRequest::HttpRequest(Request *request) : _header(NULL), _body(NULL)
 {
     setRequest(request);
 }
@@ -61,10 +61,10 @@ Header *HttpRequest::getHeader() const
 
 void HttpRequest::setHeader(Header *header)
 {
-   if (header == NULL)
+    if (header == NULL)
         throw ExecptionErrorUninitializedVariable("*header", "HttpRequest");
 
-    _header = header; 
+    _header = header;
 }
 
 Request *HttpRequest::getRequest() const
@@ -77,7 +77,7 @@ void HttpRequest::setRequest(Request *request)
     if (request == NULL)
         throw ExecptionErrorUninitializedVariable("*request", "HttpRequest");
 
-    _request = request; 
+    _request = request;
 }
 
 Body *HttpRequest::getBody() const
@@ -87,12 +87,11 @@ Body *HttpRequest::getBody() const
 
 void HttpRequest::setBody(Body *body)
 {
-   if (body == NULL)
+    if (body == NULL)
         throw ExecptionErrorUninitializedVariable("*body", "HttpRequest");
 
-    _body = body; 
+    _body = body;
 }
-
 
 // =====================
 // ==     Method      ==

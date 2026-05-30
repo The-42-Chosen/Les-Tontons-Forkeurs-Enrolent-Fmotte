@@ -21,39 +21,39 @@ class Location;
 
 class HttpRequest
 {
-	private:
-		// =====================
-		// ==    Attributs    ==
-		// =====================
-		Header *_header;
-		Body *_body;
-		Request *_request;
-		
-		HttpRequest();
-		
-	public:
-		// =====================
-		// ==       OCF       ==
-		// =====================
-		HttpRequest(Request *request);
-		~HttpRequest();
-		HttpRequest(const HttpRequest &cpy);
-		HttpRequest &operator=(const HttpRequest &cpy);
+  private:
+    // =====================
+    // ==    Attributs    ==
+    // =====================
+    Header *_header;
+    Body *_body;
+    Request *_request;
 
-		// =====================
-		// ==     Getters     ==
-		// =====================
-		Header *getHeader() const;
-		void setHeader(Header *header);
-		Request *getRequest() const;
-		void setRequest(Request *request);
-		Body *getBody() const;
-		void setBody(Body *body);
-		
-		// =====================
-		// == 	  Member	  ==
-		// =====================
-		void initHeader(const std::string &headerContent);
-		void initBody();
-		std::string selectMethodHttp(Location *location);
+    HttpRequest();
+
+  public:
+    // =====================
+    // ==       OCF       ==
+    // =====================
+    HttpRequest(Request *request);
+    ~HttpRequest();
+    HttpRequest(const HttpRequest &cpy);
+    HttpRequest &operator=(const HttpRequest &cpy);
+
+    // =====================
+    // ==     Getters     ==
+    // =====================
+    Header *getHeader() const;
+    void setHeader(Header *header);
+    Request *getRequest() const;
+    void setRequest(Request *request);
+    Body *getBody() const;
+    void setBody(Body *body);
+
+    // =====================
+    // == 	  Member	  ==
+    // =====================
+    void initHeader(const std::string &headerContent);
+    void initBody();
+    std::string selectMethodHttp(Location *location);
 };

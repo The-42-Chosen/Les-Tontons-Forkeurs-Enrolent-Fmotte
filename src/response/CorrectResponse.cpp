@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "CorrectResponse.hpp"
+#include "CorrectResponse.hpp"
 
 #include "HttpResponse.hpp"
 #include "Request.hpp"
@@ -19,14 +19,12 @@
 // =====================
 // == Canonical Form  ==
 // =====================
-CorrectResponse::CorrectResponse(HttpResponse *httpResponse, int statusCode): AResponse(httpResponse, statusCode)
+CorrectResponse::CorrectResponse(HttpResponse *httpResponse, int statusCode) : AResponse(httpResponse, statusCode)
 {
-    
 }
 
 CorrectResponse::~CorrectResponse()
 {
-
 }
 
 // =====================
@@ -34,13 +32,13 @@ CorrectResponse::~CorrectResponse()
 // =====================
 std::string CorrectResponse::getCorrectPage()
 {
-    for (size_t i = 0 ;; ++i)
-    { 
+    for (size_t i = 0;; ++i)
+    {
         HttpErrorPage *errorPage = getHttpResponse()->getRequest()->getServer()->getErrorPage(i);
-        
+
         if (errorPage == NULL)
-        return "";
-             
+            return "";
+
         if (errorPage->code == getStatusCode())
         {
             addHeaderContent("content-type", "text/html");

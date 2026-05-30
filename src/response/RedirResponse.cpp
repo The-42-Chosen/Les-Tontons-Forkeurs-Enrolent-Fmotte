@@ -12,13 +12,10 @@
 
 #include "RedirResponse.hpp"
 
-RedirResponse::RedirResponse(HttpResponse *httpResponse, int statusCode): AResponse(httpResponse, statusCode)
+RedirResponse::RedirResponse(HttpResponse *httpResponse, int statusCode) : AResponse(httpResponse, statusCode)
 {
-
 }
 
 RedirResponse::~RedirResponse()
 {
-    
 }
-

@@ -73,7 +73,7 @@ void Client::setServerPtr(Server *server)
     if (server == NULL)
         throw ExecptionErrorUninitializedVariable("*server", "Client");
 
-    _server = server; 
+    _server = server;
 }
 
 // REQUEST

@@ -10,18 +10,17 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "Header.hpp"
-#include "struct.hpp"
+#include "Header.hpp"
 #include "HttpRequest.hpp"
+#include "struct.hpp"
 #include "utilsDuplicate.hpp"
 
-Header::Header(): _method(NONE), _uri(""), _protocol(""), _host("")
+Header::Header() : _method(NONE), _uri(""), _protocol(""), _host("")
 {
 }
 
 Header::~Header()
 {
-
 }
 
 Header::Header(const Header &other)
@@ -62,12 +61,12 @@ std::string Header::getUri(void) const
 
 void Header::setUri(const std::string &uri)
 {
-     if (uri[0] != '/')
+    if (uri[0] != '/')
         throw std::runtime_error("400");
-        
+
     if (uri.size() > 8192)
         throw std::runtime_error("414");
-        
+
     _uri = uri;
 }
 
@@ -84,19 +83,18 @@ void Header::setProtocol(const std::string &protocol)
     _protocol = protocol;
 }
 
-
 HeaderContent Header::getHeaderContent(void) const
 {
     return _headerContent;
 }
 
 void Header::addHeaderContent(std::string key, std::string value)
-{   
+{
     value = trimSpaces(value);
     value = toLowerString(value);
 
     key = toLowerString(key);
-    
+
     _headerContent[key] = value;
 }
 
@@ -114,10 +112,10 @@ void Header::setHost(const std::string &host)
 {
     _host = host;
 }
-        
+
 // =====================
 // == 	  Member	  ==
-// =====================     
+// =====================
 void Header::initialisationHeader(const std::string &headerContent)
 {
     parseHeaderInfo(headerContent);
@@ -137,7 +135,7 @@ HttpMethod Header::parseMethodToken(const std::string &method)
         return (DELETE);
     if (method == "HEAD")
         return (HEAD);
-    
+
     throw std::runtime_error("501");
 }
 
@@ -146,21 +144,18 @@ void Header::parseHeaderInfo(const std::string &headerContent)
     _headerContent.clear();
 
     std::string::size_type lineEnd = headerContent.find("\r\n");
-    
-    const std::string requestLine =
-            (lineEnd == std::string::npos)
-                ? headerContent
-                : headerContent.substr(0, lineEnd);
+
+    const std::string requestLine = (lineEnd == std::string::npos) ? headerContent : headerContent.substr(0, lineEnd);
 
     std::stringstream stream(requestLine);
-    
+
     std::string method;
     std::string uri;
     std::string protocol;
     std::string extra;
     if (!(stream >> method >> uri >> protocol) || (stream >> extra))
         throw std::runtime_error("400");
-    
+
     setMethod(method);
     setUri(uri);
     setProtocol(protocol);
@@ -168,10 +163,10 @@ void Header::parseHeaderInfo(const std::string &headerContent)
 std::string::size_type Header::findEnd(const std::string &headerContent, const std::string &end)
 {
     std::string::size_type headerEnd = headerContent.find(end);
-    
+
     if (headerEnd == std::string::npos)
         return headerContent.size();
-        
+
     else
         return headerEnd += 2;
 }
@@ -205,4 +200,3 @@ void Header::parseHeaderContent(const std::string &headerContent)
         current = next + 2;
     }
 }
-

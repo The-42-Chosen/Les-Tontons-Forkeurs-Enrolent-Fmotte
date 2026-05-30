@@ -12,30 +12,29 @@
 
 #pragma once
 
-#include "struct.hpp"
 #include "AResponse.hpp"
+#include "struct.hpp"
 
-class ErrorResponse: public AResponse
+class ErrorResponse : public AResponse
 {
-    private:
-        // =====================
-        // ==    Attributs    ==
-        // =====================
+  private:
+    // =====================
+    // ==    Attributs    ==
+    // =====================
 
-        ErrorResponse();
-        
-    public:
-    	// =====================
-		// == Canonical Form  ==
-		// =====================
-        ErrorResponse(HttpResponse *httpResponse, int statusCode);
-        ~ErrorResponse();
-        
-        // =====================
-		// ==     Member      ==
-		// =====================
-        std::string makeErrorPage();
-        std::string builtErrorPage();
-        std::string getRightPageError();
+    ErrorResponse();
+
+  public:
+    // =====================
+    // == Canonical Form  ==
+    // =====================
+    ErrorResponse(HttpResponse *httpResponse, int statusCode);
+    ~ErrorResponse();
+
+    // =====================
+    // ==     Member      ==
+    // =====================
+    std::string makeErrorPage();
+    std::string builtErrorPage();
+    std::string getRightPageError();
 };
-

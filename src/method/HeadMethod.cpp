@@ -21,7 +21,7 @@
 // =====================
 // ==       OCF       ==
 // =====================
-HeadMethod::HeadMethod(HttpRequest *httpRequest): AMethod(httpRequest, HEAD)
+HeadMethod::HeadMethod(HttpRequest *httpRequest) : AMethod(httpRequest, HEAD)
 {
 }
 
@@ -56,9 +56,9 @@ std::string HeadMethod::applyMethod(Location *location)
     if (stat(path.c_str(), &st) != 0)
         throw std::runtime_error("500");
 
-    std::cout << "Taille : " <<  st.st_size << "\n";
+    std::cout << "Taille : " << st.st_size << "\n";
     char buffer[100];
-    std::tm* timeinfo = std::localtime(&st.st_mtime);
+    std::tm *timeinfo = std::localtime(&st.st_mtime);
     std::strftime(buffer, sizeof(buffer), "%d/%m/%Y %H:%M:%S", timeinfo);
     std::cout << "Derniere modification : " << buffer << "\n";
 

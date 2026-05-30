@@ -19,7 +19,7 @@
 // =====================
 // ==       OCF       ==
 // =====================
-DeleteMethod::DeleteMethod(HttpRequest *httpRequest): AMethod(httpRequest, DELETE)
+DeleteMethod::DeleteMethod(HttpRequest *httpRequest) : AMethod(httpRequest, DELETE)
 {
 }
 
@@ -60,6 +60,6 @@ std::string DeleteMethod::applyMethod(Location *location)
 
     if (std::remove(path.c_str()) != 0)
         throw std::runtime_error("500");
-    
+
     return "";
 }
