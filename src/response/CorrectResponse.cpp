@@ -46,3 +46,18 @@ std::string CorrectResponse::getCorrectPage()
         }
     }
 }
+
+void CorrectResponse::applyResponse()
+{
+    HttpResponse *response = getHttpResponse();
+
+    std::string statusLine = makeStatusLine();
+    makeHeader();
+    std::string body = response->getRequest()->getPayload();
+    addHeaderContent("Content-Length", intToString(static_cast<int>(body.size())));
+
+    response->addResponseContent(statusLine);
+    response->addResponseContent(headerToString());
+    response->addResponseContent("\n\n");
+    response->addResponseContent(body);
+}

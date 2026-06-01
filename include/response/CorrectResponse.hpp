@@ -35,4 +35,6 @@ class CorrectResponse : public AResponse
     // ==     Member      ==
     // =====================
     std::string getCorrectPage();
+
+    void applyResponse();
 };

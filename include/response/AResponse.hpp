@@ -32,7 +32,7 @@ class AResponse
     // == Canonical Form  ==
     // =====================
     AResponse(HttpResponse *httpResponse, int statusCode);
-    ~AResponse();
+    virtual ~AResponse();
 
     // =====================
     // ==     Getters     ==
@@ -55,4 +55,6 @@ class AResponse
     void makeHeader();
     std::string makeHttpDate();
     std::string headerToString();
+
+    virtual void applyResponse() = 0;
 };

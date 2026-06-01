@@ -76,3 +76,18 @@ std::string ErrorResponse::makeErrorPage()
     }
     return builtErrorPage();
 }
+
+void ErrorResponse::applyResponse()
+{
+    HttpResponse *response = getHttpResponse();
+
+    std::string statusLine = makeStatusLine();
+    makeHeader();
+    std::string body = makeErrorPage();
+    addHeaderContent("Content-Length", intToString(static_cast<int>(body.size())));
+
+    response->addResponseContent(statusLine);
+    response->addResponseContent(headerToString());
+    response->addResponseContent("\n\n");
+    response->addResponseContent(body);
+}

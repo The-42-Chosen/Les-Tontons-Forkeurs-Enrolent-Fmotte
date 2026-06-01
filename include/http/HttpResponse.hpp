@@ -15,6 +15,11 @@
 #include "struct.hpp"
 
 class HandleRequest;
+class Location;
+class AResponse;
+class ErrorResponse;
+class RedirResponse;
+class CorrectResponse;
 
 class HttpResponse
 {
@@ -47,8 +52,7 @@ class HttpResponse
     // == 	  Methods	  ==
     // =====================
     void initialisationHttpResponse();
-    void handleError(int statusCode);
-    void handleRedirection(int statusCode);
-    void handleCorrect(int statusCode);
+    AResponse *selectResponse(int statusCode, ErrorResponse &error, RedirResponse &redir,
+                              CorrectResponse &correct);
     void sendToClient();
 };
