@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 16:52:26 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/30 18:40:40 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/06/01 18:50:22 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,13 @@
 
 #include "Client.hpp"
 #include "CorrectResponse.hpp"
+#include "DeleteMethod.hpp"
 #include "ErrorResponse.hpp"
 #include "Header.hpp"
 #include "HttpRequest.hpp"
+#include "GetMethod.hpp"
+#include "HeadMethod.hpp"
+#include "PostMethod.hpp"
 #include "RedirResponse.hpp"
 #include "Request.hpp"
 
@@ -73,66 +77,27 @@ void HttpResponse::initialisationHttpResponse()
 {
     int statusCode = getRequest()->getStatusCode();
 
+    ErrorResponse error(this, statusCode);
+    RedirResponse redir(this, statusCode);
+    CorrectResponse correct(this, statusCode);
+
+    AResponse *response = selectResponse(statusCode, error, redir, correct);
+
+    response->applyResponse();
+
+    std::cout << "\n\nRESPONSE\n";
+    std::cout << getResponseContent() << "\n";
+}
+
+AResponse *HttpResponse::selectResponse(int statusCode, ErrorResponse &error, RedirResponse &redir,
+                                        CorrectResponse &correct)
+{
     if (400 <= statusCode && statusCode < 600)
-        handleError(statusCode);
-
+        return &error;
     else if (300 <= statusCode && statusCode < 400)
-        handleRedirection(statusCode);
-
+        return &redir;
     else
-        handleCorrect(statusCode);
-}
-
-void HttpResponse::handleError(int statusCode)
-{
-    ErrorResponse response(this, statusCode);
-
-    std::string statusLine = response.makeStatusLine();
-    response.makeHeader();
-    std::string body = response.makeErrorPage();
-    response.addHeaderContent("Content-Length", intToString(static_cast<int>(body.size())));
-
-    addResponseContent(statusLine);
-    addResponseContent(response.headerToString());
-    addResponseContent("\n\n");
-    addResponseContent(body);
-
-    std::cout << "\n\nRESPONSE\n";
-    std::cout << getResponseContent() << "\n";
-}
-
-void HttpResponse::handleRedirection(int statusCode)
-{
-    RedirResponse response(this, statusCode);
-
-    std::string statusLine = response.makeStatusLine();
-    response.makeHeader();
-    response.addHeaderContent("Location", getRequest()->getPayload());
-
-    addResponseContent(statusLine);
-    addResponseContent(response.headerToString());
-    addResponseContent("\n\n");
-
-    std::cout << "\n\nRESPONSE\n";
-    std::cout << getResponseContent() << "\n";
-}
-
-void HttpResponse::handleCorrect(int statusCode)
-{
-    CorrectResponse response(this, statusCode);
-
-    std::string statusLine = response.makeStatusLine();
-    response.makeHeader();
-    std::string body = getRequest()->getPayload();
-    response.addHeaderContent("Content-Length", intToString(static_cast<int>(body.size())));
-
-    addResponseContent(statusLine);
-    addResponseContent(response.headerToString());
-    addResponseContent("\n\n");
-    addResponseContent(body);
-
-    std::cout << "\n\nRESPONSE\n";
-    std::cout << getResponseContent() << "\n";
+        return &correct;
 }
 
 void HttpResponse::sendToClient()

@@ -29,4 +29,9 @@ class RedirResponse : public AResponse
     // =====================
     RedirResponse(HttpResponse *httpResponse, int statusCode);
     ~RedirResponse();
+
+    // =====================
+    // ==     Member      ==
+    // =====================
+    void applyResponse();
 };
