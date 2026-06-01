@@ -52,7 +52,6 @@ class HttpResponse
     // == 	  Methods	  ==
     // =====================
     void initialisationHttpResponse();
-    AResponse *selectResponse(int statusCode, ErrorResponse &error, RedirResponse &redir,
-                              CorrectResponse &correct);
+    AResponse *selectResponse(int statusCode, ErrorResponse &error, RedirResponse &redir, CorrectResponse &correct);
     void sendToClient();
 };
