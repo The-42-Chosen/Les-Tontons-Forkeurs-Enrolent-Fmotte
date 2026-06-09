@@ -211,7 +211,8 @@ void AMethod::manage_pipe(std::string path, int mypipe[2], const std::string &in
 
     close(mypipe[1]);
 
-	// J'ai vu que qund tu n'as pas d'interpreter, le script s'exec direct, sans interpreter! J'ai essaye ce truc pour voir.
+    // J'ai vu que qund tu n'as pas d'interpreter, le script s'exec direct, sans interpreter! J'ai essaye ce truc pour
+    // voir.
     char *args[3];
     if (interpreter.empty())
     {

@@ -56,7 +56,7 @@ std::string escape_html(std::string_view input)
     return out;
 }
 
-}
+} // namespace
 
 int main()
 {
