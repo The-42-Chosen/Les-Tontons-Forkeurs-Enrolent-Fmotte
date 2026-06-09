@@ -54,7 +54,10 @@ class AMethod
     std::string createPathWithServer();
 
     virtual std::string applyMethod(Location *location) = 0;
-    void applyCGI(std::string path);
-};
 
-void manage_pipe(std::string path, int mypipe[2]);
+    // =====================
+    // ==       CGI       ==
+    // =====================
+    std::string applyCGI(std::string path, const std::string &interpreter);
+    void manage_pipe(std::string path, int mypipe[2], const std::string &interpreter);
+};

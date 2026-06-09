@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   AMethod.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 12:54:14 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/25 11:32:57 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/06/09 14:42:55 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,14 +155,14 @@ std::string AMethod::createPathWithServer()
     throw std::runtime_error("404");
 }
 
-void AMethod::applyCGI(std::string path)
+std::string AMethod::applyCGI(std::string path, const std::string &interpreter)
 {
     int mypipe[2];
 
     if (pipe(mypipe) == -1)
     {
         std::cerr << "Error pipe\n";
-        return;
+        throw std::runtime_error("500");
     }
 
     pid_t pid = fork();
@@ -170,25 +170,30 @@ void AMethod::applyCGI(std::string path)
     if (pid == -1)
     {
         std::cerr << "Error fork\n";
-        return;
+        close(mypipe[0]);
+        close(mypipe[1]);
+        throw std::runtime_error("500");
     }
 
     if (pid == 0)
-        manage_pipe(path, mypipe);
+        manage_pipe(path, mypipe, interpreter);
 
     close(mypipe[1]);
 
     char buffer[1024];
     int nb_read;
+    std::string payload;
 
     while ((nb_read = read(mypipe[0], buffer, sizeof(buffer))) > 0)
-        write(STDOUT_FILENO, buffer, nb_read);
+        payload.append(buffer, nb_read);
 
     close(mypipe[0]);
     waitpid(pid, NULL, 0);
+
+    return payload;
 }
 
-void manage_pipe(std::string path, int mypipe[2])
+void AMethod::manage_pipe(std::string path, int mypipe[2], const std::string &interpreter)
 {
     close(mypipe[0]);
 
@@ -206,7 +211,21 @@ void manage_pipe(std::string path, int mypipe[2])
 
     close(mypipe[1]);
 
-    char *args[] = {const_cast<char *>("/usr/bin/python3"), const_cast<char *>(path.c_str()), NULL};
+	// J'ai vu que qund tu n'as pas d'interpreter, le script s'exec direct, sans interpreter! J'ai essaye ce truc pour voir.
+    char *args[3];
+    if (interpreter.empty())
+    {
+        args[0] = const_cast<char *>(path.c_str());
+        args[1] = NULL;
+        args[2] = NULL;
+    }
+    else
+    {
+        args[0] = const_cast<char *>(interpreter.c_str());
+        args[1] = const_cast<char *>(path.c_str());
+        args[2] = NULL;
+    }
+
     char *envp[] = {NULL};
 
     if (execve(args[0], args, envp) == -1)
