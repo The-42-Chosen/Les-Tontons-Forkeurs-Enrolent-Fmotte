@@ -53,8 +53,10 @@ std::string GetMethod::applyMethod(Location *location)
     checkPermisionReadFile(path);
     std::string extention = path.substr(path.find_last_of("."));
 
-    if (extention == ".py" || extention == ".php")
-        applyCGI(path);
+    if (extention == ".py")
+        return applyCGI(path, "/usr/bin/python3");
+    else if (extention == ".cgi")
+        return applyCGI(path, "");
     else
     {
         parseConfigFile(path.c_str(), contentFile);
