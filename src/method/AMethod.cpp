@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 12:54:14 by fmotte            #+#    #+#             */
-/*   Updated: 2026/06/15 13:36:39 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/06/15 13:37:51 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 #include <unistd.h>
 #include <vector>
 #include <dirent.h>
+#include <vector>
 
 // =====================
 // ==       OCF       ==
