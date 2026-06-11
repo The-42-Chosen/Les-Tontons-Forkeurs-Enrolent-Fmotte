@@ -23,9 +23,9 @@
 #include "utilsParsing.hpp"
 #include "utilsRequest.hpp"
 
+#include <sstream>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <sstream>
 #include <vector>
 
 // =====================
@@ -159,11 +159,11 @@ std::string AMethod::createPathWithServer()
     throw std::runtime_error("404");
 }
 
-// LEs doubles Pipes et le in/out : 
-    //  pipe_in[1]  ->  stdin   (body POST envoyé par le parent)
-    //  pipe_in[0]  <-  lecture par l'enfant
-    //  pipe_out[1] ->  stdout  (réponse HTML générée par l'enfant)
-    //  pipe_out[0] <-  lecture par le parent
+// LEs doubles Pipes et le in/out :
+//  pipe_in[1]  ->  stdin   (body POST envoyé par le parent)
+//  pipe_in[0]  <-  lecture par l'enfant
+//  pipe_out[1] ->  stdout  (réponse HTML générée par l'enfant)
+//  pipe_out[0] <-  lecture par le parent
 // CGI pipe_in[1] à fermer sinon le serveur attendra indéfiniment (deadlock)
 
 std::string AMethod::applyCGI(std::string path, const std::string &interpreter)

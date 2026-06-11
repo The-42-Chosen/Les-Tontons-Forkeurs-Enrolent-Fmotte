@@ -82,11 +82,21 @@ static std::string escape_html(const std::string &s)
     {
         switch (s[i])
         {
-        case '&': out += "&amp;"; break;
-        case '<': out += "&lt;"; break;
-        case '>': out += "&gt;"; break;
-        case '"': out += "&quot;"; break;
-        default:  out += s[i]; break;
+        case '&':
+            out += "&amp;";
+            break;
+        case '<':
+            out += "&lt;";
+            break;
+        case '>':
+            out += "&gt;";
+            break;
+        case '"':
+            out += "&quot;";
+            break;
+        default:
+            out += s[i];
+            break;
         }
     }
     return out;
@@ -131,15 +141,14 @@ int main()
     {
         std::cout << "<h2>Parametres</h2>\n<ul>\n";
         for (std::map<std::string, std::string>::iterator it = params.begin(); it != params.end(); ++it)
-            std::cout << "  <li><strong>" << escape_html(it->first) << "</strong> = "
-                      << escape_html(it->second) << "</li>\n";
+            std::cout << "  <li><strong>" << escape_html(it->first) << "</strong> = " << escape_html(it->second)
+                      << "</li>\n";
         std::cout << "</ul>\n";
     }
 
     std::cout << "<hr>\n"
-              << "<p><em>Server: " << escape_html(env("SERVER_NAME")) << ":"
-              << escape_html(env("SERVER_PORT")) << " | Protocol: "
-              << escape_html(env("SERVER_PROTOCOL")) << "</em></p>\n"
+              << "<p><em>Server: " << escape_html(env("SERVER_NAME")) << ":" << escape_html(env("SERVER_PORT"))
+              << " | Protocol: " << escape_html(env("SERVER_PROTOCOL")) << "</em></p>\n"
               << "</body>\n</html>\n";
 
     return 0;
