@@ -100,8 +100,7 @@ std::string returnLastElementPath(std::string path)
     std::string sub_string;
     std::vector<std::string> token_str;
 
-
-	// Avoid index redirection when Query is present, parse '?'!!
+    // Avoid index redirection when Query is present, parse '?'!!
     std::string::size_type qpos = path.find('?');
     if (qpos != std::string::npos)
         path = path.substr(0, qpos);

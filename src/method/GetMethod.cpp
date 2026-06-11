@@ -49,7 +49,6 @@ std::string GetMethod::applyMethod(Location *location)
 
     path = createPath(location);
 
-
     std::string::size_type qpos = path.find('?');
     if (qpos != std::string::npos)
         path = path.substr(0, qpos);
