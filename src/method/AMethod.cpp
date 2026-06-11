@@ -23,6 +23,7 @@
 #include "utilsRequest.hpp"
 
 #include <sys/wait.h>
+#include <vector>
 
 // =====================
 // ==       OCF       ==
@@ -211,8 +212,33 @@ void AMethod::manage_pipe(std::string path, int mypipe[2], const std::string &in
 
     close(mypipe[1]);
 
-    // J'ai vu que qund tu n'as pas d'interpreter, le script s'exec direct, sans interpreter! J'ai essaye ce truc pour
-    // voir.
+    std::string uri   = _httpRequest->getHeader()->getUri();
+    std::string query = "";
+    std::string::size_type qpos = uri.find('?');
+    if (qpos != std::string::npos)
+        query = uri.substr(qpos + 1);
+
+    std::string method   = (_httpRequest->getHeader()->getMethod() == POST) ? "POST" : "GET";
+    std::string protocol = _httpRequest->getHeader()->getProtocol();
+    HeaderContent hc     = _httpRequest->getHeader()->getHeaderContent();
+
+    std::string contentType   = hc.count("content-type")   ? hc.at("content-type")   : "";
+    std::string contentLength = hc.count("content-length") ? hc.at("content-length") : "";
+
+    std::vector<std::string> envStrings = {
+        "REQUEST_METHOD="  + method,
+        "QUERY_STRING="    + query,
+        "SERVER_PROTOCOL=" + protocol,
+        "CONTENT_TYPE="    + contentType,
+        "CONTENT_LENGTH="  + contentLength,
+        "SCRIPT_NAME="     + path,
+    };
+
+    std::vector<char *> envp;
+    for (auto &s : envStrings)
+        envp.push_back(const_cast<char *>(s.c_str()));
+    envp.push_back(nullptr);
+
     char *args[3];
     if (interpreter.empty())
     {
@@ -227,8 +253,6 @@ void AMethod::manage_pipe(std::string path, int mypipe[2], const std::string &in
         args[2] = NULL;
     }
 
-    char *envp[] = {NULL};
-
-    if (execve(args[0], args, envp) == -1)
+    if (execve(args[0], args, envp.data()) == -1)
         exit(EXIT_FAILURE);
 }
