@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 12:54:14 by fmotte            #+#    #+#             */
-/*   Updated: 2026/06/11 04:18:35 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/06/11 19:33:18 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,6 +213,16 @@ std::string AMethod::applyCGI(std::string path, const std::string &interpreter)
     close(pipe_out[0]);
     waitpid(pid, NULL, 0);
 
+    std::string::size_type sep = payload.find("\r\n\r\n");
+    std::string::size_type sepLen = 4;
+    if (sep == std::string::npos)
+    {
+        sep = payload.find("\n\n");
+        sepLen = 2;
+    }
+    if (sep != std::string::npos)
+        return payload.substr(sep + sepLen);
+
     return payload;
 }
 
@@ -268,6 +278,9 @@ void AMethod::manage_pipe(std::string path, int pipe_out[2], int pipe_in[2], con
         serverPort = oss.str();
     }
 
+    std::string::size_type pslash = path.rfind('/');
+    std::string scriptFile = (pslash != std::string::npos) ? path.substr(pslash + 1) : path;
+
     std::vector<std::string> envStrings;
     envStrings.push_back("REQUEST_METHOD=" + method);
     envStrings.push_back("QUERY_STRING=" + query);
@@ -275,6 +288,8 @@ void AMethod::manage_pipe(std::string path, int pipe_out[2], int pipe_in[2], con
     envStrings.push_back("CONTENT_TYPE=" + contentType);
     envStrings.push_back("CONTENT_LENGTH=" + contentLength);
     envStrings.push_back("SCRIPT_NAME=" + scriptName);
+    envStrings.push_back("SCRIPT_FILENAME=" + scriptFile);
+    envStrings.push_back("REDIRECT_STATUS=200");
     envStrings.push_back("PATH_INFO=");
     envStrings.push_back("SERVER_NAME=" + serverName);
     envStrings.push_back("SERVER_PORT=" + serverPort);

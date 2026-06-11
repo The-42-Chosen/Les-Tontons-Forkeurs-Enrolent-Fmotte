@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(make -C cgi re)",
+      "Bash(REQUEST_METHOD=POST CONTENT_LENGTH=15 ./webPageFile/localhost/execCgi.cgi)",
+      "Bash(make)",
+      "Bash(./Webserv *)",
+      "Bash(REQUEST_METHOD=GET QUERY_STRING=\"nom=Eric&projet=Webserv\" SERVER_NAME=localhost SERVER_PORT=8080 SERVER_PROTOCOL=HTTP/1.1 php-cgi -q webPageFile/localhost/execCgi.php)",
+      "Bash(REDIRECT_STATUS=200 REQUEST_METHOD=GET QUERY_STRING=\"nom=Eric&projet=Webserv\" SERVER_NAME=localhost SERVER_PORT=8080 SERVER_PROTOCOL=HTTP/1.1 php-cgi -q execCgi.php)",
+      "Bash(REDIRECT_STATUS=200 REQUEST_METHOD=POST CONTENT_LENGTH=15 SERVER_NAME=localhost SERVER_PORT=8080 SERVER_PROTOCOL=HTTP/1.1 php-cgi -q execCgi.php)",
+      "Bash(php-cgi --version)",
+      "Bash(REQUEST_METHOD=GET QUERY_STRING=\"name=eric&lang=fr\" SERVER_NAME=localhost SERVER_PORT=8080 SERVER_PROTOCOL=HTTP/1.1 php-cgi cgi.php)",
+      "Bash(REDIRECT_STATUS=200 REQUEST_METHOD=GET QUERY_STRING=\"name=eric&lang=fr\" SERVER_NAME=localhost SERVER_PORT=8080 SERVER_PROTOCOL=HTTP/1.1 php-cgi cgi.php)",
+      "Bash(REDIRECT_STATUS=200 SCRIPT_FILENAME=__TRACKED_VAR__/cgi.php REQUEST_METHOD=GET QUERY_STRING='name=eric&lang=fr' SERVER_NAME=localhost SERVER_PORT=8080 SERVER_PROTOCOL=HTTP/1.1 php-cgi)",
+      "Bash(REDIRECT_STATUS=200 SCRIPT_FILENAME=__TRACKED_VAR__/cgi.php REQUEST_METHOD=POST CONTENT_LENGTH=31 CONTENT_TYPE=application/x-www-form-urlencoded SERVER_NAME=localhost SERVER_PORT=8080 SERVER_PROTOCOL=HTTP/1.1 php-cgi)",
+      "Bash(REDIRECT_STATUS=200 SCRIPT_FILENAME=__TRACKED_VAR__/cgi.php REQUEST_METHOD=POST CONTENT_LENGTH=23 CONTENT_TYPE=application/x-www-form-urlencoded SERVER_NAME=localhost SERVER_PORT=8080 SERVER_PROTOCOL=HTTP/1.1 php-cgi)",
+      "Bash(echo \"pid=$!\")",
+      "Read(//tmp/**)",
+      "Bash(curl -s -i \"http://localhost:8080/execCgi.cgi?name=eric&lang=fr\")",
+      "Bash(curl -s -i \"http://localhost:8080/cgi.php?name=eric&lang=fr\")",
+      "Bash(curl -s -i \"http://localhost:8080/execCgi.cgi\")",
+      "Bash(curl -s -i \"http://localhost:8080/cgi.php\")",
+      "Bash(REQUEST_METHOD=GET QUERY_STRING=\"name=eric&lang=php\" REDIRECT_STATUS=200 SERVER_NAME=localhost SERVER_PORT=8080 SERVER_PROTOCOL=HTTP/1.1 php-cgi *)",
+      "Bash(REQUEST_METHOD=GET QUERY_STRING=\"name=eric&lang=php\" REDIRECT_STATUS=200 SCRIPT_FILENAME=\"$PWD/webPageFile/localhost/cgi.php\" SERVER_NAME=localhost SERVER_PORT=8080 SERVER_PROTOCOL=HTTP/1.1 php-cgi *)",
+      "Bash(REQUEST_METHOD=POST CONTENT_TYPE=application/x-www-form-urlencoded CONTENT_LENGTH=18 REDIRECT_STATUS=200 SCRIPT_FILENAME=__TRACKED_VAR__/webPageFile/localhost/cgi.php SERVER_NAME=localhost SERVER_PORT=8080 SERVER_PROTOCOL=HTTP/1.1 php-cgi)",
+      "Bash(grep -A12 \"^src.*isFinishByFile\\(.*{$\\\\|returnLastElementPath\\(.*{$\")",
+      "Bash(make -j4)"
+    ]
+  }
+}

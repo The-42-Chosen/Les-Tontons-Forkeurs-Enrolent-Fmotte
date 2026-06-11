@@ -28,10 +28,11 @@ static std::string read_stdin(size_t n)
     size_t total = 0;
     while (total < n)
     {
-        int r = std::cin.readsome(&body[total], static_cast<std::streamsize>(n - total));
+        std::cin.read(&body[total], static_cast<std::streamsize>(n - total));
+        std::streamsize r = std::cin.gcount();
         if (r <= 0)
             break;
-        total += r;
+        total += static_cast<size_t>(r);
     }
     body.resize(total);
     return body;

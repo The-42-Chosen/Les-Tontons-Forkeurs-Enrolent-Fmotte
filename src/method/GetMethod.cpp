@@ -48,6 +48,14 @@ std::string GetMethod::applyMethod(Location *location)
     std::string contentFile;
 
     path = createPath(location);
+
+    // On retire la query string ("?...") avant de resoudre le fichier :
+    // sinon l'extension detectee serait ".php?name=eric" et le fichier
+    // introuvable. La query reste lisible via l'URI dans manage_pipe.
+    std::string::size_type qpos = path.find('?');
+    if (qpos != std::string::npos)
+        path = path.substr(0, qpos);
+
     std::cout << "Path to read: " << path << "\n";
 
     checkPermisionReadFile(path);
@@ -55,6 +63,8 @@ std::string GetMethod::applyMethod(Location *location)
 
     if (extention == ".py")
         return applyCGI(path, "/usr/bin/python3");
+    else if (extention == ".php")
+        return applyCGI(path, "/usr/bin/php-cgi");
     else if (extention == ".cgi")
         return applyCGI(path, "");
     else

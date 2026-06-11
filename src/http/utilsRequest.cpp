@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utilsRequest.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 13:53:46 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/27 13:48:53 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/06/11 19:31:07 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,9 +100,8 @@ std::string returnLastElementPath(std::string path)
     std::string sub_string;
     std::vector<std::string> token_str;
 
-    // On retire la query string ("?...") avant de resoudre le fichier :
-    // sinon le nom de fichier serait "cgi.php?name=eric", introuvable sur
-    // le disque, et isFinishByFile retomberait sur l'index.
+
+	// Avoid index redirection when Query is present, parse '?'!!
     std::string::size_type qpos = path.find('?');
     if (qpos != std::string::npos)
         path = path.substr(0, qpos);
