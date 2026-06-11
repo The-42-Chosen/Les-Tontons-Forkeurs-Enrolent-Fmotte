@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   GetMethod.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 14:13:06 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/25 11:38:01 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/06/11 19:41:20 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,9 +49,7 @@ std::string GetMethod::applyMethod(Location *location)
 
     path = createPath(location);
 
-    // On retire la query string ("?...") avant de resoudre le fichier :
-    // sinon l'extension detectee serait ".php?name=eric" et le fichier
-    // introuvable. La query reste lisible via l'URI dans manage_pipe.
+
     std::string::size_type qpos = path.find('?');
     if (qpos != std::string::npos)
         path = path.substr(0, qpos);
