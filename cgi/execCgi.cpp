@@ -5,88 +5,142 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/05 10:33:47 by erpascua          #+#    #+#             */
-/*   Updated: 2026/06/09 19:29:37 by erpascua         ###   ########.fr       */
+/*   Created: 2026/06/11 00:00:00 by erpascua          #+#    #+#             */
+/*   Updated: 2026/06/11 04:03:46 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <array>
 #include <cstdlib>
 #include <iostream>
-#include <optional>
+#include <map>
+#include <sstream>
 #include <string>
-#include <string_view>
 
-namespace
+static std::string env(const char *key)
 {
-
-std::optional<std::string> env(std::string_view key)
-{
-    if (const char *value = std::getenv(std::string(key).c_str()))
-        return std::string(value);
-    return std::nullopt;
+    const char *val = std::getenv(key);
+    return val ? val : "";
 }
 
-// SECURITY!
-std::string escape_html(std::string_view input)
+static std::string read_stdin(size_t n)
+{
+    std::string body(n, '\0');
+    size_t total = 0;
+    while (total < n)
+    {
+        int r = std::cin.readsome(&body[total], static_cast<std::streamsize>(n - total));
+        if (r <= 0)
+            break;
+        total += r;
+    }
+    body.resize(total);
+    return body;
+}
+
+static std::string url_decode(const std::string &s)
 {
     std::string out;
-    out.reserve(input.size());
-    for (const char c : input)
+    for (size_t i = 0; i < s.size(); ++i)
     {
-        switch (c)
+        if (s[i] == '+')
+            out += ' ';
+        else if (s[i] == '%' && i + 2 < s.size())
         {
-        case '&':
-            out += "&amp;";
-            break;
-        case '<':
-            out += "&lt;";
-            break;
-        case '>':
-            out += "&gt;";
-            break;
-        case '"':
-            out += "&quot;";
-            break;
-        default:
-            out += c;
-            break;
+            char hex[3] = {s[i + 1], s[i + 2], 0};
+            out += static_cast<char>(std::strtol(hex, NULL, 16));
+            i += 2;
+        }
+        else
+            out += s[i];
+    }
+    return out;
+}
+
+// Parse "key=value&key2=value2" → map
+static std::map<std::string, std::string> parse_query(const std::string &qs)
+{
+    std::map<std::string, std::string> params;
+    std::istringstream stream(qs);
+    std::string pair;
+    while (std::getline(stream, pair, '&'))
+    {
+        size_t eq = pair.find('=');
+        if (eq == std::string::npos)
+            continue;
+        std::string key = url_decode(pair.substr(0, eq));
+        std::string val = url_decode(pair.substr(eq + 1));
+        params[key] = val;
+    }
+    return params;
+}
+
+// Echappe les caracteres HTML speciaux
+static std::string escape_html(const std::string &s)
+{
+    std::string out;
+    for (size_t i = 0; i < s.size(); ++i)
+    {
+        switch (s[i])
+        {
+        case '&': out += "&amp;"; break;
+        case '<': out += "&lt;"; break;
+        case '>': out += "&gt;"; break;
+        case '"': out += "&quot;"; break;
+        default:  out += s[i]; break;
         }
     }
     return out;
 }
 
-} // namespace
-
 int main()
 {
-    const auto method = env("REQUEST_METHOD").value_or("GET");
-    const auto query = env("QUERY_STRING").value_or("");
+    const std::string method = env("REQUEST_METHOD");
 
-    constexpr std::array<std::string_view, 3> cgi_vars = {
-        "SERVER_PROTOCOL",
-        "CONTENT_TYPE",
-        "CONTENT_LENGTH",
-    };
+    // GET : query string depuis l'environnement
+    // POST : body depuis stdin
+    std::string raw_data;
+    if (method == "POST")
+    {
+        const std::string cl = env("CONTENT_LENGTH");
+        if (!cl.empty())
+        {
+            size_t len = static_cast<size_t>(std::atoi(cl.c_str()));
+            raw_data = read_stdin(len);
+        }
+    }
+    else
+        raw_data = env("QUERY_STRING");
 
+    std::map<std::string, std::string> params = parse_query(raw_data);
+
+    // Headers HTTP
+    std::cout << "Content-Type: text/html\r\n";
+    std::cout << "\r\n";
+
+    // Page HTML
     std::cout << "<!DOCTYPE html>\n"
               << "<html lang=\"fr\">\n"
-              << "<head><meta charset=\"utf-8\"><title>Welcome to the fabilous CGI</title></head>\n"
+              << "<head><meta charset=\"utf-8\"><title>CGI Webserv</title></head>\n"
               << "<body>\n"
-              << "  <h1>Welcome to the fabilous CGI</h1>\n"
-              << "  <p>A CGI created by Fmotte & Erpascua</p>\n"
-              << "  <p>Query string : " << escape_html(query) << "</p>\n"
-              << "  <ul>\n";
+              << "<h1>CGI Webserv</h1>\n"
+              << "<p><strong>Method :</strong> " << escape_html(method) << "</p>\n";
 
-    for (const auto var : cgi_vars)
+    if (params.empty())
+        std::cout << "<p>Aucun parametre recu.</p>\n";
+    else
     {
-        const auto value = env(var).value_or("(non defini)");
-        std::cout << "    <li>" << escape_html(var) << " = " << escape_html(value) << "</li>\n";
+        std::cout << "<h2>Parametres</h2>\n<ul>\n";
+        for (std::map<std::string, std::string>::iterator it = params.begin(); it != params.end(); ++it)
+            std::cout << "  <li><strong>" << escape_html(it->first) << "</strong> = "
+                      << escape_html(it->second) << "</li>\n";
+        std::cout << "</ul>\n";
     }
 
-    std::cout << "  </ul>\n"
-              << "</body>\n"
-              << "</html>\n";
+    std::cout << "<hr>\n"
+              << "<p><em>Server: " << escape_html(env("SERVER_NAME")) << ":"
+              << escape_html(env("SERVER_PORT")) << " | Protocol: "
+              << escape_html(env("SERVER_PROTOCOL")) << "</em></p>\n"
+              << "</body>\n</html>\n";
 
     return 0;
 }
