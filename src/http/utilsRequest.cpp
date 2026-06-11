@@ -100,6 +100,13 @@ std::string returnLastElementPath(std::string path)
     std::string sub_string;
     std::vector<std::string> token_str;
 
+    // On retire la query string ("?...") avant de resoudre le fichier :
+    // sinon le nom de fichier serait "cgi.php?name=eric", introuvable sur
+    // le disque, et isFinishByFile retomberait sur l'index.
+    std::string::size_type qpos = path.find('?');
+    if (qpos != std::string::npos)
+        path = path.substr(0, qpos);
+
     std::stringstream iss1(path);
     while (getline(iss1, sub_string, '/'))
         ;
