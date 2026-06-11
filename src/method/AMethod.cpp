@@ -212,26 +212,22 @@ void AMethod::manage_pipe(std::string path, int mypipe[2], const std::string &in
 
     close(mypipe[1]);
 
-    std::string uri   = _httpRequest->getHeader()->getUri();
+    std::string uri = _httpRequest->getHeader()->getUri();
     std::string query = "";
     std::string::size_type qpos = uri.find('?');
     if (qpos != std::string::npos)
         query = uri.substr(qpos + 1);
 
-    std::string method   = (_httpRequest->getHeader()->getMethod() == POST) ? "POST" : "GET";
+    std::string method = (_httpRequest->getHeader()->getMethod() == POST) ? "POST" : "GET";
     std::string protocol = _httpRequest->getHeader()->getProtocol();
-    HeaderContent hc     = _httpRequest->getHeader()->getHeaderContent();
+    HeaderContent hc = _httpRequest->getHeader()->getHeaderContent();
 
-    std::string contentType   = hc.count("content-type")   ? hc.at("content-type")   : "";
+    std::string contentType = hc.count("content-type") ? hc.at("content-type") : "";
     std::string contentLength = hc.count("content-length") ? hc.at("content-length") : "";
 
     std::vector<std::string> envStrings = {
-        "REQUEST_METHOD="  + method,
-        "QUERY_STRING="    + query,
-        "SERVER_PROTOCOL=" + protocol,
-        "CONTENT_TYPE="    + contentType,
-        "CONTENT_LENGTH="  + contentLength,
-        "SCRIPT_NAME="     + path,
+        "REQUEST_METHOD=" + method,    "QUERY_STRING=" + query,           "SERVER_PROTOCOL=" + protocol,
+        "CONTENT_TYPE=" + contentType, "CONTENT_LENGTH=" + contentLength, "SCRIPT_NAME=" + path,
     };
 
     std::vector<char *> envp;
