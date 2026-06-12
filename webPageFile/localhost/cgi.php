@@ -27,7 +27,7 @@ echo "<head><meta charset=\"utf-8\"><title>CGI Webserv</title></head>\n";
 echo "<style>*{padding: 0;margin: 0;background-color: bisque;}.container{padding: 10px;}body{text-align: center;}h1{color: goldenrod;padding: 10px;}h2{color: maroon;padding: 10px;}</style>\n";
 echo "<body>\n";
 echo "<h1>CGI Webserv (PHP)</h1>\n";
-echo "<h2> Welcome to the Fabulous CGI PHP of Minicub & Rico</p>\n";
+echo "<h2> Welcome to the Fabulous CGI PHP of Minicube & Rico</p>\n";
 echo "<p><strong>Method :</strong> " . print_var($method) . "</p>\n";
 
 if (empty($params)) {

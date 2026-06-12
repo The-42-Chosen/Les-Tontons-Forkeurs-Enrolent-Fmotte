@@ -305,17 +305,19 @@ void AMethod::manage_pipe(std::string path, int pipe_out[2], int pipe_in[2], con
     if (slash != std::string::npos)
         chdir(path.substr(0, slash).c_str());
 
+    std::string localScript = "./" + scriptFile;
+
     char *args[3];
     if (interpreter.empty())
     {
-        args[0] = const_cast<char *>(path.c_str());
+        args[0] = const_cast<char *>(localScript.c_str());
         args[1] = NULL;
         args[2] = NULL;
     }
     else
     {
         args[0] = const_cast<char *>(interpreter.c_str());
-        args[1] = const_cast<char *>(path.c_str());
+        args[1] = const_cast<char *>(localScript.c_str());
         args[2] = NULL;
     }
 

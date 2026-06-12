@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 14:13:06 by fmotte            #+#    #+#             */
-/*   Updated: 2026/06/11 19:41:20 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/06/12 14:36:53 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,8 +62,6 @@ std::string GetMethod::applyMethod(Location *location)
         return applyCGI(path, "/usr/bin/python3");
     else if (extention == ".php")
         return applyCGI(path, "/usr/bin/php-cgi");
-    else if (extention == ".cgi")
-        return applyCGI(path, "");
     else
     {
         parseConfigFile(path.c_str(), contentFile);
