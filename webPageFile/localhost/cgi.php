@@ -14,7 +14,7 @@
 $method = getenv('REQUEST_METHOD') ?: '';
 $params = ($method === 'POST') ? $_POST : $_GET;
 
-function esc($s)
+function print_var($s)
 {
     return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8');
 }
@@ -24,10 +24,11 @@ header('Content-Type: text/html');
 echo "<!DOCTYPE html>\n";
 echo "<html lang=\"fr\">\n";
 echo "<head><meta charset=\"utf-8\"><title>CGI Webserv</title></head>\n";
+echo "<style>*{padding: 0;margin: 0;background-color: bisque;}.container{padding: 10px;}body{text-align: center;}h1{color: goldenrod;padding: 10px;}h2{color: maroon;padding: 10px;}</style>\n";
 echo "<body>\n";
 echo "<h1>CGI Webserv (PHP)</h1>\n";
 echo "<h2> Welcome to the Fabulous CGI PHP of Minicub & Rico</p>\n";
-echo "<p><strong>Method :</strong> " . esc($method) . "</p>\n";
+echo "<p><strong>Method :</strong> " . print_var($method) . "</p>\n";
 
 if (empty($params)) {
     echo "<p>Aucun parametre recu.</p>\n";
@@ -35,12 +36,12 @@ if (empty($params)) {
     echo "<h2>Parametres</h2>\n<ul>\n";
     ksort($params);
     foreach ($params as $key => $val) {
-        echo "  <li><strong>" . esc($key) . "</strong> = " . esc($val) . "</li>\n";
+        echo "  <li><strong>" . print_var($key) . "</strong> = " . print_var($val) . "</li>\n";
     }
     echo "</ul>\n";
 }
 
 echo "<hr>\n";
-echo "<p><em>Server: " . esc(getenv('SERVER_NAME')) . ":" . esc(getenv('SERVER_PORT'))
-    . " | Protocol: " . esc(getenv('SERVER_PROTOCOL')) . "</em></p>\n";
+echo "<p><em>Server: " . print_var(getenv('SERVER_NAME')) . ":" . print_var(getenv('SERVER_PORT'))
+    . " | Protocol: " . print_var(getenv('SERVER_PROTOCOL')) . "</em></p>\n";
 echo "</body>\n</html>\n";
