@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 12:50:28 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/25 11:34:40 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/06/14 17:41:48 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,10 +49,16 @@ class AMethod
     // =====================
     // == 	  Member	  ==
     // =====================
-    std::string createPath(Location *location);
-    std::string createPathWithLocation(Location *location);
-    std::string createPathWithServer();
-
+    std::string selectRoot(Location *location);
+    std::string resolveRequestedFilePath(std::string initPath);
+    
+    std::string createPath(Location *location, bool &isAutoIndex);
+    std::string createPathWithLocation(Location *location, bool &isAutoIndex);
+    std::string createPathWithServer(bool &isAutoIndex);
+    
+    void listContentFolder(const std::string& path, std::string& folderContent);
+    std::string createContentAutoIndex(const std::string& path);
+        
     virtual std::string applyMethod(Location *location) = 0;
     void applyCGI(std::string path);
 };
