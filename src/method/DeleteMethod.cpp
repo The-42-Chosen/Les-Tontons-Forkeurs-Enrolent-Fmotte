@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 14:13:06 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/25 11:20:47 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/06/14 15:22:09 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,9 @@ std::string DeleteMethod::applyMethod(Location *location)
 {
     std::string path;
     struct stat buff;
-
-    path = createPath(location);
+    bool isAutoIndex = false;
+    
+    path = createPath(location, isAutoIndex);
     std::cout << "Path to file to delete " << path << "\n";
 
     if (access(path.c_str(), F_OK) == -1)

@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:46:04 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/25 11:38:18 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/06/14 15:23:02 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,9 @@ std::string HeadMethod::applyMethod(Location *location)
 {
     struct stat st;
     std::string path;
-
-    path = createPath(location);
+    bool isAutoIndex = false;
+    
+    path = createPath(location, isAutoIndex);
     std::cout << "Path to contexte read: " << path << "\n";
 
     checkPermisionReadFile(path);

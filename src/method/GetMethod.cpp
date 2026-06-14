@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 14:13:06 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/25 11:38:01 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/06/14 15:50:44 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,13 @@ std::string GetMethod::applyMethod(Location *location)
 {
     std::string path;
     std::string contentFile;
+    bool isAutoIndex = false;
+    
+    path = createPath(location, isAutoIndex);
 
-    path = createPath(location);
+    if (isAutoIndex)
+        return createContentAutoIndex(path);
+        
     std::cout << "Path to read: " << path << "\n";
 
     checkPermisionReadFile(path);
