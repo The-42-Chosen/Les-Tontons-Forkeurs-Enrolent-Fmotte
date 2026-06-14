@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:46:04 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/25 11:38:34 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/06/14 15:23:33 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,9 @@ PostMethod &PostMethod::operator=(const PostMethod &other)
 std::string PostMethod::applyMethod(Location *location)
 {
     std::string path;
+    bool isAutoIndex = false;
 
-    path = createPath(location);
+    path = createPath(location, isAutoIndex);
     std::cout << "Path to write: " << path << "\n";
 
     std::string filename = "PostContent";
