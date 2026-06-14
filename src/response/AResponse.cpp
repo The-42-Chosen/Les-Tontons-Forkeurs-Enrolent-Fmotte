@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 17:25:00 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/29 15:31:25 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/06/14 15:51:49 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,4 +135,9 @@ std::string AResponse::headerToString()
         header += "\n";
     }
     return header;
+}
+
+bool AResponse::containsHtmlTags(const std::string& body)
+{
+    return (body.find("<html>") != std::string::npos && body.find("</html>") != std::string::npos);
 }
