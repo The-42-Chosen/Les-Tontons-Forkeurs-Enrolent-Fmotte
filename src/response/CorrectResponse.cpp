@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/29 15:44:05 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/29 15:47:44 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/06/14 15:40:48 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,9 @@ void CorrectResponse::applyResponse()
     makeHeader();
     std::string body = response->getRequest()->getPayload();
     addHeaderContent("Content-Length", intToString(static_cast<int>(body.size())));
+    
+    if (containsHtmlTags(body))
+        addHeaderContent("content-type", "text/html");
 
     response->addResponseContent(statusLine);
     response->addResponseContent(headerToString());
