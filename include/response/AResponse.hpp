@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 17:25:03 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/27 18:28:59 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/06/14 15:51:11 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ class AResponse
     void makeHeader();
     std::string makeHttpDate();
     std::string headerToString();
-
+    bool containsHtmlTags(const std::string& body);
+    
     virtual void applyResponse() = 0;
 };
