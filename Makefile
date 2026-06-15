@@ -3,12 +3,14 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+         #
+#    By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/11 16:36:16 by fmotte            #+#    #+#              #
-#    Updated: 2026/05/29 15:51:04 by fmotte           ###   ########.fr        #
+#    Updated: 2026/06/15 11:31:33 by erpascua         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
+
+.NOTPARALLEL: all re clean fclean
 
 # =======================================
 #            MAKEFILE PROJET
