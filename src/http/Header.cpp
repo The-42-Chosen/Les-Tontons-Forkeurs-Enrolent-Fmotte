@@ -113,7 +113,13 @@ std::string Header::getHost(void) const
 
 void Header::setHost(const std::string &host)
 {
-    _host = host;
+    std::string value = trimSpaces(host);
+
+    std::string::size_type colon = value.find(':');
+    if (colon != std::string::npos)
+        value = value.substr(0, colon);
+
+    _host = value;
 }
 
 // =====================
