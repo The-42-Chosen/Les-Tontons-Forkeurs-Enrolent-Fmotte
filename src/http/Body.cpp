@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Body.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/14 19:53:56 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/25 11:36:04 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/06/15 14:52:47 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ void Body::initialisationBody()
 void Body::bodyprint(void)
 {
     std::cout << YELLOW << "_body content |";
-    for (std::vector<__uint8_t>::const_iterator it = _bodyContent.begin(); it != _bodyContent.end(); it++)
+    for (std::vector<uint8_t>::const_iterator it = _bodyContent.begin(); it != _bodyContent.end(); it++)
         std::cout << *it;
     std::cout << "|" << RESET << std::endl;
 }
@@ -216,8 +216,7 @@ void Body::parseBody(const std::string &headerContent)
 void Body::appendBodyBytes(const std::string &data)
 {
     for (std::string::size_type i = 0; i < data.size(); ++i)
-        // if (data[i] != '\r' || data[i] != '\n')
-        addBodyContent(static_cast<__uint8_t>(data[i]));
+        addBodyContent(static_cast<uint8_t>(data[i]));
 }
 
 size_t Body::initMaxBodySize()

@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   Body.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/14 19:53:54 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/24 17:52:23 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/06/15 14:53:39 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "struct.hpp"
+#include <stdint.h>
 
 class HttpRequest;
 
