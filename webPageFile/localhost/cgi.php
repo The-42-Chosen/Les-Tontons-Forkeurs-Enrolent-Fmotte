@@ -12,7 +12,7 @@
 /* ************************************************************************** */
 
 $method = getenv('REQUEST_METHOD') ?: '';
-$params = ($method === 'POST') ? $_POST : $_GET;
+$queries = ($method === 'POST') ? $_POST : $_GET;
 
 function print_var($s)
 {
@@ -27,15 +27,15 @@ echo "<head><meta charset=\"utf-8\"><title>CGI Webserv</title></head>\n";
 echo "<style>*{padding: 0;margin: 0;background-color: bisque;}.container{padding: 10px;}body{text-align: center;}h1{color: goldenrod;padding: 10px;}h2{color: maroon;padding: 10px;}</style>\n";
 echo "<body>\n";
 echo "<h1>CGI Webserv (PHP)</h1>\n";
-echo "<h2> Welcome to the Fabulous CGI PHP of Minicube & Rico</p>\n";
+echo "<h2> Welcome to the Fabulous CGI PHP of Minicube & Rico</h2>\n";
 echo "<p><strong>Method :</strong> " . print_var($method) . "</p>\n";
 
-if (empty($params)) {
+if (empty($queries)) {
     echo "<p>Aucun parametre recu.</p>\n";
 } else {
-    echo "<h2>Parametres</h2>\n<ul>\n";
-    ksort($params);
-    foreach ($params as $key => $val) {
+    echo "<h2>Queries</h2>\n<ul>\n";
+    ksort($queries);
+    foreach ($queries as $key => $val) {
         echo "  <li><strong>" . print_var($key) . "</strong> = " . print_var($val) . "</li>\n";
     }
     echo "</ul>\n";
