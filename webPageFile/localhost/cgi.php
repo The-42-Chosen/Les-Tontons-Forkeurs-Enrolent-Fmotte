@@ -31,7 +31,7 @@ echo "<h2> Welcome to the Fabulous CGI PHP of Minicube & Rico</h2>\n";
 echo "<p><strong>Method :</strong> " . print_var($method) . "</p>\n";
 
 if (empty($queries)) {
-    echo "<p>Aucun parametre recu.</p>\n";
+    echo "<p>No queries</p>\n";
 } else {
     echo "<h2>Queries</h2>\n<ul>\n";
     ksort($queries);

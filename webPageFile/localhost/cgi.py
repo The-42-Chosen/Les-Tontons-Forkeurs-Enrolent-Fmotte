@@ -19,7 +19,10 @@ def main():
 	print("<h2>Welcome to the Fabulous CGI PHP of Minicube & Rico</h2>\n")
 	print(f"<p><strong>Method :</strong>  {method} </p><br/>\n")
 	print("<h2>Queries</h2>\n")
-	print_query()
+	if (len(queries)):
+		print_query()
+	else:
+		print("<p>No quieries</p>\n")
 	print ("<hr>\n")
 	print (f"<p><em>Server: . {os.getenv('SERVER_NAME')} . : . {os.getenv('SERVER_PORT')}. | Protocol: . {os.getenv('SERVER_PROTOCOL')} . </em></p>\n")
 	print ("</body>\n</html>\n")
