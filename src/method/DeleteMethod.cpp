@@ -46,7 +46,7 @@ std::string DeleteMethod::applyMethod(Location *location)
     std::string path;
     struct stat buff;
     bool isAutoIndex = false;
-    
+
     path = createPath(location, isAutoIndex);
     std::cout << "Path to file to delete " << path << "\n";
 

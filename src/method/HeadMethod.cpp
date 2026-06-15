@@ -48,7 +48,7 @@ std::string HeadMethod::applyMethod(Location *location)
     struct stat st;
     std::string path;
     bool isAutoIndex = false;
-    
+
     path = createPath(location, isAutoIndex);
     std::cout << "Path to contexte read: " << path << "\n";
 

@@ -23,11 +23,9 @@
 #include "utilsParsing.hpp"
 #include "utilsRequest.hpp"
 
+#include <dirent.h>
 #include <sstream>
 #include <sys/wait.h>
-#include <unistd.h>
-#include <vector>
-#include <dirent.h>
 #include <unistd.h>
 #include <vector>
 
@@ -101,7 +99,7 @@ std::string AMethod::createPath(Location *location, bool &isAutoIndex)
 std::string AMethod::selectRoot(Location *location)
 {
     std::string pathRoot;
-    
+
     if (location != NULL && location->getRoot() != "")
         pathRoot = location->getRoot();
     else
@@ -113,7 +111,7 @@ std::string AMethod::selectRoot(Location *location)
 std::string AMethod::resolveRequestedFilePath(std::string initPath)
 {
     std::string pathFile;
-    
+
     pathFile = joinPath(initPath, returnLastElementPath(getHttpRequest()->getHeader()->getUri()));
 
     if (isFinishByFile(pathFile))
@@ -128,7 +126,7 @@ std::string AMethod::createPathWithLocation(Location *location, bool &isAutoInde
     std::string pathRoot;
 
     pathRoot = selectRoot(location);
-    
+
     pathLoc = joinPath(pathRoot, location->getName());
 
     if (_method == POST)
@@ -165,7 +163,7 @@ std::string AMethod::createPathWithServer(bool &isAutoIndex)
 
     if ((pathFile = resolveRequestedFilePath(pathRoot)) != "")
         return pathFile;
-    
+
     if (_method == GET)
     {
         for (size_t i = 0; (index = getHttpRequest()->getRequest()->getServer()->getIndex(i)) != ""; ++i)
@@ -350,39 +348,39 @@ void AMethod::manage_pipe(std::string path, int pipe_out[2], int pipe_in[2], con
         exit(EXIT_FAILURE);
 }
 
-void AMethod::listContentFolder(const std::string& path, std::string& folderContent)
+void AMethod::listContentFolder(const std::string &path, std::string &folderContent)
 {
     DIR *dir;
     struct dirent *ent;
-    
+
     std::cout << "Auto index\n";
     std::cout << "Path: " << path << "\n";
-    
-    if ((dir = opendir (path.c_str())) == NULL)
+
+    if ((dir = opendir(path.c_str())) == NULL)
         throw std::runtime_error("500");
-    
-    while ((ent = readdir (dir)) != NULL)
+
+    while ((ent = readdir(dir)) != NULL)
     {
         folderContent.append(ent->d_name);
         if (ent->d_type == DT_DIR)
             folderContent.append("/");
         folderContent.append("\n");
-    } 
-    closedir (dir);
+    }
+    closedir(dir);
 }
 
-std::string AMethod::createContentAutoIndex(const std::string& path)
+std::string AMethod::createContentAutoIndex(const std::string &path)
 {
     size_t pos = 0;
     std::string token;
     std::string payload;
     std::string delimiter = "\n";
-    
+
     std::string folderContent;
     listContentFolder(path, folderContent);
-    
+
     payload += "<html><head><title>Index of /files/</title></head><body><h1><ul>";
-    
+
     while ((pos = folderContent.find(delimiter)) != std::string::npos)
     {
         token = folderContent.substr(0, pos);

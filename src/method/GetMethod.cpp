@@ -47,17 +47,16 @@ std::string GetMethod::applyMethod(Location *location)
     std::string path;
     std::string contentFile;
     bool isAutoIndex = false;
-    
+
     path = createPath(location, isAutoIndex);
 
-	if (isAutoIndex)
-		return createContentAutoIndex(path);
-	
+    if (isAutoIndex)
+        return createContentAutoIndex(path);
+
     std::string::size_type qpos = path.find('?');
     if (qpos != std::string::npos)
         path = path.substr(0, qpos);
 
-        
     std::string::size_type qpos = path.find('?');
     if (qpos != std::string::npos)
         path = path.substr(0, qpos);
