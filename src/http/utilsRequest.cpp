@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utilsRequest.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 13:53:46 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/27 13:48:53 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/06/15 13:42:41 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,11 @@ std::string returnLastElementPath(std::string path)
 {
     std::string sub_string;
     std::vector<std::string> token_str;
+
+    // Avoid index redirection when Query is present, parse '?'!!
+    std::string::size_type qpos = path.find('?');
+    if (qpos != std::string::npos)
+        path = path.substr(0, qpos);
 
     std::stringstream iss1(path);
     while (getline(iss1, sub_string, '/'))

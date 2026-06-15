@@ -264,7 +264,7 @@ void Body::updateTotalChunked(size_t chunkSize, size_t maxBodySize)
               << std::endl;
 
     if (getTotalChunked() > maxBodySize)
-        throw std::runtime_error("666");
+        throw std::runtime_error("413");
 }
 
 void Body::parseChunkedBody(const std::string &headerContent)

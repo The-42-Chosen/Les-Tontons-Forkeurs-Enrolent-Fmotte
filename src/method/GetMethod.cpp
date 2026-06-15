@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   GetMethod.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 14:13:06 by fmotte            #+#    #+#             */
-/*   Updated: 2026/06/14 15:50:44 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/06/15 13:47:00 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,19 +47,25 @@ std::string GetMethod::applyMethod(Location *location)
     std::string path;
     std::string contentFile;
     bool isAutoIndex = false;
-    
+
     path = createPath(location, isAutoIndex);
 
     if (isAutoIndex)
         return createContentAutoIndex(path);
-        
+
+    std::string::size_type qpos = path.find('?');
+    if (qpos != std::string::npos)
+        path = path.substr(0, qpos);
+
     std::cout << "Path to read: " << path << "\n";
 
     checkPermisionReadFile(path);
     std::string extention = path.substr(path.find_last_of("."));
 
-    if (extention == ".py" || extention == ".php")
-        applyCGI(path);
+    if (extention == ".py")
+        return applyCGI(path, "/usr/bin/python3");
+    else if (extention == ".php")
+        return applyCGI(path, "/usr/bin/php-cgi");
     else
     {
         parseConfigFile(path.c_str(), contentFile);

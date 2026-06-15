@@ -137,7 +137,7 @@ std::string AResponse::headerToString()
     return header;
 }
 
-bool AResponse::containsHtmlTags(const std::string& body)
+bool AResponse::containsHtmlTags(const std::string &body)
 {
     return (body.find("<html>") != std::string::npos && body.find("</html>") != std::string::npos);
 }

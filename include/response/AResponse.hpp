@@ -55,7 +55,7 @@ class AResponse
     void makeHeader();
     std::string makeHttpDate();
     std::string headerToString();
-    bool containsHtmlTags(const std::string& body);
-    
+    bool containsHtmlTags(const std::string &body);
+
     virtual void applyResponse() = 0;
 };

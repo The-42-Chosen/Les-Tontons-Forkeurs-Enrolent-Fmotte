@@ -59,6 +59,9 @@ void CorrectResponse::applyResponse()
     if (containsHtmlTags(body))
         addHeaderContent("content-type", "text/html");
 
+    if (containsHtmlTags(body))
+        addHeaderContent("content-type", "text/html");
+
     response->addResponseContent(statusLine);
     response->addResponseContent(headerToString());
     response->addResponseContent("\n\n");
