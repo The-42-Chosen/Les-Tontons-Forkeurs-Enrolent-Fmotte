@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 13:53:46 by fmotte            #+#    #+#             */
-/*   Updated: 2026/06/15 13:42:41 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/06/15 14:43:57 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,9 +113,6 @@ std::string returnLastElementPath(std::string path)
 
 void checkPermisionReadFile(std::string path)
 {
-    if (path.find("../") != std::string::npos)
-        throw std::runtime_error("403");
-
     if (access(path.c_str(), F_OK) == -1)
         throw std::runtime_error("404");
 

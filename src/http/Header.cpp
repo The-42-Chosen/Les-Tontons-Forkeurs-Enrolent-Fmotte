@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Header.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/17 17:37:08 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/26 17:33:57 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/06/15 14:44:12 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,9 @@ std::string Header::getUri(void) const
 
 void Header::setUri(const std::string &uri)
 {
+	if (uri.find("../") != std::string::npos)
+        throw std::runtime_error("403");
+		
     if (uri[0] != '/')
         throw std::runtime_error("400");
 
