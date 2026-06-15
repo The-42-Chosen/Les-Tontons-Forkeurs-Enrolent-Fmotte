@@ -163,7 +163,7 @@ std::string AMethod::createPathWithServer(bool &isAutoIndex)
 
     if ((pathFile = resolveRequestedFilePath(pathRoot)) != "")
         return pathFile;
-
+    
     if (_method == GET)
     {
         for (size_t i = 0; (index = getHttpRequest()->getRequest()->getServer()->getIndex(i)) != ""; ++i)
