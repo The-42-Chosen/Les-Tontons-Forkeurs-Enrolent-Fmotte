@@ -55,7 +55,7 @@ void CorrectResponse::applyResponse()
     makeHeader();
     std::string body = response->getRequest()->getPayload();
     addHeaderContent("Content-Length", intToString(static_cast<int>(body.size())));
-    
+
     if (containsHtmlTags(body))
         addHeaderContent("content-type", "text/html");
 
