@@ -61,9 +61,9 @@ std::string Header::getUri(void) const
 
 void Header::setUri(const std::string &uri)
 {
-	if (uri.find("../") != std::string::npos)
+    if (uri.find("../") != std::string::npos)
         throw std::runtime_error("403");
-		
+
     if (uri[0] != '/')
         throw std::runtime_error("400");
 
