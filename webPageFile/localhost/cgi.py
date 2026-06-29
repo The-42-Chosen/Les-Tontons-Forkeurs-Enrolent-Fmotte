@@ -1,4 +1,4 @@
-import os;
+import os
 
 method	= os.getenv('REQUEST_METHOD')
 queries	= os.getenv('QUERY_STRING')

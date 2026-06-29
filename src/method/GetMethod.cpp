@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   GetMethod.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 14:13:06 by fmotte            #+#    #+#             */
-/*   Updated: 2026/06/15 13:47:00 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/06/26 13:54:02 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,9 +63,9 @@ std::string GetMethod::applyMethod(Location *location)
     std::string extention = path.substr(path.find_last_of("."));
 
     if (extention == ".py")
-        return applyCGI(path, "/usr/bin/python3");
+        return initCGI(path, "/usr/bin/python3");
     else if (extention == ".php")
-        return applyCGI(path, "/usr/bin/php-cgi");
+        return initCGI(path, "/usr/bin/php-cgi");
     else
     {
         parseConfigFile(path.c_str(), contentFile);

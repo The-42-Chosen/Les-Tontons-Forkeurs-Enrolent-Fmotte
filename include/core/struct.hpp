@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/03 17:58:55 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/27 13:58:16 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/06/18 15:02:06 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,14 @@ enum HttpMethod
     NONE
 };
 
+enum FdType
+{
+    SERVER,
+    CLIENT,
+    PIPEIN,
+    PIPEOUT
+};
+
 struct Listen
 {
     std::string ip;
@@ -60,4 +68,11 @@ struct HttpErrorPage
 {
     int code;
     std::string path_page; // Absolute path to the page
+};
+
+struct EventData
+{
+    int fd;
+    void* ptr;
+    FdType type;
 };

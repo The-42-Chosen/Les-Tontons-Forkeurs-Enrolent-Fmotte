@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/30 18:40:40 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/06/24 13:38:54 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,7 @@ bool Webserv::splitIntoServers(std::vector<std::string> &tokens)
 void Webserv::registerNewSocket(std::map<Listen, int> &map_socket_fd, Listen *listenConfig, Server *server)
 {
     int serverSocket = createServerSocket(listenConfig->ip, listenConfig->port, MAX_CLIENT);
-    addSocketToEvent(getEpollFd(), serverSocket, NULL);
+    addFdToEvent(getEpollFd(), serverSocket, EPOLLIN);
 
     map_socket_fd.insert(std::make_pair(*listenConfig, serverSocket));
 
@@ -178,7 +178,7 @@ void Webserv::handleNewClient(int server_fd)
 
     _vectorClient.push_back(client);
 
-    addSocketToEvent(getEpollFd(), clientSocket, client);
+    addFdToEvent(getEpollFd(), clientSocket, EPOLLIN, client);
 
     client->setClientFd(clientSocket);
     client->setServerFd(server_fd);
@@ -237,13 +237,16 @@ void Webserv::processClientResponse(Client *client)
 {
     HandleRequest request;
     if (request.initialisationRequest(client))
+    {
         request.processRequest();
 
-    HttpResponse response(&request);
-    response.initialisationHttpResponse();
-    response.sendToClient();
+        if (request.)
+        HttpResponse response(&request);
+        response.initialisationHttpResponse();
+        response.sendToClient();
 
-    client->clearContentRequest();
+        client->clearContentRequest();
+    }
 }
 
 void Webserv::handleConnection(struct epoll_event &events)
