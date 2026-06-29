@@ -6,13 +6,14 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/30 18:40:40 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/06/29 02:19:32 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
 #include "Body.hpp"
 #include "Client.hpp"
+#include "Cookie.hpp"
 #include "Header.hpp"
 #include "Request.hpp"
 
@@ -131,4 +132,15 @@ std::string HttpRequest::selectMethodHttp(Location *location)
         method = &head;
 
     return method->applyMethod(location);
+}
+
+CookieMap HttpRequest::getCookies() const
+{
+    HeaderContent headers = getHeader()->getHeaderContent();
+    HeaderContent::const_iterator it = headers.find("cookie");
+
+    if (it == headers.end())
+        return CookieMap();
+
+    return parseCookieHeader(it->second);
 }

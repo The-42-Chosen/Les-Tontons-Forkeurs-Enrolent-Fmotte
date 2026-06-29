@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   AResponse.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 17:25:00 by fmotte            #+#    #+#             */
-/*   Updated: 2026/06/14 15:51:49 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/06/29 02:23:03 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,14 @@ std::string AResponse::makeStatusLine()
 void AResponse::makeHeader()
 {
     addHeaderContent("date", makeHttpDate());
+
+    // TODO: (For Session!!)
+    // getHttpResponse()->getRequest()->getHttpRequest()->getCookies()
+    // Look at cookies["session_id"] create the session if missing:
+    //   Cookie c("session_id", session.getId());
+    //   c.setPath("/");
+    //   c.setHttpOnly(true);
+    //   addHeaderContent("Set-Cookie", c.toSetCookieValue());
 }
 
 std::string AResponse::makeHttpDate()

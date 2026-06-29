@@ -57,7 +57,8 @@ HTTP_SRC = \
 	$(SRC_PATH)/http/HttpResponse.cpp \
 	$(SRC_PATH)/http/utilsResponse.cpp \
 	$(SRC_PATH)/http/Header.cpp	\
-	$(SRC_PATH)/http/Body.cpp
+	$(SRC_PATH)/http/Body.cpp \
+	$(SRC_PATH)/http/Cookie.cpp
 
 
 METHOD_SRC = \
@@ -113,7 +114,8 @@ HTTP_HEA = \
 	$(HEA_PATH)/http/HttpResponse.hpp \
 	$(HEA_PATH)/http/utilsResponse.hpp \
 	$(HEA_PATH)/http/Header.hpp \
-	$(HEA_PATH)/http/Body.hpp  
+	$(HEA_PATH)/http/Body.hpp \
+	$(HEA_PATH)/http/Cookie.hpp
 
 
 METHOD_HEA = \

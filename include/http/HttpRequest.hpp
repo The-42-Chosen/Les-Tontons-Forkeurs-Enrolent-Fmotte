@@ -6,13 +6,15 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/30 18:40:40 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/06/29 02:19:06 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <string>
+
+#include "Cookie.hpp"
 
 class Header;
 class Body;
@@ -56,4 +58,5 @@ class HttpRequest
     void initHeader(const std::string &headerContent);
     void initBody();
     std::string selectMethodHttp(Location *location);
+    CookieMap getCookies() const;
 };
