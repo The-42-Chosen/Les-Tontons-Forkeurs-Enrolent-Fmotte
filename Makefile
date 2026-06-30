@@ -6,7 +6,7 @@
 #    By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/11 16:36:16 by fmotte            #+#    #+#              #
-#    Updated: 2026/06/18 09:21:31 by fmotte           ###   ########.fr        #
+#    Updated: 2026/06/30 17:23:17 by fmotte           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -66,7 +66,7 @@ METHOD_SRC = \
 	$(SRC_PATH)/method/DeleteMethod.cpp \
 	$(SRC_PATH)/method/PostMethod.cpp \
 	$(SRC_PATH)/method/HeadMethod.cpp \
-	$(SRC_PATH)/method/CGI.cpp
+	#$(SRC_PATH)/method/CGI.cpp
 
 
 RESPONSE_SRC = \
@@ -123,7 +123,7 @@ METHOD_HEA = \
 	$(HEA_PATH)/method/DeleteMethod.hpp \
 	$(HEA_PATH)/method/PostMethod.hpp \
 	$(HEA_PATH)/method/HeadMethod.hpp \
-	$(HEA_PATH)/method/CGI.hpp
+	#$(HEA_PATH)/method/CGI.hpp
 
 
 RESPONSE_HEA = \

@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 12:50:28 by fmotte            #+#    #+#             */
-/*   Updated: 2026/06/22 11:30:13 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/06/30 17:23:38 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 class HttpRequest;
 class Location;
-class CGI;
+// class CGI;
 
 class AMethod
 {
@@ -26,8 +26,8 @@ class AMethod
     // =====================
     HttpRequest *_httpRequest;
     HttpMethod _method;
-    bool _isCGI;
-    CGI *_cgi;
+    // bool _isCGI;
+    // CGI *_cgi;
     
     AMethod();
 
@@ -48,10 +48,10 @@ class AMethod
     void setHttpRequest(HttpRequest *httpRequest);
     HttpMethod getMethod(void);
     void setMethod(HttpMethod method);
-    CGI *getCGI() const;
-    void setCGI(CGI *cgi);
-    bool getIsCGI() const;
-    void setIsCGI(bool _isCGI);
+    // CGI *getCGI() const;
+    // void setCGI(CGI *cgi);
+    // bool getIsCGI() const;
+    // void setIsCGI(bool _isCGI);
     
     // =====================
     // == 	  Member	  ==
@@ -72,11 +72,15 @@ class AMethod
     // ==       CGI       ==
     // =====================
     
+    void createPipe(int pipeIn[2], int pipeOut[2]);
     void checkForkCreate(pid_t pid, int pipe_in[2], int pipe_out[2]);
     void sendDataToChild(int pipe_in[2]);
     std::string receivedDataFromChild(int pipe_out[2]);
     std::string processDataFromChild(const std::string &payload);
     
-    std::string initCGI(const std::string &path, const std::string &interpreter);
+    // std::string initCGI(const std::string &path, const std::string &interpreter);
+
+    void manage_pipe(const std::string &path, int pipeIn[2], int pipeOut[2], const std::string &interpreter);
+    std::string applyCGI(std::string path, const std::string &interpreter);
 
 };

@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 12:54:14 by fmotte            #+#    #+#             */
-/*   Updated: 2026/06/22 11:30:06 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/06/30 17:24:10 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 #include "execption.hpp"
 #include "utilsParsing.hpp"
 #include "utilsRequest.hpp"
-
+#include "utilsConnection.hpp"
 
 #include <dirent.h>
 #include <sstream>
@@ -37,7 +37,7 @@ AMethod::AMethod()
 {
 }
 
-AMethod::AMethod(HttpRequest *httpRequest, HttpMethod method) : _httpRequest(NULL), _method(NONE), _isCGI(false)
+AMethod::AMethod(HttpRequest *httpRequest, HttpMethod method) : _httpRequest(NULL), _method(NONE)//, _isCGI(false)
 {
     setHttpRequest(httpRequest);
     setMethod(method);
@@ -45,7 +45,7 @@ AMethod::AMethod(HttpRequest *httpRequest, HttpMethod method) : _httpRequest(NUL
 
 AMethod::~AMethod()
 {
-    delete getCGI();
+    //delete getCGI();
 }
 
 AMethod::AMethod(const AMethod &other)
@@ -87,28 +87,28 @@ void AMethod::setMethod(HttpMethod method)
     _method = method;
 }
 
-CGI *AMethod::getCGI() const
-{
-    return _cgi;
-}
+// CGI *AMethod::getCGI() const
+// {
+//     return _cgi;
+// }
 
-void AMethod::setCGI(CGI *cgi)
-{
-    if (cgi == NULL)
-        throw ExecptionErrorUninitializedVariable("*cgi", "AMethod");
+// void AMethod::setCGI(CGI *cgi)
+// {
+//     if (cgi == NULL)
+//         throw ExecptionErrorUninitializedVariable("*cgi", "AMethod");
 
-    _cgi = cgi;
-}
+//     _cgi = cgi;
+// }
 
-bool AMethod::getIsCGI() const
-{
-    return _isCGI;
-}
+// bool AMethod::getIsCGI() const
+// {
+//     return _isCGI;
+// }
 
-void AMethod::setIsCGI(bool _isCGI)
-{
-    _isCGI = _isCGI;
-}
+// void AMethod::setIsCGI(bool _isCGI)
+// {
+//     _isCGI = _isCGI;
+// }
 
 // =====================
 // == 	  Member	  ==
@@ -274,7 +274,17 @@ std::string AMethod::createContentAutoIndex(const std::string &path)
 
 
 
+void AMethod::createPipe(int pipeIn[2], int pipeOut[2])
+{
+    if (pipe(pipeOut) == -1 || pipe(pipeIn) == -1)
+    {
+        std::cerr << "Error pipe\n";
+        throw std::runtime_error("500");
+    }
 
+    setNonblocking(pipeOut[1]);
+    setNonblocking(pipeIn[0]);
+}
 
 void AMethod::checkForkCreate(pid_t pid, int pipe_in[2], int pipe_out[2])
 {
@@ -332,31 +342,136 @@ std::string AMethod::processDataFromChild(const std::string &payload)
 }
 
 
-// std::string AMethod::applyCGI(std::string path, const std::string &interpreter)
-// {
+std::string AMethod::applyCGI(std::string path, const std::string &interpreter)
+{
     
-//     pid_t pid = fork();
-//     checkForkCreate(pid, pipe_in, pipe_out);
+    int pipeIn[2];
+    int pipeOut[2];
     
-//     if (pid == 0)
-//         manage_pipe(path, pipe_out, pipe_in, interpreter);
-//     close(pipe_out[1]);
+    createPipe(pipeIn, pipeOut);
     
-//     sendDataToChild(pipe_in);
+    pid_t pid = fork();
+    checkForkCreate(pid, pipeIn, pipeOut);
+    
+    if (pid == 0)
+        manage_pipe(path, pipeOut, pipeIn, interpreter);
+    close(pipeOut[1]);
+    
+    sendDataToChild(pipeIn);
 
-//     std::string payload = receivedDataFromChild(pipe_out);
-//     waitpid(pid, NULL, 0);
+    std::string payload = receivedDataFromChild(pipeOut);
+    waitpid(pid, NULL, 0);
     
-//     payload = processDataFromChild(payload);
-//     return payload;
+    payload = processDataFromChild(payload);
+    return payload;
+}
+
+// std::string AMethod::initCGI(const std::string &path, const std::string &interpreter)
+// {
+//     CGI *cgi = new CGI(this);
+//     setCGI(cgi);
+//     setIsCGI(true);
+//     getCGI()->initializationCGI(path, interpreter);
+//     getCGI()->connectToEpoll();
+//     return "";
 // }
 
-std::string AMethod::initCGI(const std::string &path, const std::string &interpreter)
+void AMethod::manage_pipe(const std::string &path, int pipeIn[2], int pipeOut[2], const std::string &interpreter)
 {
-    CGI *cgi = new CGI(this);
-    setCGI(cgi);
-    setIsCGI(true);
-    getCGI()->initializationCGI(path, interpreter);
-    getCGI()->connectToEpoll();
-    return "";
+    close(pipeOut[0]);
+    if (dup2(pipeOut[1], STDOUT_FILENO) == -1)
+    {
+        std::cerr << "dup2 error\n";
+        exit(EXIT_FAILURE);
+    }
+    if (dup2(pipeOut[1], STDERR_FILENO) == -1)
+    {
+        std::cerr << "dup2 error\n";
+        exit(EXIT_FAILURE);
+    }
+
+    close(pipeOut[1]);
+    close(pipeIn[1]);
+    
+    if (dup2(pipeIn[0], STDIN_FILENO) == -1)
+    {
+        std::cerr << "dup2 error\n";
+        exit(EXIT_FAILURE);
+    }
+    close(pipeIn[0]);
+
+    // URI / query string / script name
+    std::string uri = getHttpRequest()->getHeader()->getUri();
+    std::string query = "";
+    std::string scriptName = uri;
+    std::string::size_type qpos = uri.find('?');
+    if (qpos != std::string::npos)
+    {
+        query = uri.substr(qpos + 1);
+        scriptName = uri.substr(0, qpos);
+    }
+
+    std::string method = (getHttpRequest()->getHeader()->getMethod() == POST) ? "POST" : "GET";
+    std::string protocol = getHttpRequest()->getHeader()->getProtocol();
+    
+    HeaderContent hc = getHttpRequest()->getHeader()->getHeaderContent();
+    std::string contentType = hc.count("content-type") ? hc.at("content-type") : "";
+    std::string contentLength = hc.count("content-length") ? hc.at("content-length") : "";
+    std::string cookie = hc.count("cookie") ? hc.at("cookie") : "";
+
+    Listen *listen = getHttpRequest()->getRequest()->getServer()->getListen(0);
+    std::string serverName = (listen && !listen->ip.empty()) ? listen->ip : "localhost";
+    std::string serverPort = "80";
+    if (listen)
+    {
+        std::ostringstream oss;
+        oss << listen->port;
+        serverPort = oss.str();
+    }
+
+    std::string::size_type pslash = path.rfind('/');
+    std::string scriptFile = (pslash != std::string::npos) ? path.substr(pslash + 1) : path;
+
+    std::vector<std::string> envStrings;
+    envStrings.push_back("REQUEST_METHOD=" + method);
+    envStrings.push_back("QUERY_STRING=" + query);
+    envStrings.push_back("SERVER_PROTOCOL=" + protocol);
+    envStrings.push_back("CONTENT_TYPE=" + contentType);
+    envStrings.push_back("CONTENT_LENGTH=" + contentLength);
+    envStrings.push_back("SCRIPT_NAME=" + scriptName);
+    envStrings.push_back("SCRIPT_FILENAME=" + scriptFile);
+    envStrings.push_back("REDIRECT_STATUS=200");
+    envStrings.push_back("PATH_INFO=");
+    envStrings.push_back("SERVER_NAME=" + serverName);
+    envStrings.push_back("SERVER_PORT=" + serverPort);
+    envStrings.push_back("HTTP_COOKIE=" + cookie);
+
+    std::vector<char *> envp;
+    for (std::vector<std::string>::iterator it = envStrings.begin(); it != envStrings.end(); ++it)
+        envp.push_back(const_cast<char *>(it->c_str()));
+    envp.push_back(NULL);
+
+    // Relative paths treatment
+    std::string::size_type slash = path.rfind('/');
+    if (slash != std::string::npos)
+        chdir(path.substr(0, slash).c_str());
+
+    std::string localScript = "./" + scriptFile;
+
+    char *args[3];
+    if (interpreter.empty())
+    {
+        args[0] = const_cast<char *>(localScript.c_str());
+        args[1] = NULL;
+        args[2] = NULL;
+    }
+    else
+    {
+        args[0] = const_cast<char *>(interpreter.c_str());
+        args[1] = const_cast<char *>(localScript.c_str());
+        args[2] = NULL;
+    }
+
+    if (execve(args[0], args, envp.data()) == -1)
+        exit(EXIT_FAILURE);
 }
