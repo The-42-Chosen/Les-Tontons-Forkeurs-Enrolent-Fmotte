@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/06/24 13:38:54 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/06/30 17:32:47 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 #include "colors.hpp"
 #include "execption.hpp"
 #include "utilsConnection.hpp"
+#include "struct.hpp"
 
 #include <cstring>
 #include <errno.h>
@@ -119,7 +120,7 @@ bool Webserv::splitIntoServers(std::vector<std::string> &tokens)
 void Webserv::registerNewSocket(std::map<Listen, int> &map_socket_fd, Listen *listenConfig, Server *server)
 {
     int serverSocket = createServerSocket(listenConfig->ip, listenConfig->port, MAX_CLIENT);
-    addFdToEvent(getEpollFd(), serverSocket, EPOLLIN);
+    addFdToEvent(getEpollFd(), serverSocket, EPOLLIN, SERVER, server);
 
     map_socket_fd.insert(std::make_pair(*listenConfig, serverSocket));
 
@@ -178,7 +179,7 @@ void Webserv::handleNewClient(int server_fd)
 
     _vectorClient.push_back(client);
 
-    addFdToEvent(getEpollFd(), clientSocket, EPOLLIN, client);
+    addFdToEvent(getEpollFd(), clientSocket, EPOLLIN, CLIENT, client);
 
     client->setClientFd(clientSocket);
     client->setServerFd(server_fd);
@@ -239,8 +240,7 @@ void Webserv::processClientResponse(Client *client)
     if (request.initialisationRequest(client))
     {
         request.processRequest();
-
-        if (request.)
+        
         HttpResponse response(&request);
         response.initialisationHttpResponse();
         response.sendToClient();
@@ -252,13 +252,17 @@ void Webserv::processClientResponse(Client *client)
 void Webserv::handleConnection(struct epoll_event &events)
 {
     std::string reply = "Message received\n";
-    int server_fd = events.data.fd;
-
-    if (_mapFdToServer.find(server_fd) != _mapFdToServer.end())
-        handleNewClient(server_fd);
-
-    else
-        processClientRequest(static_cast<Client *>(events.data.ptr));
+    
+    EventData *eventData =  static_cast<EventData *>(events.data.ptr);
+    switch (eventData->type)
+    {
+        case SERVER:  handleNewClient(eventData->fd); break;
+        case CLIENT:  processClientRequest(static_cast<Client *>(eventData->ptr)); break;
+        // case PIPEIN:  writeToCgi(static_cast<Client>(data->ptr)); break;
+        // case PIPEOUT: readFromCgiAndSend(static_cast<Client *>(data->ptr)); break;
+        case PIPEIN:  break;
+        case PIPEOUT:  break;
+    }
 }
 
 void Webserv::listenToWebserv()

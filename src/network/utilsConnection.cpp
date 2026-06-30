@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 14:55:37 by fmotte            #+#    #+#             */
-/*   Updated: 2026/06/18 14:46:13 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/06/30 17:32:23 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,22 +56,6 @@ sockaddr_in createSocketAddress(std::string ip_address, unsigned int port_number
     // serverAddress.sin_port = htons(port_number);
     // freeaddrinfo(res);
     // return serverAddress;
-}
-
-void addFdToEvent(int epoll_fd, int socket_fd, uint32_t event)
-{
-    setNonblocking(socket_fd);
-
-    struct epoll_event ev;
-    ev.events = event;
-    
-    EventData *eventData = new EventData;
-    eventData->ptr = NULL;
-    eventData->fd = socket_fd;
-    ev.data.ptr = eventData;
-    
-    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, socket_fd, &ev) == -1)
-        throw ExecptionErrorFunction("epoll_ctl");
 }
 
 int createServerSocket(std::string ip_address, unsigned int port_number, unsigned int max_client)
