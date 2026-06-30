@@ -6,12 +6,14 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/29 01:49:53 by erpascua          #+#    #+#             */
-/*   Updated: 2026/06/29 02:11:09 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/06/30 19:18:46 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Cookie.hpp"
 #include "utilsDuplicate.hpp"
+
+#include <ctime>
 
 // =====================
 // ==       OCF       ==
@@ -130,4 +132,13 @@ CookieMap parseCookieHeader(const std::string &cookieHeader)
             cookies[cookieName] = cookieValue;
     }
     return (cookies);
+}
+
+std::string generateSessionId(void)
+{
+    static unsigned long counter = 0;
+    std::ostringstream id;
+
+    id << std::hex << static_cast<unsigned long>(time(NULL)) << "-" << counter++;
+    return (id.str());
 }

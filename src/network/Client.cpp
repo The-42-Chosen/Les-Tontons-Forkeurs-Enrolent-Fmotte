@@ -16,7 +16,7 @@
 // == Canonical Form  ==
 // =====================
 
-Client::Client() : _client_fd(-1), _server_fd(-1), _server(0), _webserv(0), _contentRequest("")
+Client::Client() : _client_fd(-1), _server_fd(-1), _server(0), _webserv(0), _contentRequest(""), _sessionId("")
 {
 }
 
@@ -35,6 +35,7 @@ Client &Client::operator=(const Client &other)
     this->_server_fd = other._server_fd;
     this->_server = other._server;
     this->_contentRequest = other._contentRequest;
+    this->_sessionId = other._sessionId;
 
     return (*this);
 }
@@ -101,4 +102,20 @@ void Client::setWebserv(Webserv *webserv)
         throw ExecptionErrorUninitializedVariable("*webserv", "Client");
 
     _webserv = webserv;
+}
+
+// SESSION
+std::string Client::getSessionId(void)
+{
+    return _sessionId;
+}
+
+void Client::setSessionId(const std::string &sessionId)
+{
+    _sessionId = sessionId;
+}
+
+bool Client::hasSession(void)
+{
+    return !_sessionId.empty();
 }

@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/30 18:40:40 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/06/30 19:47:17 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ Webserv &Webserv::operator=(const Webserv &other)
         _vectorServer = other._vectorServer;
         _vectorClient = other._vectorClient;
         _mapFdToServer = other._mapFdToServer;
+        _sessions = other._sessions;
         _webserEpoll = other._webserEpoll;
     }
     return (*this);
@@ -83,6 +84,11 @@ void Webserv::setEpollFd(const int epoll)
 int Webserv::getEpollFd(void)
 {
     return _webserEpoll;
+}
+
+int Webserv::touchSession(const std::string &sessionId)
+{
+    return _sessions[sessionId]++;
 }
 
 // =====================
