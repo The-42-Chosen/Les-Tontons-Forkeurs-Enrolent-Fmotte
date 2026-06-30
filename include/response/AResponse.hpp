@@ -53,6 +53,7 @@ class AResponse
     void updateCodeError(int statusCode);
     std::string makeStatusLine();
     void makeHeader();
+    void handleSession();
     std::string makeHttpDate();
     std::string headerToString();
     bool containsHtmlTags(const std::string &body);

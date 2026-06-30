@@ -29,6 +29,7 @@ class Webserv
     std::vector<Server *> _vectorServer;
     std::vector<Client *> _vectorClient;
     std::map<int, std::set<Server *> > _mapFdToServer;
+    std::map<std::string, int> _sessions;
     int _webserEpoll;
 
   public:
@@ -51,6 +52,9 @@ class Webserv
     const std::map<int, std::set<Server *> > &getFdToServersMap(void) const;
     void setEpollFd(const int epoll);
     int getEpollFd(void);
+
+    // SESSION
+    int touchSession(const std::string &sessionId);
 
     // =====================
     // ==     Method      ==

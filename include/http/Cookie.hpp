@@ -62,3 +62,4 @@ class Cookie
 // == 	  Fonction    ==
 // =====================
 CookieMap parseCookieHeader(const std::string &cookieHeader);
+std::string generateSessionId(void);

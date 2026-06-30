@@ -26,6 +26,7 @@ class Client
     Server *_server;
     Webserv *_webserv;
     std::string _contentRequest;
+    std::string _sessionId;
 
   public:
     // =====================
@@ -60,4 +61,9 @@ class Client
     // WEBSERV
     Webserv *getWebserv(void);
     void setWebserv(Webserv *webserv);
+
+    // SESSION
+    std::string getSessionId(void);
+    void setSessionId(const std::string &sessionId);
+    bool hasSession(void);
 };

@@ -6,12 +6,18 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 17:25:00 by fmotte            #+#    #+#             */
-/*   Updated: 2026/06/29 02:23:03 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/06/30 19:27:50 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "AResponse.hpp"
 
+#include "Client.hpp"
+#include "Cookie.hpp"
+#include "HttpRequest.hpp"
+#include "HttpResponse.hpp"
+#include "Request.hpp"
+#include "Webserv.hpp"
 #include "execption.hpp"
 #include "utilsDuplicate.hpp"
 #include "utilsResponse.hpp"
@@ -109,14 +115,44 @@ std::string AResponse::makeStatusLine()
 void AResponse::makeHeader()
 {
     addHeaderContent("date", makeHttpDate());
+    handleSession();
+}
 
-    // TODO: (For Session!!)
-    // getHttpResponse()->getRequest()->getHttpRequest()->getCookies()
-    // Look at cookies["session_id"] create the session if missing:
-    //   Cookie c("session_id", session.getId());
-    //   c.setPath("/");
-    //   c.setHttpOnly(true);
-    //   addHeaderContent("Set-Cookie", c.toSetCookieValue());
+void AResponse::handleSession()
+{
+    HandleRequest *request = getHttpResponse()->getRequest();
+    Client *client = request->getClient();
+    HttpRequest *httpRequest = request->getHttpRequest();
+
+    if (client == NULL || httpRequest == NULL)
+        return;
+
+    bool isNewSession = false;
+    if (!client->hasSession())
+    {
+        CookieMap cookies = httpRequest->getCookies();
+        CookieMap::const_iterator it = cookies.find("session_id");
+
+        if (it != cookies.end() && !it->second.empty())
+            client->setSessionId(it->second);
+        else
+        {
+            client->setSessionId(generateSessionId());
+            isNewSession = true;
+        }
+    }
+
+    int visits = client->getWebserv()->touchSession(client->getSessionId());
+
+    if (isNewSession)
+    {
+        Cookie session("session_id", client->getSessionId());
+        session.setPath("/");
+        session.setHttpOnly(true);
+        session.setMaxAge(3600);
+        addHeaderContent("Set-Cookie", session.toSetCookieValue());
+    }
+    addHeaderContent("X-Visit-Count", intToString(visits));
 }
 
 std::string AResponse::makeHttpDate()
