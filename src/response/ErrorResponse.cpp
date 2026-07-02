@@ -49,7 +49,7 @@ std::string ErrorResponse::builtErrorPage()
 
 std::string ErrorResponse::getRightPageError()
 {
-	// We had a SegFault if incomplete method without that. We need to check if server is NULL
+    // We had a SegFault if incomplete method without that. We need to check if server is NULL
     Server *server = getHttpResponse()->getRequest()->getServer();
 
     if (server == NULL)
