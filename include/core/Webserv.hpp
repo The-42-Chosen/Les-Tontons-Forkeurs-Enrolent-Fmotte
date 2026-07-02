@@ -38,6 +38,7 @@ class Webserv
     int _webserEpoll;
 
     void cleanupSessions(void);
+
   public:
     // =====================
     // == Canonical Form  ==
