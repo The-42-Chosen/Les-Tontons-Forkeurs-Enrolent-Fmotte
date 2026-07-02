@@ -3,25 +3,30 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:20 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/25 16:57:06 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/02 05:00:24 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "struct.hpp"
+#include <ctime>
 #include <map>
 #include <set>
 
 #define MAX_CLIENT 10
 #define MAX_EVENTS 10
 #define SIZE_BUFFER 1024
+#define SESSION_TTL 3600
 
-class Server;
-class Client;
+struct SessionInfo
+{
+    int visits;
+    time_t lastSeen;
+};
 
 class Webserv
 {
@@ -29,9 +34,10 @@ class Webserv
     std::vector<Server *> _vectorServer;
     std::vector<Client *> _vectorClient;
     std::map<int, std::set<Server *> > _mapFdToServer;
-    std::map<std::string, int> _sessions;
+    std::map<std::string, SessionInfo> _sessions;
     int _webserEpoll;
 
+    void cleanupSessions(void);
   public:
     // =====================
     // == Canonical Form  ==
