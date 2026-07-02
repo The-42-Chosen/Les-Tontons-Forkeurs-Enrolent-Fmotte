@@ -3,6 +3,19 @@ import os;
 method	= os.getenv('REQUEST_METHOD')
 queries	= os.getenv('QUERY_STRING')
 
+def	get_cookie(name):
+	raw = os.getenv('HTTP_COOKIE') or ''
+	for part in raw.split(';'):
+		if '=' in part:
+			key, value = part.split('=', 1)
+			if key.strip() == name:
+				return value.strip()
+	return ''
+
+# Compteur de visites propre a ce CGI (cookie scope sur /cgi.py)
+previous	= get_cookie('hits_py')
+count		= int(previous) + 1 if previous.isdigit() else 1
+
 def	print_query():
 	qs = queries.split('&')
 	for q in qs:
@@ -10,6 +23,10 @@ def	print_query():
 		print(f"<p><strong>{key}</strong> = {value}</p>\n")
 
 def main():
+	print("Content-Type: text/html")
+	print(f"Set-Cookie: hits_py={count}; Path=/cgi.py")
+	print()
+
 	print("<!DOCTYPE html>\n")
 	print("<html lang=\"fr\">\n")
 	print("<head><meta charset=\"utf-8\"><title>CGI Webserv</title></head>\n")
@@ -17,6 +34,7 @@ def main():
 	print("<body>\n")
 	print("<h1>CGI Webserv (Python)</h1>\n")
 	print("<h2>Welcome to the Fabulous CGI PHP of Minicube & Rico</h2>\n")
+	print(f"<h2>Visites (Python) : {count}</h2>\n")
 	print(f"<p><strong>Method :</strong>  {method} </p><br/>\n")
 	print("<h2>Queries</h2>\n")
 	if (len(queries)):

@@ -19,6 +19,9 @@ function print_var($s)
     return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8');
 }
 
+$count = isset($_COOKIE['hits_php']) ? ((int) $_COOKIE['hits_php']) + 1 : 1;
+setcookie('hits_php', (string) $count, 0, '/cgi.php');
+
 header('Content-Type: text/html');
 
 echo "<!DOCTYPE html>\n";
@@ -28,6 +31,7 @@ echo "<style>*{padding: 0;margin: 0;background-color: bisque;}.container{padding
 echo "<body>\n";
 echo "<h1>CGI Webserv (PHP)</h1>\n";
 echo "<h2> Welcome to the Fabulous CGI PHP of Minicube & Rico</h2>\n";
+echo "<h2>Visites (PHP) : " . print_var($count) . "</h2>\n";
 echo "<p><strong>Method :</strong> " . print_var($method) . "</p>\n";
 
 if (empty($queries)) {
