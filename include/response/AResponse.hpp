@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   AResponse.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 17:25:03 by fmotte            #+#    #+#             */
-/*   Updated: 2026/06/14 15:51:11 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/02 04:42:42 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ class AResponse
     int _statusCode;
     std::string _statusMessage;
     HeaderContent _headerContent;
+    std::vector<std::string> _setCookies;
 
   public:
     // =====================
@@ -46,6 +47,7 @@ class AResponse
     HeaderContent getHeaderContent(void) const;
     void setHeaderContent(HeaderContent headerContent);
     void addHeaderContent(std::string key, std::string value);
+    void addSetCookie(const std::string &setCookieValue);
 
     // =====================
     // == 	  Methods	  ==

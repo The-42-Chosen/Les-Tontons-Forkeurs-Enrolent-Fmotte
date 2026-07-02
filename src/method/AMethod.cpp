@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 12:54:14 by fmotte            #+#    #+#             */
-/*   Updated: 2026/06/15 19:32:47 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/07/02 04:37:32 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 #include "Server.hpp"
 
 #include "execption.hpp"
+#include "utilsDuplicate.hpp"
 #include "utilsParsing.hpp"
 #include "utilsRequest.hpp"
 
@@ -244,9 +245,32 @@ std::string AMethod::applyCGI(std::string path, const std::string &interpreter)
         sepLen = 2;
     }
     if (sep != std::string::npos)
+    {
+        forwardCgiHeaders(payload.substr(0, sep));
         return payload.substr(sep + sepLen);
+    }
 
     return payload;
+}
+
+void AMethod::forwardCgiHeaders(const std::string &headerBlock)
+{
+    std::stringstream stream(headerBlock);
+    std::string line;
+
+    while (std::getline(stream, line))
+    {
+        if (!line.empty() && line[line.size() - 1] == '\r')
+            line.erase(line.size() - 1);
+
+        std::string::size_type colon = line.find(':');
+        if (colon == std::string::npos)
+            continue;
+
+        std::string key = toLowerString(trimSpaces(line.substr(0, colon)));
+        if (key == "set-cookie")
+            _httpRequest->getRequest()->addCgiSetCookie(trimSpaces(line.substr(colon + 1)));
+    }
 }
 
 void AMethod::manage_pipe(std::string path, int pipe_out[2], int pipe_in[2], const std::string &interpreter)

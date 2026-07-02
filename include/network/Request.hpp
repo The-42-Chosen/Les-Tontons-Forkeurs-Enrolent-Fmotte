@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 14:35:48 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/30 18:40:40 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/07/02 04:38:45 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ class HandleRequest
     int _statusCode;
     Location *_location;
     std::string _payload;
+    std::vector<std::string> _cgiSetCookies;
 
   public:
     // =====================
@@ -56,6 +57,8 @@ class HandleRequest
     void setLocation(Location *location);
     std::string getPayload() const;
     void setPayload(std::string payload);
+    const std::vector<std::string> &getCgiSetCookies() const;
+    void addCgiSetCookie(const std::string &setCookieValue);
 
     // =====================
     // == 	  Member	  ==
