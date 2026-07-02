@@ -123,6 +123,16 @@ void HandleRequest::setPayload(std::string payload)
     _payload = payload;
 }
 
+const std::vector<std::string> &HandleRequest::getCgiSetCookies() const
+{
+    return _cgiSetCookies;
+}
+
+void HandleRequest::addCgiSetCookie(const std::string &setCookieValue)
+{
+    _cgiSetCookies.push_back(setCookieValue);
+}
+
 // =====================
 // ==     Method      ==
 // =====================

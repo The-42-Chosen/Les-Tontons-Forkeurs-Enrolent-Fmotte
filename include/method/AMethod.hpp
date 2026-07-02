@@ -66,4 +66,5 @@ class AMethod
     // =====================
     std::string applyCGI(std::string path, const std::string &interpreter);
     void manage_pipe(std::string path, int pipe_out[2], int pipe_in[2], const std::string &interpreter);
+    void forwardCgiHeaders(const std::string &headerBlock);
 };

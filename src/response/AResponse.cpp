@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 17:25:00 by fmotte            #+#    #+#             */
-/*   Updated: 2026/06/30 19:27:50 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/07/02 04:30:46 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,11 @@ void AResponse::addHeaderContent(std::string key, std::string value)
 void AResponse::setHeaderContent(HeaderContent headerContent)
 {
     _headerContent = headerContent;
+}
+
+void AResponse::addSetCookie(const std::string &setCookieValue)
+{
+    _setCookies.push_back(setCookieValue);
 }
 
 HttpResponse *AResponse::getHttpResponse() const
@@ -150,9 +155,13 @@ void AResponse::handleSession()
         session.setPath("/");
         session.setHttpOnly(true);
         session.setMaxAge(3600);
-        addHeaderContent("Set-Cookie", session.toSetCookieValue());
+        addSetCookie(session.toSetCookieValue());
     }
     addHeaderContent("X-Visit-Count", intToString(visits));
+
+    const std::vector<std::string> &cgiCookies = request->getCgiSetCookies();
+    for (size_t i = 0; i < cgiCookies.size(); ++i)
+        addSetCookie(cgiCookies[i]);
 }
 
 std::string AResponse::makeHttpDate()
@@ -176,6 +185,14 @@ std::string AResponse::headerToString()
         header += it->first;
         header += ":";
         header += it->second;
+        header += "\n";
+    }
+
+    // Cookies <-> CGI
+    for (size_t i = 0; i < _setCookies.size(); ++i)
+    {
+        header += "Set-Cookie:";
+        header += _setCookies[i];
         header += "\n";
     }
     return header;
