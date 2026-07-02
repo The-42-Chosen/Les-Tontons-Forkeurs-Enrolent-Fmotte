@@ -22,7 +22,8 @@
 // == Canonical Form  ==
 // =====================
 
-HandleRequest::HandleRequest() : _client(NULL), _httpRequest(NULL), _statusCode(200), _location(NULL), _payload("")
+HandleRequest::HandleRequest()
+    : _client(NULL), _server(NULL), _httpRequest(NULL), _statusCode(200), _location(NULL), _payload("")
 {
 }
 
