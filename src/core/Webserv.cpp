@@ -88,7 +88,25 @@ int Webserv::getEpollFd(void)
 
 int Webserv::touchSession(const std::string &sessionId)
 {
-    return _sessions[sessionId]++;
+    cleanupSessions();
+
+    SessionInfo &session = _sessions[sessionId];
+    session.lastSeen = time(NULL);
+    return ++session.visits;
+}
+
+void Webserv::cleanupSessions(void)
+{
+    time_t now = time(NULL);
+
+    std::map<std::string, SessionInfo>::iterator it = _sessions.begin();
+    while (it != _sessions.end())
+    {
+        if (now - it->second.lastSeen > SESSION_TTL)
+            _sessions.erase(it++); // post-increment keeps a valid iterator (C++98)
+        else
+            ++it;
+    }
 }
 
 // =====================
