@@ -22,6 +22,9 @@
 #define SIZE_BUFFER 1024
 #define SESSION_TTL 3600
 
+class Server;
+class Client;
+
 struct SessionInfo
 {
     int visits;
