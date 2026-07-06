@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpResponse.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 11:56:16 by erpascua          #+#    #+#             */
-/*   Updated: 2026/05/30 18:40:40 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/07/06 02:08:11 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 #include "struct.hpp"
 
-class HandleRequest;
+class ARequest;
 class Location;
 class AResponse;
 class ErrorResponse;
@@ -28,7 +28,7 @@ class HttpResponse
     // ==    Attributs    ==
     // =====================
     std::string _responseContent;
-    HandleRequest *_request;
+    ARequest *_arequest;
 
     HttpResponse();
 
@@ -36,7 +36,7 @@ class HttpResponse
     // =====================
     // == Canonical Form  ==
     // =====================
-    HttpResponse(HandleRequest *Request);
+    HttpResponse(ARequest *arequest);
     ~HttpResponse();
 
     // =====================
@@ -45,8 +45,8 @@ class HttpResponse
     std::string getResponseContent();
     void setResponseContent(std::string responseContent);
     void addResponseContent(std::string responseContent);
-    HandleRequest *getRequest(void) const;
-    void setRequest(HandleRequest *Request);
+    ARequest *getARequest(void) const;
+    void setARequest(ARequest *arequest);
 
     // =====================
     // == 	  Methods	  ==

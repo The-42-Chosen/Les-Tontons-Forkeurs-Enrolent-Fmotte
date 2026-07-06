@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 16:52:26 by erpascua          #+#    #+#             */
-/*   Updated: 2026/06/01 18:50:22 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/07/06 02:10:49 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,9 @@
 #include "HttpRequest.hpp"
 #include "PostMethod.hpp"
 #include "RedirResponse.hpp"
-#include "Request.hpp"
+#include "ARequest.hpp"
+#include "ResponseContext.hpp"
+#include "RequestContext.hpp"
 
 #include "execption.hpp"
 
@@ -30,9 +32,9 @@
 // == Canonical Form  ==
 // =====================
 
-HttpResponse::HttpResponse(HandleRequest *request) : _responseContent(""), _request(NULL)
+HttpResponse::HttpResponse(ARequest *arequest) : _responseContent(""), _arequest(NULL)
 {
-    setRequest(request);
+    setARequest(arequest);
 }
 
 HttpResponse::~HttpResponse()
@@ -57,17 +59,17 @@ void HttpResponse::addResponseContent(std::string responseContent)
     _responseContent += responseContent;
 }
 
-HandleRequest *HttpResponse::getRequest(void) const
+ARequest *HttpResponse::getARequest(void) const
 {
-    return _request;
+    return _arequest;
 }
 
-void HttpResponse::setRequest(HandleRequest *request)
+void HttpResponse::setARequest(ARequest *arequest)
 {
-    if (request == NULL)
-        throw ExecptionErrorUninitializedVariable("*request", "HttpResponse");
+    if (arequest == NULL)
+        throw ExecptionErrorUninitializedVariable("*arequest", "HttpResponse");
 
-    _request = request;
+    _arequest = arequest;
 }
 
 // =====================
@@ -75,7 +77,7 @@ void HttpResponse::setRequest(HandleRequest *request)
 // =====================
 void HttpResponse::initialisationHttpResponse()
 {
-    int statusCode = getRequest()->getStatusCode();
+    int statusCode = getARequest()->getResponseContext()->getStatusCode();
 
     ErrorResponse error(this, statusCode);
     RedirResponse redir(this, statusCode);
@@ -102,6 +104,6 @@ AResponse *HttpResponse::selectResponse(int statusCode, ErrorResponse &error, Re
 
 void HttpResponse::sendToClient()
 {
-    int clientFd = getRequest()->getClient()->getClientFd();
+    int clientFd = getARequest()->getRequestContext()->getClient()->getClientFd();
     send(clientFd, _responseContent.c_str(), _responseContent.size(), 0);
 }

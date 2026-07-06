@@ -3,19 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/06/29 02:19:32 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/07/06 05:50:26 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
+
 #include "Body.hpp"
 #include "Client.hpp"
 #include "Cookie.hpp"
 #include "Header.hpp"
-#include "Request.hpp"
+#include "RequestContext.hpp"
 
 #include "DeleteMethod.hpp"
 #include "GetMethod.hpp"
@@ -26,30 +27,15 @@
 // == Canonical Form  ==
 // =====================
 
-HttpRequest::HttpRequest(HandleRequest *request) : _header(NULL), _body(NULL)
+HttpRequest::HttpRequest(RequestContext *requestContext) : _header(NULL), _body(NULL)
 {
-    setRequest(request);
+    setRequestContext(requestContext);
 }
 
 HttpRequest::~HttpRequest()
 {
     delete getHeader();
     delete getBody();
-}
-
-HttpRequest::HttpRequest(const HttpRequest &other)
-{
-    *this = other;
-}
-
-HttpRequest &HttpRequest::operator=(const HttpRequest &other)
-{
-    if (this != &other)
-    {
-        _header = other._header;
-        _body = other._body;
-    }
-    return (*this);
 }
 
 // =====================
@@ -68,18 +54,19 @@ void HttpRequest::setHeader(Header *header)
     _header = header;
 }
 
-HandleRequest *HttpRequest::getRequest() const
+RequestContext *HttpRequest::getRequestContext() const
 {
-    return _request;
+    return _requestContext;
 }
 
-void HttpRequest::setRequest(HandleRequest *request)
+void HttpRequest::setRequestContext(RequestContext *requestContext)
 {
-    if (request == NULL)
-        throw ExecptionErrorUninitializedVariable("*request", "HttpRequest");
+    if (requestContext == NULL)
+        throw ExecptionErrorUninitializedVariable("*requestContext", "HttpRequest");
 
-    _request = request;
+    _requestContext = requestContext;
 }
+
 
 Body *HttpRequest::getBody() const
 {
@@ -99,39 +86,16 @@ void HttpRequest::setBody(Body *body)
 // =====================
 void HttpRequest::initHeader(const std::string &headerContent)
 {
-    Header *header = new Header();
+    Header *header = new Header(); // what if fail ?
     setHeader(header);
     header->initialisationHeader(headerContent);
 }
 
 void HttpRequest::initBody()
 {
-    Body *body = new Body(*this);
+    Body *body = new Body(*this); // what if fail ?
     setBody(body);
     body->initialisationBody();
-}
-
-std::string HttpRequest::selectMethodHttp(Location *location)
-{
-    HttpMethod httpMethod = getHeader()->getMethod();
-
-    AMethod *method = NULL;
-
-    GetMethod get(this);
-    DeleteMethod del(this);
-    PostMethod post(this);
-    HeadMethod head(this);
-
-    if (httpMethod == GET)
-        method = &get;
-    else if (httpMethod == DELETE)
-        method = &del;
-    else if (httpMethod == POST)
-        method = &post;
-    else if (httpMethod == HEAD)
-        method = &head;
-
-    return method->applyMethod(location);
 }
 
 CookieMap HttpRequest::getCookies() const

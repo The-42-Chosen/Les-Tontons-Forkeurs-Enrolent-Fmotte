@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   utilsRequest.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 13:53:46 by fmotte            #+#    #+#             */
-/*   Updated: 2026/06/15 14:43:57 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/07/05 23:27:26 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utilsRequest.hpp"
+#include "utilsDuplicate.hpp"
 
 int computeRemainingCost(const std::string &string, size_t min_len, int score)
 {
@@ -136,4 +137,133 @@ bool isFinishByFile(std::string path)
         return true;
 
     return false;
+}
+
+// Code d'Eric
+// C'est pas le mien
+bool isCompleteRequest(const std::string &request)
+{
+    std::string::size_type headerEnd = request.find("\r\n\r\n");
+    if (headerEnd == std::string::npos)
+        return (false);
+
+    std::string::size_type bodyStart = headerEnd + 4;
+    std::string transferEncoding = getHeaderValue(request, "transfer-encoding");
+    transferEncoding = toLowerString(trimSpaces(transferEncoding));
+    if (transferEncoding == "chunked")
+        return (isCompleteChunkedBody(request, bodyStart));
+
+    std::string contentLengthValue = getHeaderValue(request, "content-length");
+    if (!contentLengthValue.empty())
+    {
+        size_t contentLength = 0;
+        if (!parseDecimalLength(contentLengthValue, contentLength))
+            return (true);
+        return ((request.size() - bodyStart) >= contentLength);
+    }
+    return (true);
+}
+
+bool isCompleteChunkedBody(const std::string &request, std::string::size_type bodyStart)
+{
+    std::string::size_type current = bodyStart;
+
+    while (current < request.size())
+    {
+        std::string::size_type lineEnd = request.find("\r\n", current);
+        if (lineEnd == std::string::npos)
+            return (false);
+
+        std::string sizeToken = initSizeToken(request, current, lineEnd);
+
+        std::stringstream ss(sizeToken);
+        size_t chunkSize = 0;
+        ss >> std::hex >> chunkSize;
+        if (sizeToken.empty() || ss.fail() || !ss.eof())
+            return (true);
+
+        current = lineEnd + 2;
+        if (chunkSize == 0)
+            return (isFinalChunkComplete(request, current));
+
+        if (current + chunkSize + 2 > request.size())
+            return (false);
+
+        if (request.substr(current + chunkSize, 2) != "\r\n")
+            return (true);
+
+        current += chunkSize + 2;
+    }
+    return (false);
+}
+
+bool isFinalChunkComplete(const std::string &request, std::string::size_type current)
+{
+    if (request.size() < current + 2)
+        return (false);
+
+    if (request.substr(current, 2) == "\r\n")
+        return (true);
+
+    std::string::size_type trailersEnd = request.find("\r\n\r\n", current);
+    return (trailersEnd != std::string::npos);
+}
+
+std::string initSizeToken(const std::string &request, const std::string::size_type &current,
+                          const std::string::size_type &lineEnd)
+{
+    std::string sizeToken = request.substr(current, lineEnd - current);
+    std::string::size_type semicolon = sizeToken.find(';');
+
+    if (semicolon != std::string::npos)
+        sizeToken = sizeToken.substr(0, semicolon);
+
+    sizeToken = trimSpaces(sizeToken);
+    return sizeToken;
+}
+
+bool parseDecimalLength(const std::string &value, size_t &contentLength)
+{
+    std::stringstream ss(value);
+    size_t parsed = 0;
+
+    if (!(ss >> parsed))
+        return (false);
+
+    if (!ss.eof())
+        return (false);
+
+    contentLength = parsed;
+    return (true);
+}
+
+std::string getHeaderValue(const std::string &request, const std::string &headerName)
+{
+    std::string::size_type headerEnd = request.find("\r\n\r\n");
+    if (headerEnd == std::string::npos)
+        return ("");
+
+    std::string loweredHeaderName = toLowerString(headerName);
+    std::string::size_type current = request.find("\r\n");
+    if (current == std::string::npos)
+        return ("");
+    current += 2;
+
+    while (current < headerEnd)
+    {
+        std::string::size_type lineEnd = request.find("\r\n", current);
+        if (lineEnd == std::string::npos || lineEnd > headerEnd)
+            break;
+
+        std::string line = request.substr(current, lineEnd - current);
+        std::string::size_type colon = line.find(':');
+        if (colon != std::string::npos)
+        {
+            std::string key = toLowerString(trimSpaces(line.substr(0, colon)));
+            if (key == loweredHeaderName)
+                return (trimSpaces(line.substr(colon + 1)));
+        }
+        current = lineEnd + 2;
+    }
+    return ("");
 }

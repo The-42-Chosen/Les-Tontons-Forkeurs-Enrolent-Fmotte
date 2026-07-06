@@ -3,60 +3,58 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/06/29 02:19:06 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/07/06 05:39:02 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <string>
+#include "struct.hpp"
 
 #include "Cookie.hpp"
 
 class Header;
 class Body;
-class HandleRequest;
+class RequestContext;
 class Location;
 
 class HttpRequest
 {
-  private:
-    // =====================
-    // ==    Attributs    ==
-    // =====================
-    Header *_header;
-    Body *_body;
-    HandleRequest *_request;
+	private:
+		// =====================
+		// ==    Attributs    ==
+		// =====================
+		Header *_header;
+		Body *_body;
+		RequestContext *_requestContext;
 
-    HttpRequest();
+		HttpRequest();
 
-  public:
-    // =====================
-    // ==       OCF       ==
-    // =====================
-    HttpRequest(HandleRequest *request);
-    ~HttpRequest();
-    HttpRequest(const HttpRequest &cpy);
-    HttpRequest &operator=(const HttpRequest &cpy);
+	public:
+		// =====================
+		// ==       OCF       ==
+		// =====================
+		HttpRequest(RequestContext *requestContext);
+		~HttpRequest();
 
-    // =====================
-    // ==     Getters     ==
-    // =====================
-    Header *getHeader() const;
-    void setHeader(Header *header);
-    HandleRequest *getRequest() const;
-    void setRequest(HandleRequest *request);
-    Body *getBody() const;
-    void setBody(Body *body);
-
-    // =====================
-    // == 	  Member	  ==
-    // =====================
-    void initHeader(const std::string &headerContent);
-    void initBody();
-    std::string selectMethodHttp(Location *location);
-    CookieMap getCookies() const;
+		// =====================
+		// ==     Getters     ==
+		// =====================
+		Header *getHeader() const;
+		void setHeader(Header *header);
+		RequestContext *getRequestContext() const;
+		void setRequestContext(RequestContext *requestContext);
+		Body *getBody() const;
+		void setBody(Body *body);
+		
+		// =====================
+		// == 	  Member	  ==
+		// =====================
+		void initHeader(const std::string &headerContent);
+		void initBody();
+		std::string selectMethodHttp(Location *location);
+		CookieMap getCookies() const;
 };
