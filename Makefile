@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+         #
+#    By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/11 16:36:16 by fmotte            #+#    #+#              #
-#    Updated: 2026/06/15 11:31:33 by erpascua         ###   ########.fr        #
+#    Updated: 2026/07/06 06:03:40 by fmotte           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,7 +38,9 @@ CORE_SRC = \
 	$(SRC_PATH)/core/main.cpp \
 	$(SRC_PATH)/core/Webserv.cpp \
 	$(SRC_PATH)/core/execption.cpp \
-	$(SRC_PATH)/core/struct.cpp
+	$(SRC_PATH)/core/struct.cpp \
+	$(SRC_PATH)/core/utilsConnection.cpp \
+	$(SRC_PATH)/core/Client.cpp
 
 CONFIG_SRC = \
 	$(SRC_PATH)/config/Server.cpp \
@@ -46,10 +48,13 @@ CONFIG_SRC = \
 	$(SRC_PATH)/config/utilsDuplicate.cpp \
 	$(SRC_PATH)/config/utilsParsing.cpp \
 
-NETWORK_SRC = \
-	$(SRC_PATH)/network/Client.cpp \
-	$(SRC_PATH)/network/utilsConnection.cpp \
-	$(SRC_PATH)/network/Request.cpp
+REQUEST_SRC = \
+	$(SRC_PATH)/request/ARequest.cpp \
+	$(SRC_PATH)/request/RequestContext.cpp \
+	$(SRC_PATH)/request/ResponseContext.cpp \
+	$(SRC_PATH)/request/StaticRequest.cpp \
+	$(SRC_PATH)/request/CGIRequest.cpp \
+	$(SRC_PATH)/request/HandlePath.cpp
 	
 HTTP_SRC = \
 	$(SRC_PATH)/http/HttpRequest.cpp \
@@ -79,7 +84,7 @@ RESPONSE_SRC = \
 SRC_FILES = \
 	$(CORE_SRC) \
 	$(CONFIG_SRC) \
-	$(NETWORK_SRC) \
+	$(REQUEST_SRC) \
 	$(HTTP_SRC) \
 	$(METHOD_SRC) \
 	$(RESPONSE_SRC)
@@ -95,7 +100,9 @@ COMMON_HEA = \
 
 CORE_HEA = \
 	$(HEA_PATH)/core/Webserv.hpp \
-	$(HEA_PATH)/core/struct.hpp
+	$(HEA_PATH)/core/struct.hpp \
+	$(HEA_PATH)/core/Client.hpp \
+	$(HEA_PATH)/core/utilsConnection.hpp \
 
 CONFIG_HEA = \
 	$(HEA_PATH)/config/Server.hpp \
@@ -103,10 +110,13 @@ CONFIG_HEA = \
 	$(HEA_PATH)/config/utilsDuplicate.hpp \
 	$(HEA_PATH)/config/utilsParsing.hpp
 
-NETWORK_HEA = \
-	$(HEA_PATH)/network/Client.hpp \
-	$(HEA_PATH)/network/utilsConnection.hpp \
-	$(HEA_PATH)/network/Request.hpp
+REQUEST_HEA = \
+	$(HEA_PATH)/request/ARequest.hpp \
+	$(HEA_PATH)/request/RequestContext.hpp \
+	$(HEA_PATH)/request/ResponseContext.hpp \
+	$(HEA_PATH)/request/StaticRequest.hpp \
+	$(HEA_PATH)/request/CGIRequest.hpp \
+	$(HEA_PATH)/request/HandlePath.hpp
 
 HTTP_HEA = \
 	$(HEA_PATH)/http/HttpRequest.hpp \
@@ -137,7 +147,7 @@ HEA_FILES = \
 	$(COMMON_HEA) \
 	$(CORE_HEA) \
 	$(CONFIG_HEA) \
-	$(NETWORK_HEA) \
+	$(REQUEST_HEA) \
 	$(HTTP_HEA) \
 	$(METHOD_HEA) \
 	$(RESPONSE_HEA)
