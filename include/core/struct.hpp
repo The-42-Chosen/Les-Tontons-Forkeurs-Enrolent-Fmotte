@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/03 17:58:55 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/27 13:58:16 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/06 01:37:23 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,12 @@ enum HttpMethod
     DELETE,
     HEAD,
     NONE
+};
+
+enum TypeRequest
+{
+    STATIC,
+    CGI
 };
 
 struct Listen

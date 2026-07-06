@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/06/30 19:47:17 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/07/06 05:16:02 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,20 @@
 #include "Header.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
-#include "Request.hpp"
+#include "ARequest.hpp"
 #include "Server.hpp"
+#include "RequestContext.hpp"
+#include "StaticRequest.hpp"
+#include "CGIRequest.hpp"
 
 #include "colors.hpp"
 #include "execption.hpp"
 #include "utilsConnection.hpp"
+#include "utilsRequest.hpp"
 
 #include <cstring>
 #include <errno.h>
+#include <sys/wait.h>
 
 // =====================
 // == Canonical Form  ==
@@ -247,27 +252,44 @@ bool Webserv::readAndCheckRequestCompletion(Client *client)
     return false;
 }
 
-void Webserv::processClientRequest(Client *client)
+bool Webserv::processClientRequest(Client *client)
 {
     if (readAndCheckRequestCompletion(client))
-        return;
+        return false;
 
     std::cout << "Final Message from client: " << client->getContentRequest() << "\n";
-
-    processClientResponse(client);
+    return true;
 }
 
 void Webserv::processClientResponse(Client *client)
 {
-    HandleRequest request;
-    if (request.initialisationRequest(client))
-        request.processRequest();
+    client->initialisationClient();
+    client->selectTypeRequest();
+    
+    if (client->getTypeRequest() == STATIC)
+    {
+        StaticRequest *staticRequest = dynamic_cast<StaticRequest *>(client->getARequest());
+        staticRequest->selectMethodHttp();
+        
+        HttpResponse response(staticRequest);
+        response.initialisationHttpResponse();
+        response.sendToClient();
+        client->clearContentRequest();
+    }
+    else
+    {
+        CGIRequest *cgiRequest = dynamic_cast<CGIRequest *>(client->getARequest());
+        cgiRequest->initializationCGIRequest("/usr/bin/python3");
+        cgiRequest->sendDataToChild();
+        cgiRequest->receivedDataFromChild();
+        waitpid(cgiRequest->getPid(), NULL, 0);
+        cgiRequest->processDataFromChild();
 
-    HttpResponse response(&request);
-    response.initialisationHttpResponse();
-    response.sendToClient();
-
-    client->clearContentRequest();
+        HttpResponse response(cgiRequest);
+        response.initialisationHttpResponse();
+        response.sendToClient();
+        client->clearContentRequest();
+    }
 }
 
 void Webserv::handleConnection(struct epoll_event &events)
@@ -279,7 +301,10 @@ void Webserv::handleConnection(struct epoll_event &events)
         handleNewClient(server_fd);
 
     else
-        processClientRequest(static_cast<Client *>(events.data.ptr));
+    {
+        if (processClientRequest(static_cast<Client *>(events.data.ptr)))
+            processClientResponse(static_cast<Client *>(events.data.ptr));
+    }
 }
 
 void Webserv::listenToWebserv()
