@@ -6,14 +6,16 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/29 15:44:05 by fmotte            #+#    #+#             */
-/*   Updated: 2026/06/14 15:40:48 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/06 04:47:18 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "CorrectResponse.hpp"
 
 #include "HttpResponse.hpp"
-#include "Request.hpp"
+#include "ARequest.hpp"
+#include "ResponseContext.hpp"
+#include "RequestContext.hpp"
 #include "Server.hpp"
 
 // =====================
@@ -34,7 +36,7 @@ std::string CorrectResponse::getCorrectPage()
 {
     for (size_t i = 0;; ++i)
     {
-        HttpErrorPage *errorPage = getHttpResponse()->getRequest()->getServer()->getErrorPage(i);
+        HttpErrorPage *errorPage = getHttpResponse()->getARequest()->getRequestContext()->getServer()->getErrorPage(i);
 
         if (errorPage == NULL)
             return "";
@@ -53,7 +55,7 @@ void CorrectResponse::applyResponse()
 
     std::string statusLine = makeStatusLine();
     makeHeader();
-    std::string body = response->getRequest()->getPayload();
+    std::string body = response->getARequest()->getResponseContext()->getPayload();
     addHeaderContent("Content-Length", intToString(static_cast<int>(body.size())));
 
     if (containsHtmlTags(body))

@@ -6,14 +6,16 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/29 14:31:47 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/29 15:12:48 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/06 02:25:16 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "RedirResponse.hpp"
 
 #include "HttpResponse.hpp"
-#include "Request.hpp"
+#include "ARequest.hpp"
+#include "ResponseContext.hpp"
+#include "RequestContext.hpp"
 
 RedirResponse::RedirResponse(HttpResponse *httpResponse, int statusCode) : AResponse(httpResponse, statusCode)
 {
@@ -32,7 +34,7 @@ void RedirResponse::applyResponse()
 
     std::string statusLine = makeStatusLine();
     makeHeader();
-    addHeaderContent("Location", response->getRequest()->getPayload());
+    addHeaderContent("Location", response->getARequest()->getResponseContext()->getPayload());
 
     response->addResponseContent(statusLine);
     response->addResponseContent(headerToString());

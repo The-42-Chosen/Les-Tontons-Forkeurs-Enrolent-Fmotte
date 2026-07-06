@@ -3,17 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   ErrorResponse.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 16:30:52 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/02 11:39:55 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/07/06 02:24:47 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ErrorResponse.hpp"
 
 #include "HttpResponse.hpp"
-#include "Request.hpp"
+#include "ARequest.hpp"
+#include "ResponseContext.hpp"
+#include "RequestContext.hpp"
 #include "Server.hpp"
 
 // =====================
@@ -50,7 +52,7 @@ std::string ErrorResponse::builtErrorPage()
 std::string ErrorResponse::getRightPageError()
 {
     // We had a SegFault if incomplete method without that. We need to check if server is NULL
-    Server *server = getHttpResponse()->getRequest()->getServer();
+    Server *server = getHttpResponse()->getARequest()->getRequestContext()->getServer();
 
     if (server == NULL)
         return "";

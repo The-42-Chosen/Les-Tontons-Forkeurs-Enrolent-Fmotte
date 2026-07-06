@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   AResponse.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 17:25:00 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/02 04:30:46 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/07/06 02:23:09 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,11 @@
 #include "Cookie.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
-#include "Request.hpp"
+#include "ARequest.hpp"
 #include "Webserv.hpp"
+#include "RequestContext.hpp"
+#include "ResponseContext.hpp"
+
 #include "execption.hpp"
 #include "utilsDuplicate.hpp"
 #include "utilsResponse.hpp"
@@ -125,9 +128,9 @@ void AResponse::makeHeader()
 
 void AResponse::handleSession()
 {
-    HandleRequest *request = getHttpResponse()->getRequest();
-    Client *client = request->getClient();
-    HttpRequest *httpRequest = request->getHttpRequest();
+    ARequest *arequest = getHttpResponse()->getARequest();
+    Client *client = arequest->getRequestContext()->getClient();
+    HttpRequest *httpRequest = arequest->getRequestContext()->getHttpRequest();
 
     if (client == NULL || httpRequest == NULL)
         return;
@@ -159,7 +162,7 @@ void AResponse::handleSession()
     }
     addHeaderContent("X-Visit-Count", intToString(visits));
 
-    const std::vector<std::string> &cgiCookies = request->getCgiSetCookies();
+    const std::vector<std::string> &cgiCookies = arequest->getResponseContext()->getCgiSetCookies();
     for (size_t i = 0; i < cgiCookies.size(); ++i)
         addSetCookie(cgiCookies[i]);
 }
