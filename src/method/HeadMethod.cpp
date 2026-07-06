@@ -6,13 +6,14 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:46:04 by fmotte            #+#    #+#             */
-/*   Updated: 2026/06/14 15:23:02 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/06 06:01:47 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HeadMethod.hpp"
 
 #include "HttpRequest.hpp"
+#include "HandlePath.hpp"
 
 #include "utilsRequest.hpp"
 
@@ -46,10 +47,9 @@ HeadMethod &HeadMethod::operator=(const HeadMethod &other)
 std::string HeadMethod::applyMethod(Location *location)
 {
     struct stat st;
-    std::string path;
-    bool isAutoIndex = false;
 
-    path = createPath(location, isAutoIndex);
+    HandlePath handlePath(getHttpRequest());
+    std::string path = handlePath.createPath(location);
     std::cout << "Path to contexte read: " << path << "\n";
 
     checkPermisionReadFile(path);

@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   GetMethod.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 14:13:06 by fmotte            #+#    #+#             */
-/*   Updated: 2026/06/15 13:47:00 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/07/06 06:01:37 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "GetMethod.hpp"
 
 #include "HttpRequest.hpp"
+#include "HandlePath.hpp"
 
 #include "utilsParsing.hpp"
 #include "utilsRequest.hpp"
@@ -44,14 +45,13 @@ GetMethod &GetMethod::operator=(const GetMethod &other)
 // =====================
 std::string GetMethod::applyMethod(Location *location)
 {
-    std::string path;
     std::string contentFile;
-    bool isAutoIndex = false;
+    
+    HandlePath handlePath(getHttpRequest());
+    std::string  path = handlePath.createPath(location);
 
-    path = createPath(location, isAutoIndex);
-
-    if (isAutoIndex)
-        return createContentAutoIndex(path);
+    if (handlePath.getIsAutoIndex())
+        return handlePath.createContentAutoIndex(path);
 
     std::string::size_type qpos = path.find('?');
     if (qpos != std::string::npos)

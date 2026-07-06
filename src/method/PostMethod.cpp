@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:46:04 by fmotte            #+#    #+#             */
-/*   Updated: 2026/06/14 15:23:33 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/06 06:01:53 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 #include "Body.hpp"
 #include "HttpRequest.hpp"
+#include "HandlePath.hpp"
 
 #include "utilsParsing.hpp"
 
@@ -44,10 +45,8 @@ PostMethod &PostMethod::operator=(const PostMethod &other)
 // =====================
 std::string PostMethod::applyMethod(Location *location)
 {
-    std::string path;
-    bool isAutoIndex = false;
-
-    path = createPath(location, isAutoIndex);
+    HandlePath handlePath(getHttpRequest());
+    std::string path = handlePath.createPath(location);
     std::cout << "Path to write: " << path << "\n";
 
     std::string filename = "PostContent";

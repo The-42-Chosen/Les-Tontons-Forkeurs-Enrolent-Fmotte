@@ -6,13 +6,14 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 14:13:06 by fmotte            #+#    #+#             */
-/*   Updated: 2026/06/14 15:22:09 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/06 06:01:27 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "DeleteMethod.hpp"
 
 #include "HttpRequest.hpp"
+#include "HandlePath.hpp"
 
 #include <sys/stat.h>
 
@@ -43,11 +44,11 @@ DeleteMethod &DeleteMethod::operator=(const DeleteMethod &other)
 // =====================
 std::string DeleteMethod::applyMethod(Location *location)
 {
-    std::string path;
     struct stat buff;
-    bool isAutoIndex = false;
 
-    path = createPath(location, isAutoIndex);
+    HandlePath handlePath(getHttpRequest());
+    std::string path = handlePath.createPath(location);
+    
     std::cout << "Path to file to delete " << path << "\n";
 
     if (access(path.c_str(), F_OK) == -1)
