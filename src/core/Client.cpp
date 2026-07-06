@@ -6,17 +6,24 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 14:43:09 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/25 11:38:49 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/06 05:03:37 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
 
+#include "Header.hpp"
+#include "ARequest.hpp"
+#include "RequestContext.hpp"
+#include "HttpRequest.hpp"
+#include "StaticRequest.hpp"
+#include "CGIRequest.hpp"
+
 // =====================
 // == Canonical Form  ==
 // =====================
 
-Client::Client() : _client_fd(-1), _server_fd(-1), _server(0), _webserv(0), _contentRequest(""), _sessionId("")
+Client::Client() : _client_fd(-1), _server_fd(-1), _server(0), _webserv(0), _ARequest(NULL), _typeResquest(STATIC), _contentRequest(""), _sessionId("")
 {
 }
 
@@ -118,4 +125,70 @@ void Client::setSessionId(const std::string &sessionId)
 bool Client::hasSession(void)
 {
     return !_sessionId.empty();
+}
+
+
+ARequest *Client::getARequest() const
+{
+    return _ARequest;
+}
+
+void Client::setARequest(ARequest *ARequest)
+{
+    if (ARequest == NULL)
+        throw ExecptionErrorUninitializedVariable("*ARequest", "Client");
+
+    _ARequest = ARequest;
+}
+
+TypeRequest Client::getTypeRequest() const
+{
+    return _typeResquest;
+}
+
+void Client::setTypeRequest(TypeRequest typeRequest)
+{
+    _typeResquest = typeRequest;
+}
+        
+// =====================
+// ==     Method      ==
+// =====================
+void Client::initialisationClient()
+{
+    ARequest *arequest = new ARequest(); // check if fail 
+
+    setARequest(arequest);
+    getARequest()->initialisationARequest();
+    getARequest()->getRequestContext()->setClient(this);
+    getARequest()->getRequestContext()->initialisationRequestContext();
+}
+
+void Client::selectTypeRequest()
+{   
+    const std::string _allowed_cgi[3] = {".py", ".php", ".sh"}; // Put in static global
+    
+    std::string uri = getARequest()->getRequestContext()->getHttpRequest()->getHeader()->getUri();
+
+    size_t pos = uri.find_last_of('.');
+    std::string extension;
+    if (pos != std::string::npos)
+        extension = uri.substr(pos);
+
+    if (extension.empty() || std::find(_allowed_cgi, _allowed_cgi + 3, extension) == _allowed_cgi + 3)
+    {
+        setTypeRequest(STATIC);
+        ARequest *arequest = getARequest();
+        StaticRequest *staticRequest = new StaticRequest(*arequest); // check if fail
+        delete arequest;
+        setARequest(staticRequest);
+    }
+    else
+    {
+        setTypeRequest(CGI);
+        ARequest *arequest = getARequest();
+        CGIRequest *cgiRequest = new CGIRequest(*arequest);
+        delete arequest;
+        setARequest(cgiRequest);
+    }
 }
