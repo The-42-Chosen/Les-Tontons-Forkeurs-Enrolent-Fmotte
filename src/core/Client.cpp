@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 14:43:09 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/06 05:03:37 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/08 22:04:37 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,16 +166,16 @@ void Client::initialisationClient()
 
 void Client::selectTypeRequest()
 {   
-    const std::string _allowed_cgi[3] = {".py", ".php", ".sh"}; // Put in static global
+    const std::string _allowed_cgi[2] = {".py", ".php"}; // Put in static global
     
-    std::string uri = getARequest()->getRequestContext()->getHttpRequest()->getHeader()->getUri();
+    std::string uri = getARequest()->getRequestContext()->getHttpRequest()->getHeader()->getScriptName();
 
     size_t pos = uri.find_last_of('.');
     std::string extension;
     if (pos != std::string::npos)
         extension = uri.substr(pos);
 
-    if (extension.empty() || std::find(_allowed_cgi, _allowed_cgi + 3, extension) == _allowed_cgi + 3)
+    if (extension.empty() || std::find(_allowed_cgi, _allowed_cgi + 2, extension) == _allowed_cgi + 2)
     {
         setTypeRequest(STATIC);
         ARequest *arequest = getARequest();
