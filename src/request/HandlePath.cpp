@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/06 05:37:38 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/06 06:04:44 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/08 21:55:14 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ std::string HandlePath::resolveRequestedFilePath(std::string initPath)
 {
     std::string pathFile;
 
-    pathFile = joinPath(initPath, returnLastElementPath(getHttpRequest()->getHeader()->getUri()));
+    pathFile = joinPath(initPath, returnLastElementPath(getHttpRequest()->getHeader()->getScriptName()));
 
     if (isFinishByFile(pathFile))
         return pathFile;

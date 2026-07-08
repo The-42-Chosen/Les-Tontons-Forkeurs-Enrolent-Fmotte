@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/17 17:37:08 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/06 05:53:56 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/08 21:50:54 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include "struct.hpp"
 #include "utilsDuplicate.hpp"
 
-Header::Header() : _method(NONE), _uri(""), _protocol(""), _host("")
+Header::Header() : _method(NONE), _query(""), _scriptName(""), _protocol(""), _host("")
 {
 }
 
@@ -34,7 +34,8 @@ Header &Header::operator=(const Header &other)
     if (this != &other)
     {
         _method = other._method;
-        _uri = other._uri;
+        _query = other._query;
+        _scriptName = other._scriptName;
         _protocol = other._protocol;
         _headerContent = other._headerContent;
         _host = other._host;
@@ -55,23 +56,34 @@ void Header::setMethod(const std::string &method)
     _method = parseMethodToken(method);
 }
 
-std::string Header::getUri(void) const
+
+std::string Header::getQuery(void) const
 {
-    return _uri;
+    return _query;
 }
 
-void Header::setUri(const std::string &uri)
+void Header::setQuery(const std::string &query)
 {
-    if (uri.find("../") != std::string::npos)
+    _query = query;
+}
+
+std::string Header::getScriptName(void) const
+{
+    return _scriptName;
+}
+
+void Header::setScriptName(const std::string &scriptName)
+{
+    if (scriptName.find("../") != std::string::npos)
         throw std::runtime_error("403");
 
-    if (uri[0] != '/')
+    if (scriptName[0] != '/')
         throw std::runtime_error("400");
 
-    if (uri.size() > 8192)
+    if (scriptName.size() > 8192)
         throw std::runtime_error("414");
 
-    _uri = uri;
+    _scriptName = scriptName;
 }
 
 std::string Header::getProtocol(void) const
@@ -167,7 +179,7 @@ void Header::parseHeaderInfo(const std::string &headerContent)
         throw std::runtime_error("400");
 
     setMethod(method);
-    setUri(uri);
+    sliptUriNQuery(uri);
     setProtocol(protocol);
 }
 std::string::size_type Header::findEnd(const std::string &headerContent, const std::string &end)
@@ -209,4 +221,18 @@ void Header::parseHeaderContent(const std::string &headerContent)
         }
         current = next + 2;
     }
+}
+
+void Header::sliptUriNQuery(std::string uri)
+{
+    std::string query = "";
+    std::string scriptName = uri;
+    std::string::size_type qpos = uri.find('?');
+    if (qpos != std::string::npos)
+    {
+        query = uri.substr(qpos + 1);
+        scriptName = uri.substr(0, qpos);
+    }
+    setQuery(query);
+    setScriptName(scriptName);
 }

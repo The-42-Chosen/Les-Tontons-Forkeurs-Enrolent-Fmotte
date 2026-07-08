@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/05 21:33:57 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/06 05:34:16 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/08 21:55:02 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,9 +130,9 @@ void RequestContext::linkToServer(void)
             if ((*it)->getNameServer(i) == "")
                 break;
 
-            std::cout << "\n";
-            std::cout << "Name: " << (*it)->getNameServer(i) << "\n";
-            std::cout << "HOST: " << getHttpRequest()->getHeader()->getHost() << "\n";
+            // std::cout << "\n";
+            // std::cout << "Name: " << (*it)->getNameServer(i) << "\n";
+            // std::cout << "HOST: " << getHttpRequest()->getHeader()->getHost() << "\n";
 
             if ((*it)->getNameServer(i) == getHttpRequest()->getHeader()->getHost())
             {
@@ -155,7 +155,7 @@ Location *RequestContext::findLocation(void)
 
     for (int i = 0; (location = getClient()->getServerPtr()->getLocation(i)) != NULL; ++i)
     {
-        score = longestPrefixMatch(getHttpRequest()->getHeader()->getUri(), location->getName());
+        score = longestPrefixMatch(getHttpRequest()->getHeader()->getScriptName(), location->getName());
 
         if (score < best_score)
         {

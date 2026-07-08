@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/17 17:37:05 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/25 10:18:37 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/08 21:48:54 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@ class Header
     // ==    Attributs    ==
     // =====================
     HttpMethod _method;
-    std::string _uri;
+    std::string _query;
+    std::string _scriptName;
     std::string _protocol;
     HeaderContent _headerContent;
     std::string _host;
@@ -40,8 +41,10 @@ class Header
     // =====================
     HttpMethod getMethod(void) const;
     void setMethod(const std::string &method);
-    std::string getUri(void) const;
-    void setUri(const std::string &uri);
+    std::string getQuery(void) const;
+    void setQuery(const std::string &query);
+    std::string getScriptName(void) const;
+    void setScriptName(const std::string &scriptName);
     std::string getProtocol(void) const;
     void setProtocol(const std::string &protocol);
     HeaderContent getHeaderContent(void) const;
@@ -58,4 +61,5 @@ class Header
     void parseHeaderContent(const std::string &headerContent);
     HttpMethod parseMethodToken(const std::string &method);
     std::string::size_type findEnd(const std::string &headerContent, const std::string &end);
+    void sliptUriNQuery(std::string uri);
 };
