@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 16:52:26 by erpascua          #+#    #+#             */
-/*   Updated: 2026/07/06 02:10:49 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/08 21:28:15 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,8 +87,8 @@ void HttpResponse::initialisationHttpResponse()
 
     response->applyResponse();
 
-    std::cout << "\n\nRESPONSE\n";
-    std::cout << getResponseContent() << "\n";
+    //std::cout << "\n\nRESPONSE\n";
+    //std::cout << getResponseContent() << "\n";
 }
 
 AResponse *HttpResponse::selectResponse(int statusCode, ErrorResponse &error, RedirResponse &redir,

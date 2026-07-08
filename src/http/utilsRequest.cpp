@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 13:53:46 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/05 23:27:26 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/08 21:56:43 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,8 +124,6 @@ void checkPermisionReadFile(std::string path)
 bool isFinishByFile(std::string path)
 {
     struct stat buff;
-
-    std::cout << "Check " << path << "\n";
 
     if (access(path.c_str(), F_OK) == -1)
         return false;
