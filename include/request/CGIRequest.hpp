@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/16 16:35:38 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/06 05:14:41 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/08 21:54:22 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,10 +50,10 @@ class CGIRequest: public ARequest
         void createPipe(int pipeIn[2], int pipeOut[2]);
 
         void checkForkCreate(pid_t pid);
-        // void connectToEpoll();
+        void connectToEpoll();
         void sendDataToChild();
         void receivedDataFromChild();
         void processDataFromChild();
-        
+        void forwardCgiHeaders(const std::string &headerBlock);
         void manage_pipe(const std::string &interpreter);
 };  

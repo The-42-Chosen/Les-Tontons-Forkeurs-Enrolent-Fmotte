@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/16 16:35:36 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/06 06:03:00 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/08 22:00:58 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,15 +127,17 @@ void CGIRequest::initializationCGIRequest(const std::string &interpreter)
         manage_pipe(interpreter);
         
     close(getPipeOut()[1]);
+
+    connectToEpoll();
 }
 
-// void CGIRequest::connectToEpoll()
-// {
-//     int epoll_fd = getRequestContext()->getClient()->getWebserv()->getEpollFd();
+void CGIRequest::connectToEpoll()
+{
+    int epoll_fd = getRequestContext()->getClient()->getWebserv()->getEpollFd();
 
-//     addFdToEvent(epoll_fd, getPipeIn()[1], EPOLLOUT, PIPEIN, this);
-//     addFdToEvent(epoll_fd, getPipeOut()[0], EPOLLIN, PIPEOUT, this);
-// }
+    addFdToEvent(epoll_fd, getPipeIn()[1], EPOLLOUT, WRITECHILD, this);
+    addFdToEvent(epoll_fd, getPipeOut()[0], EPOLLIN, READCHILD, this);
+}
 
 void CGIRequest::sendDataToChild()
 {
@@ -176,9 +178,33 @@ void CGIRequest::processDataFromChild()
         sepLen = 2;
     }
     if (sep != std::string::npos)
+    {
+        forwardCgiHeaders(payload.substr(0, sep));
         return getResponseContext()->setPayload(payload.substr(sep + sepLen));
+    }
 
+        
     getResponseContext()->setPayload(payload);
+}
+
+void CGIRequest::forwardCgiHeaders(const std::string &headerBlock)
+{
+    std::stringstream stream(headerBlock);
+    std::string line;
+
+    while (std::getline(stream, line))
+    {
+        if (!line.empty() && line[line.size() - 1] == '\r')
+            line.erase(line.size() - 1);
+
+        std::string::size_type colon = line.find(':');
+        if (colon == std::string::npos)
+            continue;
+
+        std::string key = toLowerString(trimSpaces(line.substr(0, colon)));
+        if (key == "set-cookie")
+           getResponseContext()->addCgiSetCookie(trimSpaces(line.substr(colon + 1)));
+    }
 }
 
 void CGIRequest::manage_pipe(const std::string &interpreter)
@@ -209,21 +235,13 @@ void CGIRequest::manage_pipe(const std::string &interpreter)
     close(pipeIn[0]);
 
     // URI / query string / script name
-    HttpRequest *httpRequest = getRequestContext()->getHttpRequest();
-    std::string uri = httpRequest->getHeader()->getUri();
-    std::string query = "";
-    std::string scriptName = uri;
-    std::string::size_type qpos = uri.find('?');
-    if (qpos != std::string::npos)
-    {
-        query = uri.substr(qpos + 1);
-        scriptName = uri.substr(0, qpos);
-    }
+    std::string query = getRequestContext()->getHttpRequest()->getHeader()->getQuery();
+    std::string scriptName =  getRequestContext()->getHttpRequest()->getHeader()->getScriptName();
 
-    std::string method = (httpRequest->getHeader()->getMethod() == POST) ? "POST" : "GET";
-    std::string protocol = httpRequest->getHeader()->getProtocol();
+    std::string method = (getRequestContext()->getHttpRequest()->getHeader()->getMethod() == POST) ? "POST" : "GET";
+    std::string protocol = getRequestContext()->getHttpRequest()->getHeader()->getProtocol();
     
-    HeaderContent hc = httpRequest->getHeader()->getHeaderContent();
+    HeaderContent hc = getRequestContext()->getHttpRequest()->getHeader()->getHeaderContent();
     std::string contentType = hc.count("content-type") ? hc.at("content-type") : "";
     std::string contentLength = hc.count("content-length") ? hc.at("content-length") : "";
     std::string cookie = hc.count("cookie") ? hc.at("cookie") : "";
@@ -242,7 +260,6 @@ void CGIRequest::manage_pipe(const std::string &interpreter)
     std::string path = handlePath.createPath(getRequestContext()->getLocation());
 
     checkPermisionReadFile(path);
-    std::cout << "Path: " << path << "\n";
     
     std::string::size_type pslash = path.rfind('/');
     std::string scriptFile = (pslash != std::string::npos) ? path.substr(pslash + 1) : path;
