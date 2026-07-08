@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/03 17:58:55 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/06 01:37:23 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/08 21:26:00 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,14 @@ enum TypeRequest
     CGI
 };
 
+enum FdType
+{
+    SERVER,
+    CLIENT,
+    WRITECHILD,
+    READCHILD
+};
+
 struct Listen
 {
     std::string ip;
@@ -66,4 +74,11 @@ struct HttpErrorPage
 {
     int code;
     std::string path_page; // Absolute path to the page
+};
+
+struct EventData
+{
+    int fd;
+    void *ptr;
+    FdType type;
 };

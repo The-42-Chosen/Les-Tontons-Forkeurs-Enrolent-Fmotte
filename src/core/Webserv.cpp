@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/06 05:16:02 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/08 22:01:30 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,7 +148,7 @@ bool Webserv::splitIntoServers(std::vector<std::string> &tokens)
 void Webserv::registerNewSocket(std::map<Listen, int> &map_socket_fd, Listen *listenConfig, Server *server)
 {
     int serverSocket = createServerSocket(listenConfig->ip, listenConfig->port, MAX_CLIENT);
-    addSocketToEvent(getEpollFd(), serverSocket, NULL);
+    addFdToEvent(getEpollFd(), serverSocket, EPOLLIN, SERVER, server);
 
     map_socket_fd.insert(std::make_pair(*listenConfig, serverSocket));
 
@@ -207,8 +207,8 @@ void Webserv::handleNewClient(int server_fd)
 
     _vectorClient.push_back(client);
 
-    addSocketToEvent(getEpollFd(), clientSocket, client);
-
+    addFdToEvent(getEpollFd(), clientSocket, EPOLLIN, CLIENT, client);
+    
     client->setClientFd(clientSocket);
     client->setServerFd(server_fd);
     client->setWebserv(this);
@@ -236,11 +236,11 @@ bool Webserv::readAndCheckRequestCompletion(Client *client)
     if ((bytes = recv(client->getClientFd(), buffer, sizeof(buffer), 0)) == -1)
         return true;
 
-    if (bytes == 0)
-    {
-        deleteClient(client);
-        return true;
-    }
+    // if (bytes == 0)
+    // {
+    //     deleteClient(client);
+    //     return true;
+    // }
 
     std::string s;
     s.assign(buffer, buffer + bytes);
@@ -252,13 +252,36 @@ bool Webserv::readAndCheckRequestCompletion(Client *client)
     return false;
 }
 
+void Webserv::processClient(EventData *eventData)
+{
+    Client *client = static_cast<Client *>(eventData->ptr);
+    
+    if (processClientRequest(client))
+        processClientResponse(client);
+}
+
 bool Webserv::processClientRequest(Client *client)
 {
     if (readAndCheckRequestCompletion(client))
         return false;
 
-    std::cout << "Final Message from client: " << client->getContentRequest() << "\n";
+    //std::cout << "Final Message from client: " << client->getContentRequest() << "\n";
     return true;
+}
+
+void  Webserv::writeToChild(EventData *eventData)
+{
+    CGIRequest *cgiRequest = static_cast<CGIRequest *>(eventData->ptr);
+    cgiRequest->sendDataToChild();
+}
+
+void Webserv::readToChild(EventData *eventData)
+{
+    CGIRequest *cgiRequest = static_cast<CGIRequest *>(eventData->ptr);
+    
+    cgiRequest->receivedDataFromChild();
+    waitpid(cgiRequest->getPid(), NULL, 0);
+    cgiRequest->processDataFromChild();
 }
 
 void Webserv::processClientResponse(Client *client)
@@ -270,40 +293,48 @@ void Webserv::processClientResponse(Client *client)
     {
         StaticRequest *staticRequest = dynamic_cast<StaticRequest *>(client->getARequest());
         staticRequest->selectMethodHttp();
-        
-        HttpResponse response(staticRequest);
-        response.initialisationHttpResponse();
-        response.sendToClient();
-        client->clearContentRequest();
     }
     else
     {
         CGIRequest *cgiRequest = dynamic_cast<CGIRequest *>(client->getARequest());
         cgiRequest->initializationCGIRequest("/usr/bin/python3");
-        cgiRequest->sendDataToChild();
-        cgiRequest->receivedDataFromChild();
-        waitpid(cgiRequest->getPid(), NULL, 0);
-        cgiRequest->processDataFromChild();
-
-        HttpResponse response(cgiRequest);
-        response.initialisationHttpResponse();
-        response.sendToClient();
-        client->clearContentRequest();
     }
 }
 
 void Webserv::handleConnection(struct epoll_event &events)
 {
-    std::string reply = "Message received\n";
-    int server_fd = events.data.fd;
-
-    if (_mapFdToServer.find(server_fd) != _mapFdToServer.end())
-        handleNewClient(server_fd);
-
-    else
+    EventData *eventData = static_cast<EventData *>(events.data.ptr);
+    
+    switch (eventData->type)
     {
-        if (processClientRequest(static_cast<Client *>(events.data.ptr)))
-            processClientResponse(static_cast<Client *>(events.data.ptr));
+    
+        case(SERVER): handleNewClient(eventData->fd); return;
+        case(CLIENT): processClient(eventData); break;
+        case(WRITECHILD): writeToChild(eventData); break;
+        case(READCHILD): readToChild(eventData); break;
+    }
+    
+    if (eventData->type == CLIENT)
+    {
+        Client *client = static_cast<Client *>(eventData->ptr);
+        
+        if (client->getTypeRequest() == STATIC)
+        {
+            HttpResponse response(client->getARequest());
+            response.initialisationHttpResponse();
+            response.sendToClient();
+            client->clearContentRequest(); 
+        }
+    }
+    else if (eventData->type == READCHILD)
+    {
+        CGIRequest *cgiRequest = static_cast<CGIRequest *>(eventData->ptr);
+        Client *client = cgiRequest->getRequestContext()->getClient();
+        
+        HttpResponse response(cgiRequest);
+        response.initialisationHttpResponse();
+        response.sendToClient();
+        client->clearContentRequest();
     }
 }
 
