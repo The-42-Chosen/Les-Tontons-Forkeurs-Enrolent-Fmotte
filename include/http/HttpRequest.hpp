@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/07/06 05:39:02 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/08 22:03:04 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,5 @@ class HttpRequest
 		// =====================
 		void initHeader(const std::string &headerContent);
 		void initBody();
-		std::string selectMethodHttp(Location *location);
 		CookieMap getCookies() const;
 };
