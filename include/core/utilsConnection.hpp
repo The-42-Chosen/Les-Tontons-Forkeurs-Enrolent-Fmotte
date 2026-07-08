@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 14:55:35 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/06 05:02:12 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/08 21:21:16 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,23 +24,22 @@ void initializeSignal(void);
 int setNonblocking(int fd);
 
 sockaddr_in createSocketAddress(std::string ip_address, unsigned int port_number);
-void addSocketToEvent(int epoll_fd, int socket_fd, Client *client);
 int createServerSocket(std::string ip_address, unsigned int port_number, unsigned int max_client);
 
-// template <typename PTR> 
-// void addFdToEvent(int epoll_fd, int socket_fd, uint32_t event, FdType type, PTR *ptr)
-// {
-//     setNonblocking(socket_fd);
+template <typename PTR> 
+void addFdToEvent(int epoll_fd, int socket_fd, uint32_t event, FdType type, PTR *ptr)
+{
+    setNonblocking(socket_fd);
 
-//     struct epoll_event ev;
-//     ev.events = event;
+    struct epoll_event ev;
+    ev.events = event;
 
-//     EventData *eventData = new EventData;
-//     eventData->ptr = ptr;
-//     eventData->fd = socket_fd;
-//     eventData->type = type;
-//     ev.data.ptr = eventData;
+    EventData *eventData = new EventData;
+    eventData->ptr = ptr;
+    eventData->fd = socket_fd;
+    eventData->type = type;
+    ev.data.ptr = eventData;
     
-//     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, socket_fd, &ev) == -1)
-//         throw ExecptionErrorFunction("epoll_ctl");
-// }
+    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, socket_fd, &ev) == -1)
+        throw ExecptionErrorFunction("epoll_ctl");
+}

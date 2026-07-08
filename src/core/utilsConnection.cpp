@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utilsConnection.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 14:55:37 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/13 18:43:47 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/07/08 21:22:50 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,19 +56,6 @@ sockaddr_in createSocketAddress(std::string ip_address, unsigned int port_number
     // serverAddress.sin_port = htons(port_number);
     // freeaddrinfo(res);
     // return serverAddress;
-}
-
-void addSocketToEvent(int epoll_fd, int socket_fd, Client *client)
-{
-    setNonblocking(socket_fd);
-
-    struct epoll_event ev;
-    ev.events = EPOLLIN;
-    ev.data.fd = socket_fd;
-    if (client != NULL)
-        ev.data.ptr = client;
-    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, socket_fd, &ev) == -1)
-        throw ExecptionErrorFunction("epoll_ctl");
 }
 
 int createServerSocket(std::string ip_address, unsigned int port_number, unsigned int max_client)
