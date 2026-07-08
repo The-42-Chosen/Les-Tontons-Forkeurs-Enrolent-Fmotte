@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 14:13:06 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/06 06:01:37 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/08 22:05:34 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,15 +62,9 @@ std::string GetMethod::applyMethod(Location *location)
     checkPermisionReadFile(path);
     std::string extention = path.substr(path.find_last_of("."));
 
-    if (extention == ".py")
-        return applyCGI(path, "/usr/bin/python3");
-    else if (extention == ".php")
-        return applyCGI(path, "/usr/bin/php-cgi");
-    else
-    {
-        parseConfigFile(path.c_str(), contentFile);
-        std::cout << "\ncontentFile: " << contentFile << "\n";
-    }
 
+    parseConfigFile(path.c_str(), contentFile);
+    //std::cout << "\ncontentFile: " << contentFile << "\n";
+    
     return contentFile;
 }
