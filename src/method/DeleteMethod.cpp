@@ -12,8 +12,8 @@
 
 #include "DeleteMethod.hpp"
 
-#include "HttpRequest.hpp"
 #include "HandlePath.hpp"
+#include "HttpRequest.hpp"
 
 #include <sys/stat.h>
 
@@ -48,7 +48,7 @@ std::string DeleteMethod::applyMethod(Location *location)
 
     HandlePath handlePath(getHttpRequest());
     std::string path = handlePath.createPath(location);
-    
+
     std::cout << "Path to file to delete " << path << "\n";
 
     if (access(path.c_str(), F_OK) == -1)

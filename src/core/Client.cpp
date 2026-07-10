@@ -12,18 +12,20 @@
 
 #include "Client.hpp"
 
-#include "Header.hpp"
 #include "ARequest.hpp"
-#include "RequestContext.hpp"
-#include "HttpRequest.hpp"
-#include "StaticRequest.hpp"
 #include "CGIRequest.hpp"
+#include "Header.hpp"
+#include "HttpRequest.hpp"
+#include "RequestContext.hpp"
+#include "StaticRequest.hpp"
 
 // =====================
 // == Canonical Form  ==
 // =====================
 
-Client::Client() : _client_fd(-1), _server_fd(-1), _server(0), _webserv(0), _ARequest(NULL), _typeResquest(STATIC), _contentRequest(""), _sessionId("")
+Client::Client()
+    : _client_fd(-1), _server_fd(-1), _server(0), _webserv(0), _ARequest(NULL), _typeResquest(STATIC),
+      _contentRequest(""), _sessionId("")
 {
 }
 
@@ -127,7 +129,6 @@ bool Client::hasSession(void)
     return !_sessionId.empty();
 }
 
-
 ARequest *Client::getARequest() const
 {
     return _ARequest;
@@ -150,13 +151,13 @@ void Client::setTypeRequest(TypeRequest typeRequest)
 {
     _typeResquest = typeRequest;
 }
-        
+
 // =====================
 // ==     Method      ==
 // =====================
 void Client::initialisationClient()
 {
-    ARequest *arequest = new ARequest(); // check if fail 
+    ARequest *arequest = new ARequest(); // check if fail
 
     setARequest(arequest);
     getARequest()->initialisationARequest();
@@ -165,9 +166,9 @@ void Client::initialisationClient()
 }
 
 void Client::selectTypeRequest()
-{   
+{
     const std::string _allowed_cgi[2] = {".py", ".php"}; // Put in static global
-    
+
     std::string uri = getARequest()->getRequestContext()->getHttpRequest()->getHeader()->getScriptName();
 
     size_t pos = uri.find_last_of('.');

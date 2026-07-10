@@ -12,10 +12,10 @@
 
 #include "RedirResponse.hpp"
 
-#include "HttpResponse.hpp"
 #include "ARequest.hpp"
-#include "ResponseContext.hpp"
+#include "HttpResponse.hpp"
 #include "RequestContext.hpp"
+#include "ResponseContext.hpp"
 
 RedirResponse::RedirResponse(HttpResponse *httpResponse, int statusCode) : AResponse(httpResponse, statusCode)
 {

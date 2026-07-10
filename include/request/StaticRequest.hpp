@@ -16,25 +16,24 @@
 
 class HttpRequest;
 
-class StaticRequest: public ARequest
+class StaticRequest : public ARequest
 {
-    private:
-        // =====================
-        // ==    Attributs    ==
-        // =====================
-        
-        StaticRequest();
-        
-    public:
-        // =====================
-        // ==       OCF       ==
-        // =====================
-        StaticRequest(ARequest arequest);
-        ~StaticRequest();
+  private:
+    // =====================
+    // ==    Attributs    ==
+    // =====================
 
-        // =====================
-        // ==     Method      ==
-        // =====================
-        void selectMethodHttp();
+    StaticRequest();
+
+  public:
+    // =====================
+    // ==       OCF       ==
+    // =====================
+    StaticRequest(ARequest arequest);
+    ~StaticRequest();
+
+    // =====================
+    // ==     Method      ==
+    // =====================
+    void selectMethodHttp();
 };
-

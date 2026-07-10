@@ -12,38 +12,36 @@
 
 #include "StaticRequest.hpp"
 
-#include "RequestContext.hpp"
-#include "ResponseContext.hpp"
-#include "HttpRequest.hpp"
-#include "Header.hpp"
 #include "AMethod.hpp"
 #include "DeleteMethod.hpp"
 #include "GetMethod.hpp"
 #include "HeadMethod.hpp"
+#include "Header.hpp"
+#include "HttpRequest.hpp"
 #include "PostMethod.hpp"
+#include "RequestContext.hpp"
+#include "ResponseContext.hpp"
 
 #include "execption.hpp"
 // =====================
 // ==       OCF       ==
 // =====================
-StaticRequest::StaticRequest(ARequest arequest): ARequest(arequest)
+StaticRequest::StaticRequest(ARequest arequest) : ARequest(arequest)
 {
-
 }
 
 StaticRequest::~StaticRequest()
 {
-
 }
-
 
 // =====================
 // ==     Method      ==
 // =====================
 void StaticRequest::selectMethodHttp()
-{   
+{
     HttpRequest *httpRequest = getRequestContext()->getHttpRequest();
-    HttpMethod httpMethod = httpRequest->getHeader()->getMethod();;
+    HttpMethod httpMethod = httpRequest->getHeader()->getMethod();
+    ;
     AMethod *method = NULL;
 
     GetMethod get(httpRequest);

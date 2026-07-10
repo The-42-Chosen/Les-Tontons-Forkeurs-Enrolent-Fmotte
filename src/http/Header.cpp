@@ -56,7 +56,6 @@ void Header::setMethod(const std::string &method)
     _method = parseMethodToken(method);
 }
 
-
 std::string Header::getQuery(void) const
 {
     return _query;

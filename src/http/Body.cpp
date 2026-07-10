@@ -12,10 +12,10 @@
 
 #include "Body.hpp"
 
+#include "ARequest.hpp"
 #include "Client.hpp"
 #include "Header.hpp"
 #include "HttpRequest.hpp"
-#include "ARequest.hpp"
 #include "RequestContext.hpp"
 
 #include "colors.hpp"

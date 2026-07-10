@@ -26,8 +26,7 @@ int setNonblocking(int fd);
 sockaddr_in createSocketAddress(std::string ip_address, unsigned int port_number);
 int createServerSocket(std::string ip_address, unsigned int port_number, unsigned int max_client);
 
-template <typename PTR> 
-void addFdToEvent(int epoll_fd, int socket_fd, uint32_t event, FdType type, PTR *ptr)
+template <typename PTR> void addFdToEvent(int epoll_fd, int socket_fd, uint32_t event, FdType type, PTR *ptr)
 {
     setNonblocking(socket_fd);
 
@@ -39,7 +38,7 @@ void addFdToEvent(int epoll_fd, int socket_fd, uint32_t event, FdType type, PTR 
     eventData->fd = socket_fd;
     eventData->type = type;
     ev.data.ptr = eventData;
-    
+
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, socket_fd, &ev) == -1)
         throw ExecptionErrorFunction("epoll_ctl");
 }

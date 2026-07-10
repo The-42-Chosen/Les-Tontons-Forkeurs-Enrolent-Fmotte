@@ -19,16 +19,15 @@
 // =====================
 // == Canonical Form  ==
 // =====================
-ResponseContext::ResponseContext(ARequest *arequest): _statusCode(200), _payload(""), _cgiSetCookies(0), _ARequest(NULL)
+ResponseContext::ResponseContext(ARequest *arequest)
+    : _statusCode(200), _payload(""), _cgiSetCookies(0), _ARequest(NULL)
 {
     setARequest(arequest);
 }
-       
+
 ResponseContext::~ResponseContext()
 {
-    
 }
-
 
 // =====================
 // == Getter & Setter ==

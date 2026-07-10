@@ -21,65 +21,65 @@ class ARequest;
 
 class Client
 {
-	private:
-		//split between link and info
-		int _client_fd;
-		int _server_fd;
-		Server *_server;
-		Webserv *_webserv;
-		ARequest *_ARequest;
-		TypeRequest _typeResquest;
-		std::string _contentRequest;
-		std::string _sessionId;
+  private:
+    // split between link and info
+    int _client_fd;
+    int _server_fd;
+    Server *_server;
+    Webserv *_webserv;
+    ARequest *_ARequest;
+    TypeRequest _typeResquest;
+    std::string _contentRequest;
+    std::string _sessionId;
 
-	public:
-		// =====================
-		// == Canonical Form  ==
-		// =====================
-		Client();
-		~Client();
-		Client(const Client &other);
-		Client &operator=(const Client &other);
+  public:
+    // =====================
+    // == Canonical Form  ==
+    // =====================
+    Client();
+    ~Client();
+    Client(const Client &other);
+    Client &operator=(const Client &other);
 
-		// =====================
-		// == Getter & Setter ==
-		// =====================
+    // =====================
+    // == Getter & Setter ==
+    // =====================
 
-		// CLIENT-FD
-		int getClientFd(void);
-		void setClientFd(int client_fd);
+    // CLIENT-FD
+    int getClientFd(void);
+    void setClientFd(int client_fd);
 
-		// SERVER-FD
-		int getServerFd(void);
-		void setServerFd(int server_fd);
+    // SERVER-FD
+    int getServerFd(void);
+    void setServerFd(int server_fd);
 
-		// SERVER-PTR
-		Server *getServerPtr(void);
-		void setServerPtr(Server *server);
+    // SERVER-PTR
+    Server *getServerPtr(void);
+    void setServerPtr(Server *server);
 
-		// REQUEST
-		std::string &getContentRequest(void);
-		void clearContentRequest(void);
-		void appendContentRequest(std::string &request);
+    // REQUEST
+    std::string &getContentRequest(void);
+    void clearContentRequest(void);
+    void appendContentRequest(std::string &request);
 
-		// WEBSERV
-		Webserv *getWebserv(void);
-		void setWebserv(Webserv *webserv);
+    // WEBSERV
+    Webserv *getWebserv(void);
+    void setWebserv(Webserv *webserv);
 
-		// SESSION
-		std::string getSessionId(void);
-		void setSessionId(const std::string &sessionId);
-		bool hasSession(void);
+    // SESSION
+    std::string getSessionId(void);
+    void setSessionId(const std::string &sessionId);
+    bool hasSession(void);
 
-		ARequest *getARequest() const;
-    	void setARequest(ARequest *ARequest);
-		
-		TypeRequest getTypeRequest() const;
-		void setTypeRequest(TypeRequest typeRequest);
-		
-		// =====================
-		// ==     Method      ==
-		// =====================
-		void initialisationClient();
-		void selectTypeRequest();
+    ARequest *getARequest() const;
+    void setARequest(ARequest *ARequest);
+
+    TypeRequest getTypeRequest() const;
+    void setTypeRequest(TypeRequest typeRequest);
+
+    // =====================
+    // ==     Method      ==
+    // =====================
+    void initialisationClient();
+    void selectTypeRequest();
 };

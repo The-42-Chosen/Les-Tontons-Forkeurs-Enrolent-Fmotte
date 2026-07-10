@@ -19,45 +19,43 @@ class HttpRequest;
 
 class HandlePath
 {
-    private:
-        // =====================
-		// ==    Attributs    ==
-		// =====================
-        std::string _path;
-        bool _isAutoIndex;
-        HttpRequest *_httpRequest;
-        
-        HandlePath();
-        
-    public:
-    	// =====================
-		// ==       OCF       ==
-		// =====================
-        HandlePath(HttpRequest *httpRequest);
-        ~HandlePath();
+  private:
+    // =====================
+    // ==    Attributs    ==
+    // =====================
+    std::string _path;
+    bool _isAutoIndex;
+    HttpRequest *_httpRequest;
 
-        // =====================
-		// ==     Getters     ==
-		// =====================
-        std::string getPath() const;
-        void setPath(std::string path);
-        bool getIsAutoIndex() const;
-        void setIsAutoIndex(bool isAutoIndex);
-        HttpRequest *getHttpRequest() const;
-        void setHttpRequest(HttpRequest *httpRequest);
-        
-        // =====================
-		// == 	  Member	  ==
-		// =====================
-        std::string selectRoot(Location *location);
-        std::string resolveRequestedFilePath(std::string initPath);
+    HandlePath();
 
-        std::string createPath(Location *location);
-        std::string createPathWithLocation(Location *location);
-        std::string createPathWithServer();
+  public:
+    // =====================
+    // ==       OCF       ==
+    // =====================
+    HandlePath(HttpRequest *httpRequest);
+    ~HandlePath();
 
-        void listContentFolder(const std::string &path, std::string &folderContent);
-        std::string createContentAutoIndex(const std::string &path);
+    // =====================
+    // ==     Getters     ==
+    // =====================
+    std::string getPath() const;
+    void setPath(std::string path);
+    bool getIsAutoIndex() const;
+    void setIsAutoIndex(bool isAutoIndex);
+    HttpRequest *getHttpRequest() const;
+    void setHttpRequest(HttpRequest *httpRequest);
+
+    // =====================
+    // == 	  Member	  ==
+    // =====================
+    std::string selectRoot(Location *location);
+    std::string resolveRequestedFilePath(std::string initPath);
+
+    std::string createPath(Location *location);
+    std::string createPathWithLocation(Location *location);
+    std::string createPathWithServer();
+
+    void listContentFolder(const std::string &path, std::string &folderContent);
+    std::string createContentAutoIndex(const std::string &path);
 };
-
-

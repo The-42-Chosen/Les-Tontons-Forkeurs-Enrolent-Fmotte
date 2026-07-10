@@ -12,8 +12,8 @@
 
 #include "HeadMethod.hpp"
 
-#include "HttpRequest.hpp"
 #include "HandlePath.hpp"
+#include "HttpRequest.hpp"
 
 #include "utilsRequest.hpp"
 

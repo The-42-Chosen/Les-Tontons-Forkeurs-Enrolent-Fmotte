@@ -23,37 +23,37 @@ class Location;
 
 class HttpRequest
 {
-	private:
-		// =====================
-		// ==    Attributs    ==
-		// =====================
-		Header *_header;
-		Body *_body;
-		RequestContext *_requestContext;
+  private:
+    // =====================
+    // ==    Attributs    ==
+    // =====================
+    Header *_header;
+    Body *_body;
+    RequestContext *_requestContext;
 
-		HttpRequest();
+    HttpRequest();
 
-	public:
-		// =====================
-		// ==       OCF       ==
-		// =====================
-		HttpRequest(RequestContext *requestContext);
-		~HttpRequest();
+  public:
+    // =====================
+    // ==       OCF       ==
+    // =====================
+    HttpRequest(RequestContext *requestContext);
+    ~HttpRequest();
 
-		// =====================
-		// ==     Getters     ==
-		// =====================
-		Header *getHeader() const;
-		void setHeader(Header *header);
-		RequestContext *getRequestContext() const;
-		void setRequestContext(RequestContext *requestContext);
-		Body *getBody() const;
-		void setBody(Body *body);
-		
-		// =====================
-		// == 	  Member	  ==
-		// =====================
-		void initHeader(const std::string &headerContent);
-		void initBody();
-		CookieMap getCookies() const;
+    // =====================
+    // ==     Getters     ==
+    // =====================
+    Header *getHeader() const;
+    void setHeader(Header *header);
+    RequestContext *getRequestContext() const;
+    void setRequestContext(RequestContext *requestContext);
+    Body *getBody() const;
+    void setBody(Body *body);
+
+    // =====================
+    // == 	  Member	  ==
+    // =====================
+    void initHeader(const std::string &headerContent);
+    void initBody();
+    CookieMap getCookies() const;
 };

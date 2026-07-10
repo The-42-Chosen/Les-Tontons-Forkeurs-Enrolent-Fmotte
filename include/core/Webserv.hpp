@@ -33,63 +33,63 @@ struct SessionInfo
 
 class Webserv
 {
-	private:
-		std::vector<Server *> _vectorServer;
-		std::vector<Client *> _vectorClient;
-		std::map<int, std::set<Server *> > _mapFdToServer;
-		std::map<std::string, SessionInfo> _sessions;
-		int _webserEpoll;
+  private:
+    std::vector<Server *> _vectorServer;
+    std::vector<Client *> _vectorClient;
+    std::map<int, std::set<Server *> > _mapFdToServer;
+    std::map<std::string, SessionInfo> _sessions;
+    int _webserEpoll;
 
-		void cleanupSessions(void);
+    void cleanupSessions(void);
 
-	public:
-		// =====================
-		// == Canonical Form  ==
-		// =====================
+  public:
+    // =====================
+    // == Canonical Form  ==
+    // =====================
 
-		Webserv();
-		~Webserv();
-		Webserv(const Webserv &other);
-		Webserv &operator=(const Webserv &other);
+    Webserv();
+    ~Webserv();
+    Webserv(const Webserv &other);
+    Webserv &operator=(const Webserv &other);
 
-		// =====================
-		// == Getter & Setter ==
-		// =====================
+    // =====================
+    // == Getter & Setter ==
+    // =====================
 
-		// SERVERS
-		const std::vector<Server *> &getServers(void) const;
-		const std::vector<Client *> &getClients(void) const;
-		const std::map<int, std::set<Server *> > &getFdToServersMap(void) const;
-		void setEpollFd(const int epoll);
-		int getEpollFd(void);
+    // SERVERS
+    const std::vector<Server *> &getServers(void) const;
+    const std::vector<Client *> &getClients(void) const;
+    const std::map<int, std::set<Server *> > &getFdToServersMap(void) const;
+    void setEpollFd(const int epoll);
+    int getEpollFd(void);
 
-		// SESSION
-		int touchSession(const std::string &sessionId);
+    // SESSION
+    int touchSession(const std::string &sessionId);
 
-		// =====================
-		// ==     Method      ==
-		// =====================
+    // =====================
+    // ==     Method      ==
+    // =====================
 
-		bool initializeWebserv(std::vector<std::string> &tokens);
-		bool splitIntoServers(std::vector<std::string> &tokens);
+    bool initializeWebserv(std::vector<std::string> &tokens);
+    bool splitIntoServers(std::vector<std::string> &tokens);
 
-		bool initializeConnection();
-		void initializeSocket();
-		void registerNewSocket(std::map<Listen, int> &map_socket_fd, Listen *listenConfig, Server *server);
-		void registerExistingSocket(int serverSocket, Server *server);
-		void listenToWebserv();
-		
-		void handleConnection(struct epoll_event &events);
-		void handleNewClient(int server_fd);
+    bool initializeConnection();
+    void initializeSocket();
+    void registerNewSocket(std::map<Listen, int> &map_socket_fd, Listen *listenConfig, Server *server);
+    void registerExistingSocket(int serverSocket, Server *server);
+    void listenToWebserv();
 
-		void processClient(EventData *eventData);
-		bool processClientRequest(Client *client);
-		void processClientResponse(Client *client);
-		
-		void writeToChild(EventData *eventData);
-		void readToChild(EventData *eventData);
-		
-		bool readAndCheckRequestCompletion(Client *client);
-		void deleteClient(Client *client);
-		void closeConnection();
+    void handleConnection(struct epoll_event &events);
+    void handleNewClient(int server_fd);
+
+    void processClient(EventData *eventData);
+    bool processClientRequest(Client *client);
+    void processClientResponse(Client *client);
+
+    void writeToChild(EventData *eventData);
+    void readToChild(EventData *eventData);
+
+    bool readAndCheckRequestCompletion(Client *client);
+    void deleteClient(Client *client);
+    void closeConnection();
 };

@@ -17,35 +17,33 @@ class ARequest;
 
 class ResponseContext
 {
-    private:
-        // =====================
-        // ==    Attributs    ==
-        // =====================
-        int _statusCode;
-        std::string _payload;
-        std::vector<std::string> _cgiSetCookies;
-        ARequest *_ARequest;
-        
-        ResponseContext();
-        
-    public:
-        // =====================
-        // ==       OCF       ==
-        // =====================
-        ResponseContext(ARequest *arequest);
-        ~ResponseContext();
+  private:
+    // =====================
+    // ==    Attributs    ==
+    // =====================
+    int _statusCode;
+    std::string _payload;
+    std::vector<std::string> _cgiSetCookies;
+    ARequest *_ARequest;
 
-        // =====================
-		// ==     Getters     ==
-		// =====================
-		int getStatusCode() const;
-		void setStatusCode(int statusCode);
-		std::string getPayload() const;
-		void setPayload(std::string payload);
-		const std::vector<std::string> &getCgiSetCookies() const;
-		void addCgiSetCookie(const std::string &setCookieValue);
-        ARequest *getARequest(void) const;
-		void setARequest(ARequest *arequest);
+    ResponseContext();
+
+  public:
+    // =====================
+    // ==       OCF       ==
+    // =====================
+    ResponseContext(ARequest *arequest);
+    ~ResponseContext();
+
+    // =====================
+    // ==     Getters     ==
+    // =====================
+    int getStatusCode() const;
+    void setStatusCode(int statusCode);
+    std::string getPayload() const;
+    void setPayload(std::string payload);
+    const std::vector<std::string> &getCgiSetCookies() const;
+    void addCgiSetCookie(const std::string &setCookieValue);
+    ARequest *getARequest(void) const;
+    void setARequest(ARequest *arequest);
 };
-
-

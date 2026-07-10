@@ -20,49 +20,48 @@ class ARequest;
 
 class RequestContext
 {
-    private:
-        // =====================
-        // ==    Attributs    ==
-        // =====================
-        Client* _client;
-        Server* _server;
-        Location *_location;
-        ARequest *_ARequest;
-        HttpRequest *_httpRequest;
+  private:
+    // =====================
+    // ==    Attributs    ==
+    // =====================
+    Client *_client;
+    Server *_server;
+    Location *_location;
+    ARequest *_ARequest;
+    HttpRequest *_httpRequest;
 
-        RequestContext();
-        
-    public:
-        // =====================
-        // ==       OCF       ==
-        // =====================
-        RequestContext(ARequest *arequest);
-        ~RequestContext();
-        
-        // =====================
-		// ==     Getters     ==
-		// =====================
-        Client *getClient(void) const;
-		void setClient(Client *client);
-		Server *getServer(void) const;
-		void setServer(Server *server);
-		HttpRequest *getHttpRequest(void) const;
-		void setHttpRequest(HttpRequest *httpRequest);
-		Location *getLocation(void) const;
-		void setLocation(Location *location);
-        ARequest *getARequest(void) const;
-		void setARequest(ARequest *arequest);
-        
-        // =====================
-		// == 	  Member	  ==
-		// =====================
-        void initialisationRequestContext();
-        
-        void linkToServer(void);
-        Location *findLocation(void);
-        void validateRequest(Location *location);
-		void checkAllowedMethods(Location *location);
-		void checkServerIsOpen();
-		void checkLocationIsOpen(Location *location);
+    RequestContext();
+
+  public:
+    // =====================
+    // ==       OCF       ==
+    // =====================
+    RequestContext(ARequest *arequest);
+    ~RequestContext();
+
+    // =====================
+    // ==     Getters     ==
+    // =====================
+    Client *getClient(void) const;
+    void setClient(Client *client);
+    Server *getServer(void) const;
+    void setServer(Server *server);
+    HttpRequest *getHttpRequest(void) const;
+    void setHttpRequest(HttpRequest *httpRequest);
+    Location *getLocation(void) const;
+    void setLocation(Location *location);
+    ARequest *getARequest(void) const;
+    void setARequest(ARequest *arequest);
+
+    // =====================
+    // == 	  Member	  ==
+    // =====================
+    void initialisationRequestContext();
+
+    void linkToServer(void);
+    Location *findLocation(void);
+    void validateRequest(Location *location);
+    void checkAllowedMethods(Location *location);
+    void checkServerIsOpen();
+    void checkLocationIsOpen(Location *location);
 };
-

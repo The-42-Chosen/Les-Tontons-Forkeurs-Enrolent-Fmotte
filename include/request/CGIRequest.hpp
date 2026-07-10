@@ -13,47 +13,47 @@
 #pragma once
 
 #include "ARequest.hpp"
- 
-class CGIRequest: public ARequest
+
+class CGIRequest : public ARequest
 {
-    private:
-        // =====================
-        // ==    Attributs    ==
-        // =====================
-        int _pipeIn[2];
-        int _pipeOut[2];
-        pid_t _pid;
-        
-        CGIRequest();
-        
-    public:
-        // =====================
-        // ==       OCF       ==
-        // =====================
-        CGIRequest(ARequest arequest);
-        ~CGIRequest();
+  private:
+    // =====================
+    // ==    Attributs    ==
+    // =====================
+    int _pipeIn[2];
+    int _pipeOut[2];
+    pid_t _pid;
 
-        // =====================
-        // ==     Getters     ==
-        // =====================
-        int *getPipeIn();
-        void setPipeIn(int pipeIn[2]);
-        int* getPipeOut();
-        void setPipeOut(int pipeOut[2]);
-        pid_t getPid() const;
-        void setPid(pid_t pid);
-        
-        // =====================
-        // == 	  Member	  ==
-        // =====================
-        void initializationCGIRequest(const std::string &interpreter);
-        void createPipe(int pipeIn[2], int pipeOut[2]);
+    CGIRequest();
 
-        void checkForkCreate(pid_t pid);
-        void connectToEpoll();
-        void sendDataToChild();
-        void receivedDataFromChild();
-        void processDataFromChild();
-        void forwardCgiHeaders(const std::string &headerBlock);
-        void manage_pipe(const std::string &interpreter);
-};  
+  public:
+    // =====================
+    // ==       OCF       ==
+    // =====================
+    CGIRequest(ARequest arequest);
+    ~CGIRequest();
+
+    // =====================
+    // ==     Getters     ==
+    // =====================
+    int *getPipeIn();
+    void setPipeIn(int pipeIn[2]);
+    int *getPipeOut();
+    void setPipeOut(int pipeOut[2]);
+    pid_t getPid() const;
+    void setPid(pid_t pid);
+
+    // =====================
+    // == 	  Member	  ==
+    // =====================
+    void initializationCGIRequest(const std::string &interpreter);
+    void createPipe(int pipeIn[2], int pipeOut[2]);
+
+    void checkForkCreate(pid_t pid);
+    void connectToEpoll();
+    void sendDataToChild();
+    void receivedDataFromChild();
+    void processDataFromChild();
+    void forwardCgiHeaders(const std::string &headerBlock);
+    void manage_pipe(const std::string &interpreter);
+};

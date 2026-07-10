@@ -12,14 +12,14 @@
 
 #include "AResponse.hpp"
 
+#include "ARequest.hpp"
 #include "Client.hpp"
 #include "Cookie.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
-#include "ARequest.hpp"
-#include "Webserv.hpp"
 #include "RequestContext.hpp"
 #include "ResponseContext.hpp"
+#include "Webserv.hpp"
 
 #include "execption.hpp"
 #include "utilsDuplicate.hpp"

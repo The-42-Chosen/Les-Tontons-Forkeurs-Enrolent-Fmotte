@@ -12,15 +12,15 @@
 
 #include "Webserv.hpp"
 
+#include "ARequest.hpp"
+#include "CGIRequest.hpp"
 #include "Client.hpp"
 #include "Header.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
-#include "ARequest.hpp"
-#include "Server.hpp"
 #include "RequestContext.hpp"
+#include "Server.hpp"
 #include "StaticRequest.hpp"
-#include "CGIRequest.hpp"
 
 #include "colors.hpp"
 #include "execption.hpp"
@@ -208,7 +208,7 @@ void Webserv::handleNewClient(int server_fd)
     _vectorClient.push_back(client);
 
     addFdToEvent(getEpollFd(), clientSocket, EPOLLIN, CLIENT, client);
-    
+
     client->setClientFd(clientSocket);
     client->setServerFd(server_fd);
     client->setWebserv(this);
@@ -255,7 +255,7 @@ bool Webserv::readAndCheckRequestCompletion(Client *client)
 void Webserv::processClient(EventData *eventData)
 {
     Client *client = static_cast<Client *>(eventData->ptr);
-    
+
     if (processClientRequest(client))
         processClientResponse(client);
 }
@@ -265,11 +265,11 @@ bool Webserv::processClientRequest(Client *client)
     if (readAndCheckRequestCompletion(client))
         return false;
 
-    //std::cout << "Final Message from client: " << client->getContentRequest() << "\n";
+    // std::cout << "Final Message from client: " << client->getContentRequest() << "\n";
     return true;
 }
 
-void  Webserv::writeToChild(EventData *eventData)
+void Webserv::writeToChild(EventData *eventData)
 {
     CGIRequest *cgiRequest = static_cast<CGIRequest *>(eventData->ptr);
     cgiRequest->sendDataToChild();
@@ -278,7 +278,7 @@ void  Webserv::writeToChild(EventData *eventData)
 void Webserv::readToChild(EventData *eventData)
 {
     CGIRequest *cgiRequest = static_cast<CGIRequest *>(eventData->ptr);
-    
+
     cgiRequest->receivedDataFromChild();
     waitpid(cgiRequest->getPid(), NULL, 0);
     cgiRequest->processDataFromChild();
@@ -298,7 +298,7 @@ void Webserv::processClientResponse(Client *client)
 {
     client->initialisationClient();
     client->selectTypeRequest();
-    
+
     if (client->getTypeRequest() == STATIC)
     {
         StaticRequest *staticRequest = dynamic_cast<StaticRequest *>(client->getARequest());
@@ -315,33 +315,41 @@ void Webserv::processClientResponse(Client *client)
 void Webserv::handleConnection(struct epoll_event &events)
 {
     EventData *eventData = static_cast<EventData *>(events.data.ptr);
-    
+
     switch (eventData->type)
     {
-    
-        case(SERVER): handleNewClient(eventData->fd); return;
-        case(CLIENT): processClient(eventData); break;
-        case(WRITECHILD): writeToChild(eventData); break;
-        case(READCHILD): readToChild(eventData); break;
+
+    case (SERVER):
+        handleNewClient(eventData->fd);
+        return;
+    case (CLIENT):
+        processClient(eventData);
+        break;
+    case (WRITECHILD):
+        writeToChild(eventData);
+        break;
+    case (READCHILD):
+        readToChild(eventData);
+        break;
     }
-    
+
     if (eventData->type == CLIENT)
     {
         Client *client = static_cast<Client *>(eventData->ptr);
-        
+
         if (client->getTypeRequest() == STATIC)
         {
             HttpResponse response(client->getARequest());
             response.initialisationHttpResponse();
             response.sendToClient();
-            client->clearContentRequest(); 
+            client->clearContentRequest();
         }
     }
     else if (eventData->type == READCHILD)
     {
         CGIRequest *cgiRequest = static_cast<CGIRequest *>(eventData->ptr);
         Client *client = cgiRequest->getRequestContext()->getClient();
-        
+
         HttpResponse response(cgiRequest);
         response.initialisationHttpResponse();
         response.sendToClient();

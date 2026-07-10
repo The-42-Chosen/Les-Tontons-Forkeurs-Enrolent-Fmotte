@@ -12,27 +12,27 @@
 
 #include "RequestContext.hpp"
 
-#include "Client.hpp"
-#include "HttpRequest.hpp"
-#include "Header.hpp"
 #include "ARequest.hpp"
+#include "Client.hpp"
+#include "Header.hpp"
+#include "HttpRequest.hpp"
 #include "ResponseContext.hpp"
 
-#include "utilsRequest.hpp"
 #include "execption.hpp"
+#include "utilsRequest.hpp"
 
 // =====================
 // == Canonical Form  ==
 // =====================
 
-RequestContext::RequestContext(ARequest *arequest): _client(NULL), _server(NULL), _location(NULL), _ARequest(NULL), _httpRequest(NULL)
+RequestContext::RequestContext(ARequest *arequest)
+    : _client(NULL), _server(NULL), _location(NULL), _ARequest(NULL), _httpRequest(NULL)
 {
     setARequest(arequest);
 }
 
 RequestContext::~RequestContext()
 {
-    
 }
 
 // =====================
@@ -102,7 +102,7 @@ void RequestContext::setHttpRequest(HttpRequest *httpRequest)
         throw ExecptionErrorUninitializedVariable("*httpRequest", "RequestContext");
 
     _httpRequest = httpRequest;
-}   
+}
 
 // =====================
 // ==     Method      ==
@@ -111,7 +111,7 @@ void RequestContext::initialisationRequestContext()
 {
     HttpRequest *httpRequest = new HttpRequest(this); // check fail
     setHttpRequest(httpRequest);
-    
+
     getHttpRequest()->initHeader(getClient()->getContentRequest());
     linkToServer();
     getHttpRequest()->initBody();
@@ -190,7 +190,7 @@ void RequestContext::checkServerIsOpen()
     int code = getClient()->getServerPtr()->getReturn()->code;
 
     if (code != 0)
-    {  
+    {
         std::string payload = getClient()->getServerPtr()->getReturn()->value;
         getARequest()->getResponseContext()->setPayload(payload);
         throw std::runtime_error(intToString(code));

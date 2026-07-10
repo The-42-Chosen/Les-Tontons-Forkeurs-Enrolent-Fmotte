@@ -67,7 +67,6 @@ void HttpRequest::setRequestContext(RequestContext *requestContext)
     _requestContext = requestContext;
 }
 
-
 Body *HttpRequest::getBody() const
 {
     return _body;

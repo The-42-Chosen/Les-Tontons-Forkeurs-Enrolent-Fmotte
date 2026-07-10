@@ -12,8 +12,8 @@
 
 #include "GetMethod.hpp"
 
-#include "HttpRequest.hpp"
 #include "HandlePath.hpp"
+#include "HttpRequest.hpp"
 
 #include "utilsParsing.hpp"
 #include "utilsRequest.hpp"
@@ -46,9 +46,9 @@ GetMethod &GetMethod::operator=(const GetMethod &other)
 std::string GetMethod::applyMethod(Location *location)
 {
     std::string contentFile;
-    
+
     HandlePath handlePath(getHttpRequest());
-    std::string  path = handlePath.createPath(location);
+    std::string path = handlePath.createPath(location);
 
     if (handlePath.getIsAutoIndex())
         return handlePath.createContentAutoIndex(path);
@@ -62,9 +62,8 @@ std::string GetMethod::applyMethod(Location *location)
     checkPermisionReadFile(path);
     std::string extention = path.substr(path.find_last_of("."));
 
-
     parseConfigFile(path.c_str(), contentFile);
-    //std::cout << "\ncontentFile: " << contentFile << "\n";
-    
+    // std::cout << "\ncontentFile: " << contentFile << "\n";
+
     return contentFile;
 }

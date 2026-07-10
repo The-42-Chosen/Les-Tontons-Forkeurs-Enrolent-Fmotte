@@ -19,33 +19,31 @@ class ResponseContext;
 
 class ARequest
 {
-	private:
-		// =====================
-		// ==    Attributs    ==
-		// =====================
-		RequestContext* _requestContext;
-		ResponseContext* _responseContext;
+  private:
+    // =====================
+    // ==    Attributs    ==
+    // =====================
+    RequestContext *_requestContext;
+    ResponseContext *_responseContext;
 
-	public:
-		// =====================
-		// ==       OCF       ==
-		// =====================
-		ARequest();
-		ARequest(const ARequest &arequest);
-		virtual ~ARequest();
+  public:
+    // =====================
+    // ==       OCF       ==
+    // =====================
+    ARequest();
+    ARequest(const ARequest &arequest);
+    virtual ~ARequest();
 
-		// =====================
-		// ==     Getters     ==
-		// =====================
-		RequestContext *getRequestContext() const;
-		void setRequestContext(RequestContext* requestContext);
-		ResponseContext *getResponseContext() const;
-		void setResponseContext(ResponseContext* responseContext);
-		
-		// =====================
-		// == 	  Member	  ==
-		// =====================
-		int initialisationARequest();
+    // =====================
+    // ==     Getters     ==
+    // =====================
+    RequestContext *getRequestContext() const;
+    void setRequestContext(RequestContext *requestContext);
+    ResponseContext *getResponseContext() const;
+    void setResponseContext(ResponseContext *responseContext);
+
+    // =====================
+    // == 	  Member	  ==
+    // =====================
+    int initialisationARequest();
 };
-
-

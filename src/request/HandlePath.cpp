@@ -12,22 +12,22 @@
 
 #include "HandlePath.hpp"
 
-#include "Location.hpp"
+#include "Header.hpp"
 #include "HttpRequest.hpp"
+#include "Location.hpp"
 #include "RequestContext.hpp"
 #include "Server.hpp"
-#include "Header.hpp"
 
-#include "utilsRequest.hpp"
-#include "utilsParsing.hpp"
 #include "execption.hpp"
+#include "utilsParsing.hpp"
+#include "utilsRequest.hpp"
 
 #include <dirent.h>
 
 // =====================
 // ==       OCF       ==
 // =====================
-HandlePath::HandlePath(HttpRequest *httpRequest): _path(""), _isAutoIndex(false), _httpRequest(NULL)
+HandlePath::HandlePath(HttpRequest *httpRequest) : _path(""), _isAutoIndex(false), _httpRequest(NULL)
 {
     setHttpRequest(httpRequest);
 }
@@ -114,7 +114,7 @@ std::string HandlePath::createPathWithLocation(Location *location)
 
     pathRoot = selectRoot(location);
     pathLoc = joinPath(pathRoot, location->getName());
-    
+
     HttpMethod method = getHttpRequest()->getHeader()->getMethod();
     if (method == POST)
         return pathLoc;
@@ -145,7 +145,7 @@ std::string HandlePath::createPathWithServer()
 
     pathRoot = selectRoot(NULL);
     HttpMethod method = getHttpRequest()->getHeader()->getMethod();
-    
+
     if (method == POST)
         return pathRoot;
 

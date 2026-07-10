@@ -21,14 +21,12 @@
 // == Canonical Form  ==
 // =====================
 
-ARequest::ARequest(): _requestContext(NULL), _responseContext(NULL)
+ARequest::ARequest() : _requestContext(NULL), _responseContext(NULL)
 {
-
 }
 
-ARequest::ARequest(const ARequest &other): 
-_requestContext(other._requestContext), 
-_responseContext(other._responseContext)
+ARequest::ARequest(const ARequest &other)
+    : _requestContext(other._requestContext), _responseContext(other._responseContext)
 {
 }
 
@@ -47,7 +45,7 @@ RequestContext *ARequest::getRequestContext() const
     return _requestContext;
 }
 
-void ARequest::setRequestContext(RequestContext* requestContext)
+void ARequest::setRequestContext(RequestContext *requestContext)
 {
     if (requestContext == NULL)
         throw ExecptionErrorUninitializedVariable("*requestContext", "ARequest");
@@ -60,7 +58,7 @@ ResponseContext *ARequest::getResponseContext() const
     return _responseContext;
 }
 
-void ARequest::setResponseContext(ResponseContext* responseContext)
+void ARequest::setResponseContext(ResponseContext *responseContext)
 {
     if (responseContext == NULL)
         throw ExecptionErrorUninitializedVariable("*responseContext", "ARequest");
@@ -81,16 +79,10 @@ int ARequest::initialisationARequest()
         setRequestContext(requestContext);
         setResponseContext(responseContext);
     }
-    catch(const std::exception& e)
+    catch (const std::exception &e)
     {
         std::cerr << e.what() << '\n';
         return 1;
     }
     return 0;
 }
-
-
-
-
-
-

@@ -12,15 +12,15 @@
 
 #include "CGIRequest.hpp"
 
+#include "ARequest.hpp"
 #include "Body.hpp"
+#include "HandlePath.hpp"
 #include "Header.hpp"
 #include "HttpRequest.hpp"
 #include "Location.hpp"
-#include "ARequest.hpp"
-#include "Server.hpp"
 #include "RequestContext.hpp"
 #include "ResponseContext.hpp"
-#include "HandlePath.hpp"
+#include "Server.hpp"
 
 #include "utilsConnection.hpp"
 #include "utilsRequest.hpp"
@@ -29,7 +29,7 @@
 // ==       OCF       ==
 // =====================
 
-CGIRequest::CGIRequest(ARequest arequest): ARequest(arequest)
+CGIRequest::CGIRequest(ARequest arequest) : ARequest(arequest)
 {
 }
 
@@ -41,8 +41,7 @@ CGIRequest::~CGIRequest()
 // ==     Getters     ==
 // =====================
 
-
-int* CGIRequest::getPipeIn()
+int *CGIRequest::getPipeIn()
 {
     return _pipeIn;
 }
@@ -53,7 +52,7 @@ void CGIRequest::setPipeIn(int pipeIn[2])
     _pipeIn[1] = pipeIn[1];
 }
 
-int* CGIRequest::getPipeOut()
+int *CGIRequest::getPipeOut()
 {
     return _pipeOut;
 }
@@ -114,18 +113,18 @@ void CGIRequest::initializationCGIRequest(const std::string &interpreter)
 {
     int pipeIn[2];
     int pipeOut[2];
-    
+
     createPipe(pipeIn, pipeOut);
     setPipeIn(pipeIn);
     setPipeOut(pipeOut);
-    
+
     pid_t pid = fork();
     setPid(pid);
     checkForkCreate(pid);
-    
+
     if (pid == 0)
         manage_pipe(interpreter);
-        
+
     close(getPipeOut()[1]);
 
     connectToEpoll();
@@ -142,7 +141,7 @@ void CGIRequest::connectToEpoll()
 void CGIRequest::sendDataToChild()
 {
     close(getPipeIn()[0]);
-    
+
     if (getRequestContext()->getHttpRequest()->getBody() != NULL)
     {
         BodyContent body = getRequestContext()->getHttpRequest()->getBody()->getBodyContent();
@@ -162,14 +161,14 @@ void CGIRequest::receivedDataFromChild()
         payload.append(buffer, nb_read);
 
     close(getPipeOut()[0]);
-    
+
     getResponseContext()->setPayload(payload);
 }
 
 void CGIRequest::processDataFromChild()
 {
     const std::string &payload = getResponseContext()->getPayload();
-    
+
     std::string::size_type sep = payload.find("\r\n\r\n");
     std::string::size_type sepLen = 4;
     if (sep == std::string::npos)
@@ -183,7 +182,6 @@ void CGIRequest::processDataFromChild()
         return getResponseContext()->setPayload(payload.substr(sep + sepLen));
     }
 
-        
     getResponseContext()->setPayload(payload);
 }
 
@@ -203,15 +201,15 @@ void CGIRequest::forwardCgiHeaders(const std::string &headerBlock)
 
         std::string key = toLowerString(trimSpaces(line.substr(0, colon)));
         if (key == "set-cookie")
-           getResponseContext()->addCgiSetCookie(trimSpaces(line.substr(colon + 1)));
+            getResponseContext()->addCgiSetCookie(trimSpaces(line.substr(colon + 1)));
     }
 }
 
 void CGIRequest::manage_pipe(const std::string &interpreter)
-{   
+{
     int *pipeIn = getPipeIn();
     int *pipeOut = getPipeOut();
-    
+
     close(pipeOut[0]);
     if (dup2(pipeOut[1], STDOUT_FILENO) == -1)
     {
@@ -226,7 +224,7 @@ void CGIRequest::manage_pipe(const std::string &interpreter)
 
     close(pipeOut[1]);
     close(pipeIn[1]);
-    
+
     if (dup2(pipeIn[0], STDIN_FILENO) == -1)
     {
         std::cerr << "dup2 error\n";
@@ -236,11 +234,11 @@ void CGIRequest::manage_pipe(const std::string &interpreter)
 
     // URI / query string / script name
     std::string query = getRequestContext()->getHttpRequest()->getHeader()->getQuery();
-    std::string scriptName =  getRequestContext()->getHttpRequest()->getHeader()->getScriptName();
+    std::string scriptName = getRequestContext()->getHttpRequest()->getHeader()->getScriptName();
 
     std::string method = (getRequestContext()->getHttpRequest()->getHeader()->getMethod() == POST) ? "POST" : "GET";
     std::string protocol = getRequestContext()->getHttpRequest()->getHeader()->getProtocol();
-    
+
     HeaderContent hc = getRequestContext()->getHttpRequest()->getHeader()->getHeaderContent();
     std::string contentType = hc.count("content-type") ? hc.at("content-type") : "";
     std::string contentLength = hc.count("content-length") ? hc.at("content-length") : "";
@@ -255,12 +253,12 @@ void CGIRequest::manage_pipe(const std::string &interpreter)
         oss << listen->port;
         serverPort = oss.str();
     }
-    
+
     HandlePath handlePath(getRequestContext()->getHttpRequest());
     std::string path = handlePath.createPath(getRequestContext()->getLocation());
 
     checkPermisionReadFile(path);
-    
+
     std::string::size_type pslash = path.rfind('/');
     std::string scriptFile = (pslash != std::string::npos) ? path.substr(pslash + 1) : path;
 

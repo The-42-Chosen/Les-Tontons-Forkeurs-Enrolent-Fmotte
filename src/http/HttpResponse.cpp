@@ -12,6 +12,7 @@
 
 #include "HttpResponse.hpp"
 
+#include "ARequest.hpp"
 #include "Client.hpp"
 #include "CorrectResponse.hpp"
 #include "DeleteMethod.hpp"
@@ -22,9 +23,8 @@
 #include "HttpRequest.hpp"
 #include "PostMethod.hpp"
 #include "RedirResponse.hpp"
-#include "ARequest.hpp"
-#include "ResponseContext.hpp"
 #include "RequestContext.hpp"
+#include "ResponseContext.hpp"
 
 #include "execption.hpp"
 
@@ -87,8 +87,8 @@ void HttpResponse::initialisationHttpResponse()
 
     response->applyResponse();
 
-    //std::cout << "\n\nRESPONSE\n";
-    //std::cout << getResponseContent() << "\n";
+    // std::cout << "\n\nRESPONSE\n";
+    // std::cout << getResponseContent() << "\n";
 }
 
 AResponse *HttpResponse::selectResponse(int statusCode, ErrorResponse &error, RedirResponse &redir,

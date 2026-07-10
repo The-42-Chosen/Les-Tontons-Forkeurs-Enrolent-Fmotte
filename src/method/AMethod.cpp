@@ -12,14 +12,14 @@
 
 #include "AMethod.hpp"
 
+#include "ARequest.hpp"
 #include "Body.hpp"
 #include "Header.hpp"
 #include "HttpRequest.hpp"
 #include "Location.hpp"
-#include "ARequest.hpp"
-#include "Server.hpp"
 #include "RequestContext.hpp"
 #include "ResponseContext.hpp"
+#include "Server.hpp"
 
 #include "execption.hpp"
 #include "utilsDuplicate.hpp"
@@ -92,15 +92,9 @@ void AMethod::setHttpRequest(HttpRequest *httpRequest)
 // == 	  Member	  ==
 // =====================
 
-
 // LEs doubles Pipes et le in/out :
 //  pipe_in[1]  ->  stdin   (body POST envoyé par le parent)
 //  pipe_in[0]  <-  lecture par l'enfant
 //  pipe_out[1] ->  stdout  (réponse HTML générée par l'enfant)
 //  pipe_out[0] <-  lecture par le parent
 // CGI pipe_in[1] à fermer sinon le serveur attendra indéfiniment (deadlock)
-
-
-
-
-
