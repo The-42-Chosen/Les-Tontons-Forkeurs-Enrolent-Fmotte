@@ -284,6 +284,16 @@ void Webserv::readToChild(EventData *eventData)
     cgiRequest->processDataFromChild();
 }
 
+static std::string selectCgiInterpreter(const std::string &scriptName)
+{
+    std::string::size_type pos = scriptName.find_last_of('.');
+    std::string extension = (pos != std::string::npos) ? scriptName.substr(pos) : "";
+
+    if (extension == ".php")
+        return "/usr/bin/php-cgi";
+    return "/usr/bin/python3";
+}
+
 void Webserv::processClientResponse(Client *client)
 {
     client->initialisationClient();
@@ -297,7 +307,8 @@ void Webserv::processClientResponse(Client *client)
     else
     {
         CGIRequest *cgiRequest = dynamic_cast<CGIRequest *>(client->getARequest());
-        cgiRequest->initializationCGIRequest("/usr/bin/python3");
+        std::string scriptName = cgiRequest->getRequestContext()->getHttpRequest()->getHeader()->getScriptName();
+        cgiRequest->initializationCGIRequest(selectCgiInterpreter(scriptName));
     }
 }
 
