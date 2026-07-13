@@ -12,7 +12,6 @@
 /* ************************************************************************** */
 
 $method = getenv('REQUEST_METHOD') ?: '';
-$queries = ($method === 'POST') ? $_POST : $_GET;
 
 function print_var($s)
 {
@@ -34,17 +33,42 @@ echo "<h2> Welcome to the Fabulous CGI PHP of Minicube & Rico</h2>\n";
 echo "<h2>Visites (PHP) : " . print_var($count) . "</h2>\n";
 echo "<p><strong>Method :</strong> " . print_var($method) . "</p>\n";
 
-if (empty($queries)) {
-    echo "<p>No queries</p>\n";
-} else {
-    echo "<h2>Queries</h2>\n<ul>\n";
-    ksort($queries);
-    foreach ($queries as $key => $val) {
+function print_params($params)
+{
+    if (empty($params)) {
+        echo "<p>No parameters</p>\n";
+        return;
+    }
+    echo "<ul>\n";
+    ksort($params);
+    foreach ($params as $key => $val) {
         echo "  <li><strong>" . print_var($key) . "</strong> = " . print_var($val) . "</li>\n";
     }
     echo "</ul>\n";
 }
 
+echo "<h2>Queries (GET)</h2>\n";
+print_params($_GET);
+echo "<h2>Body (POST)</h2>\n";
+print_params($_POST);
+
+echo "<hr>\n";
+echo "<div class=\"container\">\n";
+echo "<h2>Test GET /cgi.php</h2>\n";
+echo "<form method=\"GET\" action=\"/cgi.php\">\n";
+echo "<label for=\"get-msg\">Message :</label>\n";
+echo "<input id=\"get-msg\" type=\"text\" name=\"message\">\n";
+echo "<button type=\"submit\">Send (GET)</button>\n";
+echo "</form>\n";
+echo "</div>\n";
+echo "<div class=\"container\">\n";
+echo "<h2>Test POST /cgi.php</h2>\n";
+echo "<form method=\"POST\" action=\"/cgi.php\" enctype=\"application/x-www-form-urlencoded\">\n";
+echo "<label for=\"post-msg\">Message :</label>\n";
+echo "<input id=\"post-msg\" type=\"text\" name=\"message\">\n";
+echo "<button type=\"submit\">Send (POST)</button>\n";
+echo "</form>\n";
+echo "</div>\n";
 echo "<hr>\n";
 echo "<p><em>Server: " . print_var(getenv('SERVER_NAME')) . ":" . print_var(getenv('SERVER_PORT'))
     . " | Protocol: " . print_var(getenv('SERVER_PROTOCOL')) . "</em></p>\n";
