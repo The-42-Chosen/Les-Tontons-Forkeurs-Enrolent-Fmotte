@@ -21,7 +21,7 @@ void handleSigint(int sig)
 
 void initializeSignal(void)
 {
-	signal(SIGPIPE, SIG_IGN);
+    signal(SIGPIPE, SIG_IGN);
     signal(SIGINT, handleSigint);
 }
 
