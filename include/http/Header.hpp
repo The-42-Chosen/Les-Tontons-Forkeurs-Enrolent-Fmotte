@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Header.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/17 17:37:05 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/08 21:48:54 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/13 02:23:51 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 class Header
 {
   private:
+    static const std::string _listMethods[4];
+
     // =====================
     // ==    Attributs    ==
     // =====================

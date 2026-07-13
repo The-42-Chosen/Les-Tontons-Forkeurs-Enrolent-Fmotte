@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 14:43:09 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/08 22:04:37 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/13 02:24:44 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,8 @@ Client &Client::operator=(const Client &other)
 
     return (*this);
 }
+
+const std::string Client::_listCGI[2] = {".py", ".php"};
 
 // =====================
 // == Getter & Setter ==
@@ -167,8 +169,6 @@ void Client::initialisationClient()
 
 void Client::selectTypeRequest()
 {
-    const std::string _allowed_cgi[2] = {".py", ".php"}; // Put in static global
-
     std::string uri = getARequest()->getRequestContext()->getHttpRequest()->getHeader()->getScriptName();
 
     size_t pos = uri.find_last_of('.');
@@ -176,7 +176,7 @@ void Client::selectTypeRequest()
     if (pos != std::string::npos)
         extension = uri.substr(pos);
 
-    if (extension.empty() || std::find(_allowed_cgi, _allowed_cgi + 2, extension) == _allowed_cgi + 2)
+    if (extension.empty() || std::find(_listCGI, _listCGI + 2, extension) == _listCGI + 2)
     {
         setTypeRequest(STATIC);
         ARequest *arequest = getARequest();

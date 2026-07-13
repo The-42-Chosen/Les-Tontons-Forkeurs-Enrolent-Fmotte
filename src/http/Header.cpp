@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Header.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/17 17:37:08 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/08 21:50:54 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/13 02:25:14 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,8 @@ Header &Header::operator=(const Header &other)
     }
     return (*this);
 }
+
+const std::string Header::_listMethods[4] = {"GET", "POST", "DELETE", "HEAD"};
 
 // =====================
 // ==     Getters     ==
@@ -148,14 +150,9 @@ void Header::initialisationHeader(const std::string &headerContent)
 
 HttpMethod Header::parseMethodToken(const std::string &method)
 {
-    if (method == "GET")
-        return (GET);
-    if (method == "POST")
-        return (POST);
-    if (method == "DELETE")
-        return (DELETE);
-    if (method == "HEAD")
-        return (HEAD);
+    for (size_t i = 0; i < 4; ++i)
+        if (method == _listMethods[i])
+            return static_cast<HttpMethod>(i);
 
     throw std::runtime_error("501");
 }
