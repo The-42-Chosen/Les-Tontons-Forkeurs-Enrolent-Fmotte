@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGIRequest.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/16 16:35:36 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/08 22:00:58 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/15 05:02:57 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,9 @@ void CGIRequest::initializationCGIRequest(const std::string &interpreter)
     int pipeIn[2];
     int pipeOut[2];
 
+    HandlePath handlePath(getRequestContext()->getHttpRequest());
+    checkPermisionReadFile(handlePath.createPath(getRequestContext()->getLocation()));
+
     createPipe(pipeIn, pipeOut);
     setPipeIn(pipeIn);
     setPipeOut(pipeOut);
@@ -123,7 +126,18 @@ void CGIRequest::initializationCGIRequest(const std::string &interpreter)
     checkForkCreate(pid);
 
     if (pid == 0)
-        manage_pipe(interpreter);
+    {
+        //child must never return to the parent's event loop: any exception here ends the child process
+        try
+        {
+            manage_pipe(interpreter);
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << "CGI child error: " << e.what() << "\n";
+        }
+        exit(EXIT_FAILURE);
+    }
 
     close(getPipeOut()[1]);
 

@@ -57,6 +57,8 @@ void StaticRequest::selectMethodHttp()
         method = &post;
     else if (httpMethod == HEAD)
         method = &head;
+    else
+        throw std::runtime_error("501");
 
     std::string payload = method->applyMethod(getRequestContext()->getLocation());
     getResponseContext()->setPayload(payload);

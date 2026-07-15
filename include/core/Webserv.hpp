@@ -14,6 +14,7 @@
 
 #include "struct.hpp"
 #include <ctime>
+#include <exception>
 #include <map>
 #include <set>
 
@@ -85,6 +86,8 @@ class Webserv
     void processClient(EventData *eventData);
     bool processClientRequest(Client *client);
     void processClientResponse(Client *client);
+    void applyErrorToResponse(Client *client, const std::exception &e);
+    void sendResponseToClient(Client *client);
 
     void writeToChild(EventData *eventData);
     void readToChild(EventData *eventData);

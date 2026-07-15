@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/08 22:01:30 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/15 05:06:48 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
 #include "RequestContext.hpp"
+#include "ResponseContext.hpp"
 #include "Server.hpp"
 #include "StaticRequest.hpp"
 
@@ -29,6 +30,7 @@
 
 #include <cstring>
 #include <errno.h>
+#include <sstream>
 #include <sys/wait.h>
 
 // =====================
@@ -252,12 +254,59 @@ bool Webserv::readAndCheckRequestCompletion(Client *client)
     return false;
 }
 
+// If error code not set, everything else becomes a 500.
+static int statusCodeFromException(const std::exception &e)
+{
+    std::stringstream stream(e.what());
+    int statusCode = 0;
+
+    if (!(stream >> statusCode) || !stream.eof() || statusCode < 100 || statusCode > 599)
+        return 500;
+    return statusCode;
+}
+
+void Webserv::applyErrorToResponse(Client *client, const std::exception &e)
+{
+    int statusCode = statusCodeFromException(e);
+
+    std::cerr << "Request failed with status " << statusCode << " (" << e.what() << ")\n";
+
+    // response sent through the STATIC path, even for a failed CGI
+    client->setTypeRequest(STATIC);
+
+    if (client->getARequest() != NULL && client->getARequest()->getResponseContext() != NULL)
+        client->getARequest()->getResponseContext()->setStatusCode(statusCode);
+}
+
+void Webserv::sendResponseToClient(Client *client)
+{
+    if (client->getARequest() == NULL || client->getARequest()->getResponseContext() == NULL)
+        return;
+
+    HttpResponse response(client->getARequest());
+    response.initialisationHttpResponse();
+    response.sendToClient();
+    client->clearContentRequest();
+}
+
 void Webserv::processClient(EventData *eventData)
 {
     Client *client = static_cast<Client *>(eventData->ptr);
 
-    if (processClientRequest(client))
+    if (!processClientRequest(client))
+        return;
+
+    try
+    {
         processClientResponse(client);
+    }
+    catch (const std::exception &e)
+    {
+        applyErrorToResponse(client, e);
+    }
+
+    if (client->getTypeRequest() == STATIC)
+        sendResponseToClient(client);
 }
 
 bool Webserv::processClientRequest(Client *client)
@@ -278,10 +327,20 @@ void Webserv::writeToChild(EventData *eventData)
 void Webserv::readToChild(EventData *eventData)
 {
     CGIRequest *cgiRequest = static_cast<CGIRequest *>(eventData->ptr);
+    Client *client = cgiRequest->getRequestContext()->getClient();
 
-    cgiRequest->receivedDataFromChild();
-    waitpid(cgiRequest->getPid(), NULL, 0);
-    cgiRequest->processDataFromChild();
+    try
+    {
+        cgiRequest->receivedDataFromChild();
+        waitpid(cgiRequest->getPid(), NULL, 0);
+        cgiRequest->processDataFromChild();
+    }
+    catch (const std::exception &e)
+    {
+        applyErrorToResponse(client, e);
+    }
+
+    sendResponseToClient(client);
 }
 
 static std::string selectCgiInterpreter(const std::string &scriptName)
@@ -321,7 +380,7 @@ void Webserv::handleConnection(struct epoll_event &events)
 
     case (SERVER):
         handleNewClient(eventData->fd);
-        return;
+        break;
     case (CLIENT):
         processClient(eventData);
         break;
@@ -331,29 +390,6 @@ void Webserv::handleConnection(struct epoll_event &events)
     case (READCHILD):
         readToChild(eventData);
         break;
-    }
-
-    if (eventData->type == CLIENT)
-    {
-        Client *client = static_cast<Client *>(eventData->ptr);
-
-        if (client->getTypeRequest() == STATIC)
-        {
-            HttpResponse response(client->getARequest());
-            response.initialisationHttpResponse();
-            response.sendToClient();
-            client->clearContentRequest();
-        }
-    }
-    else if (eventData->type == READCHILD)
-    {
-        CGIRequest *cgiRequest = static_cast<CGIRequest *>(eventData->ptr);
-        Client *client = cgiRequest->getRequestContext()->getClient();
-
-        HttpResponse response(cgiRequest);
-        response.initialisationHttpResponse();
-        response.sendToClient();
-        client->clearContentRequest();
     }
 }
 
@@ -373,7 +409,16 @@ void Webserv::listenToWebserv()
             return;
 
         for (int i = 0; i < nfds; ++i)
-            handleConnection(events[i]);
+        {
+            try
+            {
+                handleConnection(events[i]);
+            }
+            catch (const std::exception &e)
+            {
+                std::cerr << "Unhandled event error: " << e.what() << "\n";
+            }
+        }
     }
 }
 
