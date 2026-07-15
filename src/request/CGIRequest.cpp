@@ -127,7 +127,7 @@ void CGIRequest::initializationCGIRequest(const std::string &interpreter)
 
     if (pid == 0)
     {
-        //child must never return to the parent's event loop: any exception here ends the child process
+        // child must never return to the parent's event loop: any exception here ends the child process
         try
         {
             manage_pipe(interpreter);
