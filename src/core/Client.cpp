@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 14:43:09 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/13 02:24:44 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/07/20 02:56:31 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 
 Client::Client()
     : _client_fd(-1), _server_fd(-1), _server(0), _webserv(0), _ARequest(NULL), _typeResquest(STATIC),
-      _contentRequest(""), _sessionId("")
+      _contentRequest(""), _sessionId(""), _CGIProcessing(false), _pendingDelete(false)
 {
 }
 
@@ -45,6 +45,8 @@ Client &Client::operator=(const Client &other)
     this->_server = other._server;
     this->_contentRequest = other._contentRequest;
     this->_sessionId = other._sessionId;
+    this->_CGIProcessing = other._CGIProcessing;
+    this->_pendingDelete = other._pendingDelete;
 
     return (*this);
 }
@@ -152,6 +154,27 @@ TypeRequest Client::getTypeRequest() const
 void Client::setTypeRequest(TypeRequest typeRequest)
 {
     _typeResquest = typeRequest;
+}
+
+// CGI / DISCONNECT STATE
+bool Client::isCGIProcessing() const
+{
+    return _CGIProcessing;
+}
+
+void Client::setCGIProcessing(bool CGIProcessing)
+{
+    _CGIProcessing = CGIProcessing;
+}
+
+bool Client::isPendingDelete() const
+{
+    return _pendingDelete;
+}
+
+void Client::setPendingDelete(bool pendingDelete)
+{
+    _pendingDelete = pendingDelete;
 }
 
 // =====================

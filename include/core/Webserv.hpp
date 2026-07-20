@@ -32,6 +32,13 @@ struct SessionInfo
     time_t lastSeen;
 };
 
+enum RequestState
+{
+    REQUEST_DISCONNECTED,
+    REQUEST_INCOMPLETE,
+    REQUEST_COMPLETE
+};
+
 class Webserv
 {
   private:
@@ -84,7 +91,6 @@ class Webserv
     void handleNewClient(int server_fd);
 
     void processClient(EventData *eventData);
-    bool processClientRequest(Client *client);
     void processClientResponse(Client *client);
     void applyErrorToResponse(Client *client, const std::exception &e);
     void sendResponseToClient(Client *client);
@@ -92,7 +98,8 @@ class Webserv
     void writeToChild(EventData *eventData);
     void readToChild(EventData *eventData);
 
-    bool readAndCheckRequestCompletion(Client *client);
+    RequestState readAndCheckRequestCompletion(Client *client);
+    void handleDisconnect(Client *client, EventData *eventData);
     void deleteClient(Client *client);
     void closeConnection();
 };

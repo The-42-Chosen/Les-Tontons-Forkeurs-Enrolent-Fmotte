@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 14:43:11 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/13 02:24:44 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/07/20 02:56:31 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ class Client
     TypeRequest _typeResquest;
     std::string _contentRequest;
     std::string _sessionId;
+    bool _CGIProcessing;
+    bool _pendingDelete;
 
   public:
     // =====================
@@ -78,6 +80,12 @@ class Client
 
     TypeRequest getTypeRequest() const;
     void setTypeRequest(TypeRequest typeRequest);
+
+    // CGI / DISCONNECT STATE
+    bool isCGIProcessing() const;
+    void setCGIProcessing(bool CGIProcessing);
+    bool isPendingDelete() const;
+    void setPendingDelete(bool pendingDelete);
 
     // =====================
     // ==     Method      ==

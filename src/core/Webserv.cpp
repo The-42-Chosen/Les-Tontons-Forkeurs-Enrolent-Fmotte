@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/15 05:06:48 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/07/20 03:00:07 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,38 +220,47 @@ void Webserv::handleNewClient(int server_fd)
 
 void Webserv::deleteClient(Client *client)
 {
+    // Remove client softly and not throw it to avoid
     if (epoll_ctl(getEpollFd(), EPOLL_CTL_DEL, client->getClientFd(), NULL) == -1)
-        throw ExecptionErrorFunction("epoll_ctl");
+        std::cerr << "epoll_ctl EPOLL_CTL_DEL failed on fd " << client->getClientFd() << "\n";
 
     close(client->getClientFd());
-    delete client;
     _vectorClient.erase(std::find(_vectorClient.begin(), _vectorClient.end(), client));
+    delete client;
 
     std::cout << "Client is disconnected\n";
 }
 
-bool Webserv::readAndCheckRequestCompletion(Client *client)
+void Webserv::handleDisconnect(Client *client, EventData *eventData)
+{
+    if (client->isCGIProcessing())
+    {
+            std::cerr << "epoll_ctl EPOLL_CTL_DEL failed on fd " << client->getClientFd() << "\n";
+        client->setPendingDelete(true);
+    }
+    else
+        deleteClient(client);
+
+    delete eventData;
+}
+
+RequestState Webserv::readAndCheckRequestCompletion(Client *client)
 {
     int bytes;
     char buffer[SIZE_BUFFER];
 
-    if ((bytes = recv(client->getClientFd(), buffer, sizeof(buffer), 0)) == -1)
-        return true;
-
-    // if (bytes == 0)
-    // {
-    //     deleteClient(client);
-    //     return true;
-    // }
+    //recv <= 0 -> client closed (0) or the socket failed (-1)
+    if ((bytes = recv(client->getClientFd(), buffer, sizeof(buffer), 0)) <= 0)
+        return REQUEST_DISCONNECTED;
 
     std::string s;
     s.assign(buffer, buffer + bytes);
     client->appendContentRequest(s);
 
     if (!isCompleteRequest(client->getContentRequest()))
-        return true;
+        return REQUEST_INCOMPLETE;
 
-    return false;
+    return REQUEST_COMPLETE;
 }
 
 // If error code not set, everything else becomes a 500.
@@ -293,7 +302,14 @@ void Webserv::processClient(EventData *eventData)
 {
     Client *client = static_cast<Client *>(eventData->ptr);
 
-    if (!processClientRequest(client))
+    RequestState state = readAndCheckRequestCompletion(client);
+
+    if (state == REQUEST_DISCONNECTED)
+    {
+        handleDisconnect(client, eventData);
+        return;
+    }
+    if (state == REQUEST_INCOMPLETE)
         return;
 
     try
@@ -307,15 +323,6 @@ void Webserv::processClient(EventData *eventData)
 
     if (client->getTypeRequest() == STATIC)
         sendResponseToClient(client);
-}
-
-bool Webserv::processClientRequest(Client *client)
-{
-    if (readAndCheckRequestCompletion(client))
-        return false;
-
-    // std::cout << "Final Message from client: " << client->getContentRequest() << "\n";
-    return true;
 }
 
 void Webserv::writeToChild(EventData *eventData)
@@ -340,7 +347,11 @@ void Webserv::readToChild(EventData *eventData)
         applyErrorToResponse(client, e);
     }
 
+    client->setCGIProcessing(false);
     sendResponseToClient(client);
+
+    if (client->isPendingDelete())
+        deleteClient(client);
 }
 
 static std::string selectCgiInterpreter(const std::string &scriptName)
@@ -368,6 +379,7 @@ void Webserv::processClientResponse(Client *client)
         CGIRequest *cgiRequest = dynamic_cast<CGIRequest *>(client->getARequest());
         std::string scriptName = cgiRequest->getRequestContext()->getHttpRequest()->getHeader()->getScriptName();
         cgiRequest->initializationCGIRequest(selectCgiInterpreter(scriptName));
+        client->setCGIProcessing(true);
     }
 }
 
