@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/20 03:00:07 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/07/20 03:10:59 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,10 +220,6 @@ void Webserv::handleNewClient(int server_fd)
 
 void Webserv::deleteClient(Client *client)
 {
-    // Remove client softly and not throw it to avoid
-    if (epoll_ctl(getEpollFd(), EPOLL_CTL_DEL, client->getClientFd(), NULL) == -1)
-        std::cerr << "epoll_ctl EPOLL_CTL_DEL failed on fd " << client->getClientFd() << "\n";
-
     close(client->getClientFd());
     _vectorClient.erase(std::find(_vectorClient.begin(), _vectorClient.end(), client));
     delete client;
@@ -233,11 +229,11 @@ void Webserv::deleteClient(Client *client)
 
 void Webserv::handleDisconnect(Client *client, EventData *eventData)
 {
-    if (client->isCGIProcessing())
-    {
+    if (epoll_ctl(getEpollFd(), EPOLL_CTL_DEL, client->getClientFd(), NULL) == -1)
         std::cerr << "epoll_ctl EPOLL_CTL_DEL failed on fd " << client->getClientFd() << "\n";
+        
+    if (client->isCGIProcessing())
         client->setPendingDelete(true);
-    }
     else
         deleteClient(client);
 
