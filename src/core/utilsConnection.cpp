@@ -44,9 +44,9 @@ sockaddr_in createSocketAddress(std::string ip_address, unsigned int port_number
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
-    //If empty read all interfaces
+    // If empty read all interfaces
 
-    //build address from the config host
+    // build address from the config host
     const char *node = ip_address.empty() ? NULL : ip_address.c_str();
     if (getaddrinfo(node, NULL, &hints, &res) != 0 || res == NULL)
         throw ExecptionErrorFunction("getaddrinfo");
