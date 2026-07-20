@@ -231,7 +231,7 @@ void Webserv::handleDisconnect(Client *client, EventData *eventData)
 {
     if (epoll_ctl(getEpollFd(), EPOLL_CTL_DEL, client->getClientFd(), NULL) == -1)
         std::cerr << "epoll_ctl EPOLL_CTL_DEL failed on fd " << client->getClientFd() << "\n";
-        
+
     if (client->isCGIProcessing())
         client->setPendingDelete(true);
     else
