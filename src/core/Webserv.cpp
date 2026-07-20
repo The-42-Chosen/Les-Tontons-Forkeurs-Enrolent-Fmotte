@@ -235,7 +235,7 @@ void Webserv::handleDisconnect(Client *client, EventData *eventData)
 {
     if (client->isCGIProcessing())
     {
-            std::cerr << "epoll_ctl EPOLL_CTL_DEL failed on fd " << client->getClientFd() << "\n";
+        std::cerr << "epoll_ctl EPOLL_CTL_DEL failed on fd " << client->getClientFd() << "\n";
         client->setPendingDelete(true);
     }
     else
@@ -249,7 +249,7 @@ RequestState Webserv::readAndCheckRequestCompletion(Client *client)
     int bytes;
     char buffer[SIZE_BUFFER];
 
-    //recv <= 0 -> client closed (0) or the socket failed (-1)
+    // recv <= 0 -> client closed (0) or the socket failed (-1)
     if ((bytes = recv(client->getClientFd(), buffer, sizeof(buffer), 0)) <= 0)
         return REQUEST_DISCONNECTED;
 
