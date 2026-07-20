@@ -3,15 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   utilsConnection.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 14:55:37 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/08 21:22:50 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/20 03:28:49 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utilsConnection.hpp"
 #include "execption.hpp"
+
+#include <cstring>
+#include <netdb.h>
 
 void handleSigint(int sig)
 {
@@ -34,29 +37,25 @@ int setNonblocking(int fd)
 
 sockaddr_in createSocketAddress(std::string ip_address, unsigned int port_number)
 {
-    sockaddr_in serverAddress;
+    struct addrinfo hints;
+    struct addrinfo *res = NULL;
 
-    serverAddress.sin_family = AF_INET;
+    std::memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_PASSIVE;
+    //If empty read all interfaces
+
+    //build address from the config host
+    const char *node = ip_address.empty() ? NULL : ip_address.c_str();
+    if (getaddrinfo(node, NULL, &hints, &res) != 0 || res == NULL)
+        throw ExecptionErrorFunction("getaddrinfo");
+
+    sockaddr_in serverAddress = *reinterpret_cast<sockaddr_in *>(res->ai_addr);
+    freeaddrinfo(res);
+
     serverAddress.sin_port = htons(port_number);
-    serverAddress.sin_addr.s_addr = inet_addr(ip_address.c_str()); // ❌ A SUPPR
     return serverAddress;
-
-    // === 	❌ WAAAAAIIIT FCTION INTERDITE❌===
-    // sockaddr_in        serverAddress;
-    // struct addrinfo    hints;
-    // struct addrinfo   *res;
-    //
-    // std::memset(&hints, 0, sizeof(hints));
-    // hints.ai_family   = AF_INET;
-    // hints.ai_socktype = SOCK_STREAM;
-    //
-    // if (getaddrinfo(ip_address.c_str(), NULL, &hints, &res) != 0)
-    //     throw ExecptionErrorFunction("getaddrinfo");
-    //
-    // serverAddress = *(struct sockaddr_in *)res->ai_addr;
-    // serverAddress.sin_port = htons(port_number);
-    // freeaddrinfo(res);
-    // return serverAddress;
 }
 
 int createServerSocket(std::string ip_address, unsigned int port_number, unsigned int max_client)
