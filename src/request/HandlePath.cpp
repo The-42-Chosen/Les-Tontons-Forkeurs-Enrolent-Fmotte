@@ -136,7 +136,7 @@ std::string HandlePath::createPathWithLocation(Location *location)
     return createPathWithServer();
 }
 
-//In case of POST on CGI we need to have a ≠ path. We need to set to the CGI itself
+// In case of POST on CGI we need to have a ≠ path. We need to set to the CGI itself
 std::string HandlePath::createPathCgi(Location *location)
 {
     std::string base;
