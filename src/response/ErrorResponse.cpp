@@ -96,6 +96,6 @@ void ErrorResponse::applyResponse()
 
     response->addResponseContent(statusLine);
     response->addResponseContent(headerToString());
-    response->addResponseContent("\n\n");
+    response->addResponseContent("\n");
     response->addResponseContent(body);
 }

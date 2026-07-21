@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CorrectResponse.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/29 15:44:05 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/06 04:47:18 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/21 19:52:55 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,11 +61,8 @@ void CorrectResponse::applyResponse()
     if (containsHtmlTags(body))
         addHeaderContent("content-type", "text/html");
 
-    if (containsHtmlTags(body))
-        addHeaderContent("content-type", "text/html");
-
     response->addResponseContent(statusLine);
     response->addResponseContent(headerToString());
-    response->addResponseContent("\n\n");
+    response->addResponseContent("\n");
     response->addResponseContent(body);
 }

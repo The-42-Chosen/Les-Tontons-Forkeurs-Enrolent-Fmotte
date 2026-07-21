@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   AResponse.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 17:25:00 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/06 02:23:09 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/21 19:55:23 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,5 +203,5 @@ std::string AResponse::headerToString()
 
 bool AResponse::containsHtmlTags(const std::string &body)
 {
-    return (body.find("<html>") != std::string::npos && body.find("</html>") != std::string::npos);
+    return (body.find("<!DOCTYPE html>") != std::string::npos && body.find("</html>") != std::string::npos);
 }

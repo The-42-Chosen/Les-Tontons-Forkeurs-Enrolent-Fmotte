@@ -38,5 +38,5 @@ void RedirResponse::applyResponse()
 
     response->addResponseContent(statusLine);
     response->addResponseContent(headerToString());
-    response->addResponseContent("\n\n");
+    response->addResponseContent("\n");
 }
