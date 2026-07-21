@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HandlePath.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/06 05:37:38 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/08 21:55:14 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/21 02:53:58 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,6 +134,23 @@ std::string HandlePath::createPathWithLocation(Location *location)
         }
     }
     return createPathWithServer();
+}
+
+//In case of POST on CGI we need to have a ≠ path. We need to set to the CGI itself
+std::string HandlePath::createPathCgi(Location *location)
+{
+    std::string base;
+
+    if (location != NULL)
+        base = joinPath(selectRoot(location), location->getName());
+    else
+        base = selectRoot(NULL);
+
+    std::string pathFile = resolveRequestedFilePath(base);
+    if (pathFile == "")
+        throw std::runtime_error("404");
+
+    return pathFile;
 }
 
 std::string HandlePath::createPathWithServer()

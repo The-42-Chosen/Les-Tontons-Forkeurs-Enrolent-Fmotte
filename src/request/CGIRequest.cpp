@@ -115,7 +115,7 @@ void CGIRequest::initializationCGIRequest(const std::string &interpreter)
     int pipeOut[2];
 
     HandlePath handlePath(getRequestContext()->getHttpRequest());
-    checkPermisionReadFile(handlePath.createPath(getRequestContext()->getLocation()));
+    checkPermisionReadFile(handlePath.createPathCgi(getRequestContext()->getLocation()));
 
     createPipe(pipeIn, pipeOut);
     setPipeIn(pipeIn);
@@ -269,7 +269,7 @@ void CGIRequest::manage_pipe(const std::string &interpreter)
     }
 
     HandlePath handlePath(getRequestContext()->getHttpRequest());
-    std::string path = handlePath.createPath(getRequestContext()->getLocation());
+    std::string path = handlePath.createPathCgi(getRequestContext()->getLocation());
 
     checkPermisionReadFile(path);
 

@@ -55,6 +55,7 @@ class HandlePath
     std::string createPath(Location *location);
     std::string createPathWithLocation(Location *location);
     std::string createPathWithServer();
+    std::string createPathCgi(Location *location);
 
     void listContentFolder(const std::string &path, std::string &folderContent);
     std::string createContentAutoIndex(const std::string &path);
