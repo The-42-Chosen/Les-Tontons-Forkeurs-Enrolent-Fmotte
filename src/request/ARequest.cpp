@@ -14,6 +14,10 @@
 
 #include "RequestContext.hpp"
 #include "ResponseContext.hpp"
+#include "Client.hpp"
+#include "Header.hpp"
+#include "HttpRequest.hpp"
+#include "Location.hpp"
 
 #include "execption.hpp"
 
@@ -85,4 +89,58 @@ int ARequest::initialisationARequest()
         return 1;
     }
     return 0;
+}
+
+void ARequest::checkAllowedMethods(Location *location)
+{
+    if (location == NULL)
+        return;
+
+    std::set<HttpMethod> set_allowed_methods = location->getAllowedMethods();
+
+    if (set_allowed_methods.size() == 0)
+        return;
+
+    std::set<HttpMethod>::iterator it = set_allowed_methods.begin();
+    for (; it != set_allowed_methods.end(); ++it)
+    {
+        if (*it == getRequestContext()->getHttpRequest()->getHeader()->getMethod())
+            return;
+    }
+    throw std::runtime_error("405");
+}
+
+void ARequest::checkServerIsOpen()
+{
+    int code = getRequestContext()->getClient()->getServerPtr()->getReturn()->code;
+
+    if (code != 0)
+    {
+        std::string payload = getRequestContext()->getClient()->getServerPtr()->getReturn()->value;
+        getResponseContext()->setPayload(payload);
+        throw std::runtime_error(intToString(code));
+    }
+}
+
+void ARequest::checkLocationIsOpen(Location *location)
+{
+    if (location == NULL)
+        return;
+
+    int code = location->getReturn()->code;
+    if (code != 0)
+    {
+        std::string payload = location->getReturn()->value;
+        getResponseContext()->setPayload(payload);
+        throw std::runtime_error(intToString(code));
+    }
+}
+
+void ARequest::validateRequest()
+{
+    Location *location = getRequestContext()->getLocation();
+
+    checkServerIsOpen();
+    checkLocationIsOpen(location);
+    checkAllowedMethods(location);
 }

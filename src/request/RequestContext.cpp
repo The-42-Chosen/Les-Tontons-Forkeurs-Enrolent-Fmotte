@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/05 21:33:57 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/08 21:55:02 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/22 13:08:51 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,7 @@ void RequestContext::initialisationRequestContext()
 
     getHttpRequest()->initHeader(getClient()->getContentRequest());
     linkToServer();
+    setLocation(findLocation());
     getHttpRequest()->initBody();
 }
 
@@ -164,58 +165,4 @@ Location *RequestContext::findLocation(void)
         }
     }
     return best_location;
-}
-
-void RequestContext::checkAllowedMethods(Location *location)
-{
-    if (location == NULL)
-        return;
-
-    std::set<HttpMethod> set_allowed_methods = location->getAllowedMethods();
-
-    if (set_allowed_methods.size() == 0)
-        return;
-
-    std::set<HttpMethod>::iterator it = set_allowed_methods.begin();
-    for (; it != set_allowed_methods.end(); ++it)
-    {
-        if (*it == getHttpRequest()->getHeader()->getMethod())
-            return;
-    }
-    throw std::runtime_error("405");
-}
-
-void RequestContext::checkServerIsOpen()
-{
-    int code = getClient()->getServerPtr()->getReturn()->code;
-
-    if (code != 0)
-    {
-        std::string payload = getClient()->getServerPtr()->getReturn()->value;
-        getARequest()->getResponseContext()->setPayload(payload);
-        throw std::runtime_error(intToString(code));
-    }
-}
-
-void RequestContext::checkLocationIsOpen(Location *location)
-{
-    if (location == NULL)
-        return;
-
-    std::cout << "Location: " << location->getName() << "\n";
-
-    int code = location->getReturn()->code;
-    if (code != 0)
-    {
-        std::string payload = location->getReturn()->value;
-        getARequest()->getResponseContext()->setPayload(payload);
-        throw std::runtime_error(intToString(code));
-    }
-}
-
-void RequestContext::validateRequest(Location *location)
-{
-    checkServerIsOpen();
-    checkLocationIsOpen(location);
-    checkAllowedMethods(location);
 }

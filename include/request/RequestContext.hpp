@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/05 21:33:50 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/06 05:34:22 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/22 13:01:11 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,8 +60,4 @@ class RequestContext
 
     void linkToServer(void);
     Location *findLocation(void);
-    void validateRequest(Location *location);
-    void checkAllowedMethods(Location *location);
-    void checkServerIsOpen();
-    void checkLocationIsOpen(Location *location);
 };
