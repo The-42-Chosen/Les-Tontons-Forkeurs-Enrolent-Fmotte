@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:50:27 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/27 13:34:22 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/22 15:53:16 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,16 @@ Server::Server(const Webserv *)
 
 Server::~Server()
 {
+    EventData* evenData;
+    int epoll_fd = getWebserv()->getEpollFd();
+    
+    std::set<EventData*>::iterator it;
+    for (it = _setEventData.begin(); it != _setEventData.end(); it++)
+    {   
+        evenData = *it;
+        epoll_ctl(epoll_fd, EPOLL_CTL_DEL, evenData->fd, NULL);
+        delete evenData;
+    }
 }
 
 Server::Server(const Server &other)
@@ -49,6 +59,7 @@ Server &Server::operator=(const Server &other)
     this->_error_page = other._error_page;
     this->_client_max_body_size = other._client_max_body_size;
     this->_ret = other._ret;
+    _setEventData = other._setEventData;
 
     return (*this);
 }
@@ -163,6 +174,32 @@ void Server::setReturn(HttpReturn ret)
 HttpReturn *Server::getReturn(void)
 {
     return &_ret;
+}
+
+void Server::addEventData(EventData *eventData)
+{
+    if (eventData == NULL)
+        throw ExecptionErrorUninitializedVariable("*eventData", "Server");
+
+    _setEventData.insert(eventData);
+}
+
+std::set<EventData*> Server::getEventData(void) const
+{
+    return _setEventData;
+}
+
+void Server::setWebserv(Webserv *webserv)
+{
+    if (webserv == NULL)
+        throw ExecptionErrorUninitializedVariable("*webserv", "Server");
+
+    _webserv = webserv;
+}
+
+Webserv *Server::getWebserv(void) const
+{
+    return _webserv;
 }
 
 // =====================

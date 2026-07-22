@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:43:21 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/27 13:30:10 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/22 15:50:06 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,14 @@ class Server
     std::string _root;
     std::vector<std::string> _index_files;
     std::vector<Server> _servers;
-
+    
     bool _auto_index;
     std::vector<HttpErrorPage> _error_page;
     unsigned int _client_max_body_size;
     HttpReturn _ret;
-
+    std::set<EventData*> _setEventData;
+    Webserv *_webserv;
+    
   public:
     // =====================
     // == Canonical Form  ==
@@ -93,6 +95,11 @@ class Server
     void setReturn(HttpReturn ret);
     HttpReturn *getReturn(void);
 
+    void addEventData(EventData *eventData);
+    std::set<EventData*> getEventData(void) const;
+    
+    void setWebserv(Webserv *webserv);
+    Webserv *getWebserv(void) const;
     // =====================
     // ==     Method      ==
     // =====================
