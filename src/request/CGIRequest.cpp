@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/16 16:35:36 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/22 12:43:15 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/22 16:25:02 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,13 @@ CGIRequest::CGIRequest(ARequest arequest) : ARequest(arequest)
 
 CGIRequest::~CGIRequest()
 {
+    int epoll_fd = getRequestContext()->getClient()->getWebserv()->getEpollFd();
+    
+    epoll_ctl(epoll_fd, EPOLL_CTL_DEL, _eventDataWriteChild->fd, NULL);
+    epoll_ctl(epoll_fd, EPOLL_CTL_DEL, _eventDataReadChild->fd, NULL);
+    
+    delete _eventDataWriteChild;
+    delete _eventDataReadChild;
 }
 
 // =====================
@@ -71,6 +78,32 @@ pid_t CGIRequest::getPid() const
 void CGIRequest::setPid(pid_t pid)
 {
     _pid = pid;
+}
+
+EventData *CGIRequest::geteventData1() const
+{
+    return _eventDataWriteChild;
+}
+
+void CGIRequest::seteventData1(EventData* eventDataWriteChild)
+{
+    if (eventDataWriteChild == NULL)
+        throw ExecptionErrorUninitializedVariable("*eventDataWriteChild", "CGIRequest");
+
+    _eventDataWriteChild = eventDataWriteChild;
+}
+
+EventData *CGIRequest::geteventData2() const
+{
+    return _eventDataReadChild;
+}
+
+void CGIRequest::seteventData2(EventData* eventDataReadChild)
+{
+    if (eventDataReadChild == NULL)
+        throw ExecptionErrorUninitializedVariable("*eventDataReadChild", "CGIRequest");
+
+    _eventDataReadChild= eventDataReadChild;
 }
 
 // =====================
@@ -148,8 +181,11 @@ void CGIRequest::connectToEpoll()
 {
     int epoll_fd = getRequestContext()->getClient()->getWebserv()->getEpollFd();
 
-    addFdToEvent(epoll_fd, getPipeIn()[1], EPOLLOUT, WRITECHILD, this);
-    addFdToEvent(epoll_fd, getPipeOut()[0], EPOLLIN, READCHILD, this);
+    EventData *evenData1 = addFdToEvent(epoll_fd, getPipeIn()[1], EPOLLOUT, WRITECHILD, this);
+    EventData *evenData2 = addFdToEvent(epoll_fd, getPipeOut()[0], EPOLLIN, READCHILD, this);
+    
+    seteventData1(evenData1);
+    seteventData2(evenData2);
 }
 
 void CGIRequest::sendDataToChild()
