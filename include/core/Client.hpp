@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 14:43:11 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/20 02:56:31 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/07/22 13:22:04 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,8 @@ class Client
     std::string _sessionId;
     bool _CGIProcessing;
     bool _pendingDelete;
-
+    EventData *_eventData;
+    
   public:
     // =====================
     // == Canonical Form  ==
@@ -87,6 +88,9 @@ class Client
     bool isPendingDelete() const;
     void setPendingDelete(bool pendingDelete);
 
+    void setEventData(EventData *eventData);
+    EventData *getEventData(void) const;
+    
     // =====================
     // ==     Method      ==
     // =====================

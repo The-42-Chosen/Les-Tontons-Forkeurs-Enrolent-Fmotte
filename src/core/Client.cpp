@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 14:43:09 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/20 02:56:31 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/07/22 16:26:51 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,17 @@
 
 Client::Client()
     : _client_fd(-1), _server_fd(-1), _server(0), _webserv(0), _ARequest(NULL), _typeResquest(STATIC),
-      _contentRequest(""), _sessionId(""), _CGIProcessing(false), _pendingDelete(false)
+      _contentRequest(""), _sessionId(""), _CGIProcessing(false), _pendingDelete(false), _eventData(NULL)
 {
 }
 
 Client::~Client()
 {
+    int epoll_fd = getWebserv()->getEpollFd();
+    epoll_ctl(epoll_fd, EPOLL_CTL_DEL, getEventData()->fd, NULL);
+    
+    delete getARequest();
+    delete getEventData();
 }
 
 Client::Client(const Client &other)
@@ -177,11 +182,25 @@ void Client::setPendingDelete(bool pendingDelete)
     _pendingDelete = pendingDelete;
 }
 
+void Client::setEventData(EventData *eventData)
+{
+    if (eventData == NULL)
+        throw ExecptionErrorUninitializedVariable("*eventData", "Client");
+
+    _eventData = eventData;
+}
+
+EventData *Client::getEventData(void) const
+{
+    return _eventData;
+}
+
 // =====================
 // ==     Method      ==
 // =====================
 void Client::initialisationClient()
 {
+    delete getARequest();
     ARequest *arequest = new ARequest(); // check if fail
 
     setARequest(arequest);
