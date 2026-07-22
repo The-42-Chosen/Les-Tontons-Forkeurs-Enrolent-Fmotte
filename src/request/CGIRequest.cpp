@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGIRequest.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/16 16:35:36 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/15 05:02:57 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/07/22 12:43:15 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,18 +165,23 @@ void CGIRequest::sendDataToChild()
     close(getPipeIn()[1]);
 }
 
-void CGIRequest::receivedDataFromChild()
+bool CGIRequest::receivedDataFromChild()
 {
-    char buffer[1024];
-    int nb_read;
-    std::string payload;
+    char buffer[4096];
+    ssize_t nb_read;
 
     while ((nb_read = read(getPipeOut()[0], buffer, sizeof(buffer))) > 0)
-        payload.append(buffer, nb_read);
+        _cgiBuffer.append(buffer, nb_read);
 
-    close(getPipeOut()[0]);
-
-    getResponseContext()->setPayload(payload);
+    if (nb_read == 0)               // EOF : l'enfant a fermé stdout
+    {
+        getResponseContext()->setPayload(_cgiBuffer);
+        return true;                // -> on finalise
+    }
+    // nb_read == -1 : sur un fd non-bloquant on suppose EAGAIN
+    // (au sujet 42 tu n'as pas le droit de tester errno après read ;
+    //  ici -1 => "rien de plus pour l'instant", on attend le prochain event)
+    return false;
 }
 
 void CGIRequest::processDataFromChild()
