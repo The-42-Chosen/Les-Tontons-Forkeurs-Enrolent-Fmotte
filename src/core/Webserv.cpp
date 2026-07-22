@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/22 13:05:57 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/22 16:45:30 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,8 +150,11 @@ bool Webserv::splitIntoServers(std::vector<std::string> &tokens)
 void Webserv::registerNewSocket(std::map<Listen, int> &map_socket_fd, Listen *listenConfig, Server *server)
 {
     int serverSocket = createServerSocket(listenConfig->ip, listenConfig->port, MAX_CLIENT);
-    addFdToEvent(getEpollFd(), serverSocket, EPOLLIN, SERVER, server);
+    EventData *eventData = addFdToEvent(getEpollFd(), serverSocket, EPOLLIN, SERVER, server);
 
+    server->addEventData(eventData);
+    server->setWebserv(this);
+    
     map_socket_fd.insert(std::make_pair(*listenConfig, serverSocket));
 
     _mapFdToServer.insert(std::make_pair(serverSocket, std::set<Server *>()));
@@ -209,8 +212,9 @@ void Webserv::handleNewClient(int server_fd)
 
     _vectorClient.push_back(client);
 
-    addFdToEvent(getEpollFd(), clientSocket, EPOLLIN, CLIENT, client);
-
+    EventData *eventData = addFdToEvent(getEpollFd(), clientSocket, EPOLLIN, CLIENT, client);
+    client->setEventData(eventData);
+    
     client->setClientFd(clientSocket);
     client->setServerFd(server_fd);
     client->setWebserv(this);
@@ -227,7 +231,7 @@ void Webserv::deleteClient(Client *client)
     std::cout << "Client is disconnected\n";
 }
 
-void Webserv::handleDisconnect(Client *client, EventData *eventData)
+void Webserv::handleDisconnect(Client *client)
 {
     if (epoll_ctl(getEpollFd(), EPOLL_CTL_DEL, client->getClientFd(), NULL) == -1)
         std::cerr << "epoll_ctl EPOLL_CTL_DEL failed on fd " << client->getClientFd() << "\n";
@@ -236,8 +240,6 @@ void Webserv::handleDisconnect(Client *client, EventData *eventData)
         client->setPendingDelete(true);
     else
         deleteClient(client);
-
-    delete eventData;
 }
 
 RequestState Webserv::readAndCheckRequestCompletion(Client *client)
@@ -302,7 +304,7 @@ void Webserv::processClient(EventData *eventData)
 
     if (state == REQUEST_DISCONNECTED)
     {
-        handleDisconnect(client, eventData);
+        handleDisconnect(client);
         return;
     }
     if (state == REQUEST_INCOMPLETE)
@@ -343,8 +345,6 @@ void Webserv::readToChild(EventData *eventData)
         // On le récupère sans bloquer.
         waitpid(cgiRequest->getPid(), NULL, WNOHANG);
 
-        // retirer proprement le fd d'epoll AVANT close (+ delete l'EventData)
-        removeFdFromEvent(eventData, getEpollFd());
         close(cgiRequest->getPipeOut()[0]);
 
         cgiRequest->processDataFromChild();

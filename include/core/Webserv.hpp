@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:20 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/08 21:40:26 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/22 15:24:36 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ class Webserv
     void readToChild(EventData *eventData);
 
     RequestState readAndCheckRequestCompletion(Client *client);
-    void handleDisconnect(Client *client, EventData *eventData);
+    void handleDisconnect(Client *client);
     void deleteClient(Client *client);
     void closeConnection();
 };
