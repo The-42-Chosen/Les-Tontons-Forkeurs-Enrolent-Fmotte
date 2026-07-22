@@ -30,14 +30,15 @@ ARequest::ARequest() : _requestContext(NULL), _responseContext(NULL)
 }
 
 ARequest::ARequest(const ARequest &other)
-    : _requestContext(other._requestContext), _responseContext(other._responseContext)
+    : _requestContext(new RequestContext(*other._requestContext)),
+    _responseContext(new ResponseContext(*other._responseContext))
 {
 }
 
 ARequest::~ARequest()
 {
-    // delete _requestContext;
-    // delete _responseContext;
+    delete _requestContext;
+    delete _responseContext;
 }
 
 // =====================
