@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 14:35:48 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/06 04:08:16 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/22 13:07:30 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 
 class RequestContext;
 class ResponseContext;
+class Location;
 
 class ARequest
 {
@@ -46,4 +47,9 @@ class ARequest
     // == 	  Member	  ==
     // =====================
     int initialisationARequest();
+
+    void validateRequest();
+    void checkAllowedMethods(Location *location);
+    void checkServerIsOpen();
+    void checkLocationIsOpen(Location *location);
 };

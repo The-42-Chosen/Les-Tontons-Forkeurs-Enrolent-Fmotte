@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/22 12:51:00 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/22 13:05:57 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -374,7 +374,9 @@ void Webserv::processClientResponse(Client *client)
 {
     client->initialisationClient();
     client->selectTypeRequest();
-
+    
+    client->getARequest()->validateRequest();
+    
     if (client->getTypeRequest() == STATIC)
     {
         StaticRequest *staticRequest = dynamic_cast<StaticRequest *>(client->getARequest());
