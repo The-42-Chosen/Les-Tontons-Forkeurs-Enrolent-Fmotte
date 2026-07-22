@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/16 16:35:38 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/22 12:43:07 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/22 16:20:36 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,9 @@ class CGIRequest : public ARequest
     int _pipeOut[2];
     pid_t _pid;
     std::string _cgiBuffer;
-  
+    EventData* _eventDataWriteChild;
+    EventData* _eventDataReadChild;
+    
     CGIRequest();
 
   public:
@@ -43,7 +45,11 @@ class CGIRequest : public ARequest
     void setPipeOut(int pipeOut[2]);
     pid_t getPid() const;
     void setPid(pid_t pid);
-
+    EventData *geteventData1() const;
+    void seteventData1(EventData* _eventData);
+    EventData *geteventData2() const;
+    void seteventData2(EventData* _eventData);
+    
     // =====================
     // == 	  Member	  ==
     // =====================
