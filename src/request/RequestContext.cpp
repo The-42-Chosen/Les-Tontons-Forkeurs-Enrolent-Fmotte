@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/05 21:33:57 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/22 13:08:51 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/22 15:11:06 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,17 @@ RequestContext::RequestContext(ARequest *arequest)
 
 RequestContext::~RequestContext()
 {
+    delete getHttpRequest();
+}
+
+RequestContext::RequestContext(const RequestContext &other)
+: _client(other._client), 
+_server(other._server),
+_location(other._location),
+_ARequest(other._ARequest),
+_httpRequest(new HttpRequest(*other._httpRequest))
+{
+    _httpRequest->setRequestContext(this);
 }
 
 // =====================

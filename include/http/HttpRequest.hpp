@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 14:01:38 by erpascua          #+#    #+#             */
-/*   Updated: 2026/07/08 22:03:04 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/22 14:05:38 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ class HttpRequest
     // =====================
     HttpRequest(RequestContext *requestContext);
     ~HttpRequest();
+    HttpRequest(const HttpRequest &other);
 
     // =====================
     // ==     Getters     ==
