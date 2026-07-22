@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/06 00:33:34 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/06 04:29:00 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/22 13:38:27 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void StaticRequest::selectMethodHttp()
 {
     HttpRequest *httpRequest = getRequestContext()->getHttpRequest();
     HttpMethod httpMethod = httpRequest->getHeader()->getMethod();
-    ;
+    
     AMethod *method = NULL;
 
     GetMethod get(httpRequest);
