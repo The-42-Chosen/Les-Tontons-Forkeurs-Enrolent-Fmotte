@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utilsConnection.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 14:55:37 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/20 03:28:49 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/07/22 12:51:41 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,4 +77,10 @@ int createServerSocket(std::string ip_address, unsigned int port_number, unsigne
         throw ExecptionErrorFunction("listen");
 
     return serverSocket;
+}
+
+void removeFdFromEvent(EventData *eventData, int epoll_webserv)
+{   
+    epoll_ctl(epoll_webserv, EPOLL_CTL_DEL, eventData->fd, NULL);
+    delete eventData;
 }

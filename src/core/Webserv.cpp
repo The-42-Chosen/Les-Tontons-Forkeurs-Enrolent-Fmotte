@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/20 03:10:59 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/07/22 12:51:00 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -327,6 +327,8 @@ void Webserv::writeToChild(EventData *eventData)
     cgiRequest->sendDataToChild();
 }
 
+
+
 void Webserv::readToChild(EventData *eventData)
 {
     CGIRequest *cgiRequest = static_cast<CGIRequest *>(eventData->ptr);
@@ -334,8 +336,17 @@ void Webserv::readToChild(EventData *eventData)
 
     try
     {
-        cgiRequest->receivedDataFromChild();
-        waitpid(cgiRequest->getPid(), NULL, 0);
+        if (!cgiRequest->receivedDataFromChild())
+            return;                       // pas encore EOF -> on rendra la main à epoll
+
+        // EOF atteint : l'enfant a fermé stdout, il se termine.
+        // On le récupère sans bloquer.
+        waitpid(cgiRequest->getPid(), NULL, WNOHANG);
+
+        // retirer proprement le fd d'epoll AVANT close (+ delete l'EventData)
+        removeFdFromEvent(eventData, getEpollFd());
+        close(cgiRequest->getPipeOut()[0]);
+
         cgiRequest->processDataFromChild();
     }
     catch (const std::exception &e)
@@ -345,7 +356,6 @@ void Webserv::readToChild(EventData *eventData)
 
     client->setCGIProcessing(false);
     sendResponseToClient(client);
-
     if (client->isPendingDelete())
         deleteClient(client);
 }
