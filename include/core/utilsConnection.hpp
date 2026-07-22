@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 14:55:35 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/22 12:50:10 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/22 15:08:21 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ sockaddr_in createSocketAddress(std::string ip_address, unsigned int port_number
 int createServerSocket(std::string ip_address, unsigned int port_number, unsigned int max_client);
 void removeFdFromEvent(EventData *eventData, int epoll_webserv);
 
-template <typename PTR> void addFdToEvent(int epoll_fd, int socket_fd, uint32_t event, FdType type, PTR *ptr)
+template <typename PTR> EventData * addFdToEvent(int epoll_fd, int socket_fd, uint32_t event, FdType type, PTR *ptr)
 {
     setNonblocking(socket_fd);
 
@@ -41,5 +41,10 @@ template <typename PTR> void addFdToEvent(int epoll_fd, int socket_fd, uint32_t 
     ev.data.ptr = eventData;
 
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, socket_fd, &ev) == -1)
+    {
+        delete eventData;
         throw ExecptionErrorFunction("epoll_ctl");
+    }
+    
+    return eventData;
 }
