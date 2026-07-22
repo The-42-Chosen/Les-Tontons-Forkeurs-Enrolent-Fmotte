@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/05 21:33:55 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/06 02:46:38 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/22 13:46:01 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,11 @@ ResponseContext::ResponseContext(ARequest *arequest)
 }
 
 ResponseContext::~ResponseContext()
+{
+}
+
+ResponseContext::ResponseContext(const ResponseContext &other)
+: _statusCode(other._statusCode), _payload(other._payload), _cgiSetCookies(other._cgiSetCookies), _ARequest(other._ARequest)
 {
 }
 

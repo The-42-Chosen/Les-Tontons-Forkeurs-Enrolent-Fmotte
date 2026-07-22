@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/05 21:33:52 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/06 02:47:34 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/22 13:45:46 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,8 @@ class ResponseContext
     // =====================
     ResponseContext(ARequest *arequest);
     ~ResponseContext();
-
+    ResponseContext(const ResponseContext &other);
+    
     // =====================
     // ==     Getters     ==
     // =====================

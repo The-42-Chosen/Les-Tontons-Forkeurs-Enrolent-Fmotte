@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 13:15:18 by erpascua          #+#    #+#             */
-/*   Updated: 2026/07/06 05:50:26 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/22 14:05:48 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,8 @@
 // == Canonical Form  ==
 // =====================
 
-HttpRequest::HttpRequest(RequestContext *requestContext) : _header(NULL), _body(NULL)
+HttpRequest::HttpRequest(RequestContext *requestContext) : _header(NULL), _body(NULL), _requestContext(requestContext)
 {
-    setRequestContext(requestContext);
 }
 
 HttpRequest::~HttpRequest()
@@ -38,6 +37,10 @@ HttpRequest::~HttpRequest()
     delete getBody();
 }
 
+HttpRequest::HttpRequest(const HttpRequest &other) :
+_header(new Header(*other._header)), _body(new Body(*other._body)), _requestContext(other._requestContext)
+{
+}
 // =====================
 // == Getter & Setter ==
 // =====================
