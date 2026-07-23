@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/16 16:35:36 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/22 16:25:02 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/23 19:21:43 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,11 +181,13 @@ void CGIRequest::connectToEpoll()
 {
     int epoll_fd = getRequestContext()->getClient()->getWebserv()->getEpollFd();
 
-    EventData *evenData1 = addFdToEvent(epoll_fd, getPipeIn()[1], EPOLLOUT, WRITECHILD, this);
-    EventData *evenData2 = addFdToEvent(epoll_fd, getPipeOut()[0], EPOLLIN, READCHILD, this);
+    EventData *eventData1 = addFdToEvent(epoll_fd, getPipeIn()[1], EPOLLOUT, WRITECHILD, this);
+    EventData *eventData2 = addFdToEvent(epoll_fd, getPipeOut()[0], EPOLLIN, READCHILD, this);
     
-    seteventData1(evenData1);
-    seteventData2(evenData2);
+    std::cout << "Add to Epoll\n";
+    
+    seteventData1(eventData1);
+    seteventData2(eventData2);
 }
 
 void CGIRequest::sendDataToChild()
