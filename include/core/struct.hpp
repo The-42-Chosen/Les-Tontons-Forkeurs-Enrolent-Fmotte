@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/03 17:58:55 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/08 21:26:00 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/23 18:56:35 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,4 +81,5 @@ struct EventData
     int fd;
     void *ptr;
     FdType type;
+    uint64_t time;
 };

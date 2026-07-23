@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:20 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/22 15:24:36 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/23 19:15:59 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 #define MAX_EVENTS 10
 #define SIZE_BUFFER 1024
 #define SESSION_TTL 3600
+#define DELAY 5000
 
 class Server;
 class Client;
@@ -46,6 +47,8 @@ class Webserv
     std::vector<Client *> _vectorClient;
     std::map<int, std::set<Server *> > _mapFdToServer;
     std::map<std::string, SessionInfo> _sessions;
+    std::set<EventData*> _setEventData;
+    
     int _webserEpoll;
 
     void cleanupSessions(void);
@@ -70,7 +73,9 @@ class Webserv
     const std::map<int, std::set<Server *> > &getFdToServersMap(void) const;
     void setEpollFd(const int epoll);
     int getEpollFd(void);
-
+    std::set<EventData*> getSetEventData(void) const;
+    void addSetEventData(EventData* eventData);
+    
     // SESSION
     int touchSession(const std::string &sessionId);
 
@@ -102,4 +107,6 @@ class Webserv
     void handleDisconnect(Client *client);
     void deleteClient(Client *client);
     void closeConnection();
+
+    void checkTimeOut();
 };

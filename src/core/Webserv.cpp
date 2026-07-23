@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/22 16:45:30 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/23 19:56:17 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ Webserv &Webserv::operator=(const Webserv &other)
         _mapFdToServer = other._mapFdToServer;
         _sessions = other._sessions;
         _webserEpoll = other._webserEpoll;
+        _setEventData = other._setEventData;
     }
     return (*this);
 }
@@ -116,6 +117,20 @@ void Webserv::cleanupSessions(void)
     }
 }
 
+std::set<EventData*> Webserv::getSetEventData(void) const
+{
+    return _setEventData;
+}
+
+void Webserv::addSetEventData(EventData* eventData)
+{
+    if (eventData == NULL)
+        throw ExecptionErrorUninitializedVariable("*eventData", "Webserv");
+        
+    _setEventData.insert(eventData);
+}
+
+    
 // =====================
 // ==     Method      ==
 // =====================
@@ -154,6 +169,7 @@ void Webserv::registerNewSocket(std::map<Listen, int> &map_socket_fd, Listen *li
 
     server->addEventData(eventData);
     server->setWebserv(this);
+    addSetEventData(eventData);
     
     map_socket_fd.insert(std::make_pair(*listenConfig, serverSocket));
 
@@ -214,6 +230,7 @@ void Webserv::handleNewClient(int server_fd)
 
     EventData *eventData = addFdToEvent(getEpollFd(), clientSocket, EPOLLIN, CLIENT, client);
     client->setEventData(eventData);
+    addSetEventData(eventData);
     
     client->setClientFd(clientSocket);
     client->setServerFd(server_fd);
@@ -226,6 +243,7 @@ void Webserv::deleteClient(Client *client)
 {
     close(client->getClientFd());
     _vectorClient.erase(std::find(_vectorClient.begin(), _vectorClient.end(), client));
+    _setEventData.erase(client->getEventData());
     delete client;
 
     std::cout << "Client is disconnected\n";
@@ -388,6 +406,9 @@ void Webserv::processClientResponse(Client *client)
         std::string scriptName = cgiRequest->getRequestContext()->getHttpRequest()->getHeader()->getScriptName();
         cgiRequest->initializationCGIRequest(selectCgiInterpreter(scriptName));
         client->setCGIProcessing(true);
+        
+        addSetEventData(cgiRequest->geteventData1());
+        addSetEventData(cgiRequest->geteventData2());
     }
 }
 
@@ -422,11 +443,17 @@ void Webserv::listenToWebserv()
 
     while (1)
     {
-        if ((nfds = epoll_wait(getEpollFd(), events, MAX_EVENTS, -1)) == -1)
+        if ((nfds = epoll_wait(getEpollFd(), events, MAX_EVENTS, 1000)) == -1)
             throw ExecptionErrorFunction("epoll_wait");
 
         if (stop_webserv)
             return;
+        
+        if (nfds == 0)
+        {
+            checkTimeOut();
+            continue;
+        }
 
         for (int i = 0; i < nfds; ++i)
         {
@@ -471,6 +498,35 @@ bool Webserv::initializeConnection()
     }
     closeConnection();
     return res;
+}
+
+void Webserv::checkTimeOut()
+{
+    std::set<EventData*>::iterator it;
+    it = _setEventData.begin();
+
+    for (; it != _setEventData.end(); it++)
+    {
+        if (getCurrentTime() > (*it)->time + DELAY && (*it)->type == READCHILD)
+        {
+            std::cout << "KILL process\n";
+            CGIRequest *cgiRequest = static_cast<CGIRequest *>((*it)->ptr);
+            
+            kill(cgiRequest->getPid(), 9);
+            
+            applyErrorToResponse(cgiRequest->getRequestContext()->getClient(), std::runtime_error("504"));
+
+            cgiRequest->getRequestContext()->getClient()->setCGIProcessing(false);
+            sendResponseToClient(cgiRequest->getRequestContext()->getClient());
+
+            _setEventData.erase(cgiRequest->geteventData1());
+            _setEventData.erase(cgiRequest->geteventData2());
+            
+            _setEventData.erase(cgiRequest->getRequestContext()->getClient()->getEventData());
+            deleteClient(cgiRequest->getRequestContext()->getClient());
+            break;
+        }
+    }
 }
 
 void Webserv::closeConnection()
