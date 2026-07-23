@@ -6,12 +6,14 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/08 12:58:24 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/28 11:35:14 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/23 18:56:06 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utilsDuplicate.hpp"
 #include "execption.hpp"
+
+#include <sys/time.h>
 
 std::string parseRootDirective(std::vector<std::string> &tokens)
 {
@@ -162,4 +164,11 @@ std::string trimSpaces(const std::string &value)
         return ("");
     std::string::size_type end = value.find_last_not_of(" \t");
     return (value.substr(begin, end - begin + 1));
+}
+
+uint64_t getCurrentTime(void)
+{
+    struct timeval tv = {};
+    gettimeofday(&tv, 0);
+    return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }

@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/08 12:58:22 by fmotte            #+#    #+#             */
-/*   Updated: 2026/05/27 13:30:21 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/23 18:56:18 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,3 +22,4 @@ HttpReturn parseReturnDirective(std::vector<std::string> &tokens, bool &is_init)
 std::string intToString(int value);
 std::string trimSpaces(const std::string &value);
 std::string toLowerString(const std::string &str);
+uint64_t getCurrentTime(void);
