@@ -6,7 +6,7 @@
 /*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 14:50:27 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/22 15:53:16 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/23 17:46:26 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,15 +30,15 @@ Server::Server(const Webserv *)
 
 Server::~Server()
 {
-    EventData* evenData;
+    EventData* eventData;
     int epoll_fd = getWebserv()->getEpollFd();
     
     std::set<EventData*>::iterator it;
     for (it = _setEventData.begin(); it != _setEventData.end(); it++)
     {   
-        evenData = *it;
-        epoll_ctl(epoll_fd, EPOLL_CTL_DEL, evenData->fd, NULL);
-        delete evenData;
+        eventData = *it;
+        epoll_ctl(epoll_fd, EPOLL_CTL_DEL, eventData->fd, NULL);
+        delete eventData;
     }
 }
 
