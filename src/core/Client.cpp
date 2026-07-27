@@ -33,7 +33,7 @@ Client::~Client()
 {
     int epoll_fd = getWebserv()->getEpollFd();
     epoll_ctl(epoll_fd, EPOLL_CTL_DEL, getEventData()->fd, NULL);
-    
+
     delete getARequest();
     delete getEventData();
 }

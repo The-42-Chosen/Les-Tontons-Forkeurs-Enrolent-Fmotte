@@ -37,8 +37,8 @@ HttpRequest::~HttpRequest()
     delete getBody();
 }
 
-HttpRequest::HttpRequest(const HttpRequest &other) :
-_header(new Header(*other._header)), _body(new Body(*other._body)), _requestContext(other._requestContext)
+HttpRequest::HttpRequest(const HttpRequest &other)
+    : _header(new Header(*other._header)), _body(new Body(*other._body)), _requestContext(other._requestContext)
 {
 }
 // =====================

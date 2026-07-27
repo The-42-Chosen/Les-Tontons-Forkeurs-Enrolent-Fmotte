@@ -36,7 +36,7 @@ class Client
     bool _CGIProcessing;
     bool _pendingDelete;
     EventData *_eventData;
-    
+
   public:
     // =====================
     // == Canonical Form  ==
@@ -90,7 +90,7 @@ class Client
 
     void setEventData(EventData *eventData);
     EventData *getEventData(void) const;
-    
+
     // =====================
     // ==     Method      ==
     // =====================

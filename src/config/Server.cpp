@@ -30,12 +30,12 @@ Server::Server(const Webserv *)
 
 Server::~Server()
 {
-    EventData* eventData;
+    EventData *eventData;
     int epoll_fd = getWebserv()->getEpollFd();
-    
-    std::set<EventData*>::iterator it;
+
+    std::set<EventData *>::iterator it;
     for (it = _setEventData.begin(); it != _setEventData.end(); it++)
-    {   
+    {
         eventData = *it;
         epoll_ctl(epoll_fd, EPOLL_CTL_DEL, eventData->fd, NULL);
         delete eventData;
@@ -184,7 +184,7 @@ void Server::addEventData(EventData *eventData)
     _setEventData.insert(eventData);
 }
 
-std::set<EventData*> Server::getEventData(void) const
+std::set<EventData *> Server::getEventData(void) const
 {
     return _setEventData;
 }

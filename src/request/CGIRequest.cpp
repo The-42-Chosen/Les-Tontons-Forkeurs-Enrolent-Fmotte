@@ -36,10 +36,10 @@ CGIRequest::CGIRequest(ARequest arequest) : ARequest(arequest)
 CGIRequest::~CGIRequest()
 {
     int epoll_fd = getRequestContext()->getClient()->getWebserv()->getEpollFd();
-    
+
     epoll_ctl(epoll_fd, EPOLL_CTL_DEL, _eventDataWriteChild->fd, NULL);
     epoll_ctl(epoll_fd, EPOLL_CTL_DEL, _eventDataReadChild->fd, NULL);
-    
+
     delete _eventDataWriteChild;
     delete _eventDataReadChild;
 }
@@ -85,7 +85,7 @@ EventData *CGIRequest::geteventData1() const
     return _eventDataWriteChild;
 }
 
-void CGIRequest::seteventData1(EventData* eventDataWriteChild)
+void CGIRequest::seteventData1(EventData *eventDataWriteChild)
 {
     if (eventDataWriteChild == NULL)
         throw ExecptionErrorUninitializedVariable("*eventDataWriteChild", "CGIRequest");
@@ -98,12 +98,12 @@ EventData *CGIRequest::geteventData2() const
     return _eventDataReadChild;
 }
 
-void CGIRequest::seteventData2(EventData* eventDataReadChild)
+void CGIRequest::seteventData2(EventData *eventDataReadChild)
 {
     if (eventDataReadChild == NULL)
         throw ExecptionErrorUninitializedVariable("*eventDataReadChild", "CGIRequest");
 
-    _eventDataReadChild= eventDataReadChild;
+    _eventDataReadChild = eventDataReadChild;
 }
 
 // =====================
@@ -183,9 +183,9 @@ void CGIRequest::connectToEpoll()
 
     EventData *eventData1 = addFdToEvent(epoll_fd, getPipeIn()[1], EPOLLOUT, WRITECHILD, this);
     EventData *eventData2 = addFdToEvent(epoll_fd, getPipeOut()[0], EPOLLIN, READCHILD, this);
-    
+
     std::cout << "Add to Epoll\n";
-    
+
     seteventData1(eventData1);
     seteventData2(eventData2);
 }
@@ -214,10 +214,10 @@ bool CGIRequest::receivedDataFromChild()
     while ((nb_read = read(getPipeOut()[0], buffer, sizeof(buffer))) > 0)
         _cgiBuffer.append(buffer, nb_read);
 
-    if (nb_read == 0)               // EOF : l'enfant a fermé stdout
+    if (nb_read == 0) // EOF : l'enfant a fermé stdout
     {
         getResponseContext()->setPayload(_cgiBuffer);
-        return true;                // -> on finalise
+        return true; // -> on finalise
     }
     // nb_read == -1 : sur un fd non-bloquant on suppose EAGAIN
     // (au sujet 42 tu n'as pas le droit de tester errno après read ;

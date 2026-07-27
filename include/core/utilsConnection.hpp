@@ -27,7 +27,7 @@ sockaddr_in createSocketAddress(std::string ip_address, unsigned int port_number
 int createServerSocket(std::string ip_address, unsigned int port_number, unsigned int max_client);
 void removeFdFromEvent(EventData *eventData, int epoll_webserv);
 
-template <typename PTR> EventData * addFdToEvent(int epoll_fd, int socket_fd, uint32_t event, FdType type, PTR *ptr)
+template <typename PTR> EventData *addFdToEvent(int epoll_fd, int socket_fd, uint32_t event, FdType type, PTR *ptr)
 {
     setNonblocking(socket_fd);
 
@@ -39,7 +39,7 @@ template <typename PTR> EventData * addFdToEvent(int epoll_fd, int socket_fd, ui
     eventData->fd = socket_fd;
     eventData->type = type;
     eventData->time = getCurrentTime();
-    
+
     ev.data.ptr = eventData;
 
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, socket_fd, &ev) == -1)
@@ -47,6 +47,6 @@ template <typename PTR> EventData * addFdToEvent(int epoll_fd, int socket_fd, ui
         delete eventData;
         throw ExecptionErrorFunction("epoll_ctl");
     }
-    
+
     return eventData;
 }

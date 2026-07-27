@@ -24,9 +24,9 @@ class CGIRequest : public ARequest
     int _pipeOut[2];
     pid_t _pid;
     std::string _cgiBuffer;
-    EventData* _eventDataWriteChild;
-    EventData* _eventDataReadChild;
-    
+    EventData *_eventDataWriteChild;
+    EventData *_eventDataReadChild;
+
     CGIRequest();
 
   public:
@@ -46,10 +46,10 @@ class CGIRequest : public ARequest
     pid_t getPid() const;
     void setPid(pid_t pid);
     EventData *geteventData1() const;
-    void seteventData1(EventData* _eventData);
+    void seteventData1(EventData *_eventData);
     EventData *geteventData2() const;
-    void seteventData2(EventData* _eventData);
-    
+    void seteventData2(EventData *_eventData);
+
     // =====================
     // == 	  Member	  ==
     // =====================

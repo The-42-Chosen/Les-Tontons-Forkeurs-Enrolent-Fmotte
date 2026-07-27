@@ -37,11 +37,8 @@ RequestContext::~RequestContext()
 }
 
 RequestContext::RequestContext(const RequestContext &other)
-: _client(other._client), 
-_server(other._server),
-_location(other._location),
-_ARequest(other._ARequest),
-_httpRequest(new HttpRequest(*other._httpRequest))
+    : _client(other._client), _server(other._server), _location(other._location), _ARequest(other._ARequest),
+      _httpRequest(new HttpRequest(*other._httpRequest))
 {
     _httpRequest->setRequestContext(this);
 }

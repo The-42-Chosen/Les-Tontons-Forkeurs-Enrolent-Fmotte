@@ -80,7 +80,7 @@ int createServerSocket(std::string ip_address, unsigned int port_number, unsigne
 }
 
 void removeFdFromEvent(EventData *eventData, int epoll_webserv)
-{   
+{
     epoll_ctl(epoll_webserv, EPOLL_CTL_DEL, eventData->fd, NULL);
     delete eventData;
 }

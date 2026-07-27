@@ -117,20 +117,19 @@ void Webserv::cleanupSessions(void)
     }
 }
 
-std::set<EventData*> Webserv::getSetEventData(void) const
+std::set<EventData *> Webserv::getSetEventData(void) const
 {
     return _setEventData;
 }
 
-void Webserv::addSetEventData(EventData* eventData)
+void Webserv::addSetEventData(EventData *eventData)
 {
     if (eventData == NULL)
         throw ExecptionErrorUninitializedVariable("*eventData", "Webserv");
-        
+
     _setEventData.insert(eventData);
 }
 
-    
 // =====================
 // ==     Method      ==
 // =====================
@@ -170,7 +169,7 @@ void Webserv::registerNewSocket(std::map<Listen, int> &map_socket_fd, Listen *li
     server->addEventData(eventData);
     server->setWebserv(this);
     addSetEventData(eventData);
-    
+
     map_socket_fd.insert(std::make_pair(*listenConfig, serverSocket));
 
     _mapFdToServer.insert(std::make_pair(serverSocket, std::set<Server *>()));
@@ -231,7 +230,7 @@ void Webserv::handleNewClient(int server_fd)
     EventData *eventData = addFdToEvent(getEpollFd(), clientSocket, EPOLLIN, CLIENT, client);
     client->setEventData(eventData);
     addSetEventData(eventData);
-    
+
     client->setClientFd(clientSocket);
     client->setServerFd(server_fd);
     client->setWebserv(this);
@@ -347,8 +346,6 @@ void Webserv::writeToChild(EventData *eventData)
     cgiRequest->sendDataToChild();
 }
 
-
-
 void Webserv::readToChild(EventData *eventData)
 {
     CGIRequest *cgiRequest = static_cast<CGIRequest *>(eventData->ptr);
@@ -357,7 +354,7 @@ void Webserv::readToChild(EventData *eventData)
     try
     {
         if (!cgiRequest->receivedDataFromChild())
-            return;                       // pas encore EOF -> on rendra la main à epoll
+            return; // pas encore EOF -> on rendra la main à epoll
 
         // EOF atteint : l'enfant a fermé stdout, il se termine.
         // On le récupère sans bloquer.
@@ -392,9 +389,9 @@ void Webserv::processClientResponse(Client *client)
 {
     client->initialisationClient();
     client->selectTypeRequest();
-    
+
     client->getARequest()->validateRequest();
-    
+
     if (client->getTypeRequest() == STATIC)
     {
         StaticRequest *staticRequest = dynamic_cast<StaticRequest *>(client->getARequest());
@@ -406,7 +403,7 @@ void Webserv::processClientResponse(Client *client)
         std::string scriptName = cgiRequest->getRequestContext()->getHttpRequest()->getHeader()->getScriptName();
         cgiRequest->initializationCGIRequest(selectCgiInterpreter(scriptName));
         client->setCGIProcessing(true);
-        
+
         addSetEventData(cgiRequest->geteventData1());
         addSetEventData(cgiRequest->geteventData2());
     }
@@ -448,7 +445,7 @@ void Webserv::listenToWebserv()
 
         if (stop_webserv)
             return;
-        
+
         if (nfds == 0)
         {
             checkTimeOut();
@@ -502,7 +499,7 @@ bool Webserv::initializeConnection()
 
 void Webserv::checkTimeOut()
 {
-    std::set<EventData*>::iterator it;
+    std::set<EventData *>::iterator it;
     it = _setEventData.begin();
 
     for (; it != _setEventData.end(); it++)
@@ -511,9 +508,9 @@ void Webserv::checkTimeOut()
         {
             std::cout << "KILL process\n";
             CGIRequest *cgiRequest = static_cast<CGIRequest *>((*it)->ptr);
-            
+
             kill(cgiRequest->getPid(), 9);
-            
+
             applyErrorToResponse(cgiRequest->getRequestContext()->getClient(), std::runtime_error("504"));
 
             cgiRequest->getRequestContext()->getClient()->setCGIProcessing(false);
@@ -521,7 +518,7 @@ void Webserv::checkTimeOut()
 
             _setEventData.erase(cgiRequest->geteventData1());
             _setEventData.erase(cgiRequest->geteventData2());
-            
+
             _setEventData.erase(cgiRequest->getRequestContext()->getClient()->getEventData());
             deleteClient(cgiRequest->getRequestContext()->getClient());
             break;

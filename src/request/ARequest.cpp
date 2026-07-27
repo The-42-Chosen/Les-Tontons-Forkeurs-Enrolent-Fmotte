@@ -12,12 +12,12 @@
 
 #include "ARequest.hpp"
 
-#include "RequestContext.hpp"
-#include "ResponseContext.hpp"
 #include "Client.hpp"
 #include "Header.hpp"
 #include "HttpRequest.hpp"
 #include "Location.hpp"
+#include "RequestContext.hpp"
+#include "ResponseContext.hpp"
 
 #include "execption.hpp"
 
@@ -31,7 +31,7 @@ ARequest::ARequest() : _requestContext(NULL), _responseContext(NULL)
 
 ARequest::ARequest(const ARequest &other)
     : _requestContext(new RequestContext(*other._requestContext)),
-    _responseContext(new ResponseContext(*other._responseContext))
+      _responseContext(new ResponseContext(*other._responseContext))
 {
 }
 

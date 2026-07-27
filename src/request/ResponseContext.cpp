@@ -30,7 +30,8 @@ ResponseContext::~ResponseContext()
 }
 
 ResponseContext::ResponseContext(const ResponseContext &other)
-: _statusCode(other._statusCode), _payload(other._payload), _cgiSetCookies(other._cgiSetCookies), _ARequest(other._ARequest)
+    : _statusCode(other._statusCode), _payload(other._payload), _cgiSetCookies(other._cgiSetCookies),
+      _ARequest(other._ARequest)
 {
 }
 

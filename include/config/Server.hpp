@@ -36,14 +36,14 @@ class Server
     std::string _root;
     std::vector<std::string> _index_files;
     std::vector<Server> _servers;
-    
+
     bool _auto_index;
     std::vector<HttpErrorPage> _error_page;
     unsigned int _client_max_body_size;
     HttpReturn _ret;
-    std::set<EventData*> _setEventData;
+    std::set<EventData *> _setEventData;
     Webserv *_webserv;
-    
+
   public:
     // =====================
     // == Canonical Form  ==
@@ -96,8 +96,8 @@ class Server
     HttpReturn *getReturn(void);
 
     void addEventData(EventData *eventData);
-    std::set<EventData*> getEventData(void) const;
-    
+    std::set<EventData *> getEventData(void) const;
+
     void setWebserv(Webserv *webserv);
     Webserv *getWebserv(void) const;
     // =====================

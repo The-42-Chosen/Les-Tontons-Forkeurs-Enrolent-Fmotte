@@ -35,7 +35,7 @@ class ResponseContext
     ResponseContext(ARequest *arequest);
     ~ResponseContext();
     ResponseContext(const ResponseContext &other);
-    
+
     // =====================
     // ==     Getters     ==
     // =====================

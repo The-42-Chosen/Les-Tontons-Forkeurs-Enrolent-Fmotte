@@ -47,8 +47,8 @@ class Webserv
     std::vector<Client *> _vectorClient;
     std::map<int, std::set<Server *> > _mapFdToServer;
     std::map<std::string, SessionInfo> _sessions;
-    std::set<EventData*> _setEventData;
-    
+    std::set<EventData *> _setEventData;
+
     int _webserEpoll;
 
     void cleanupSessions(void);
@@ -73,9 +73,9 @@ class Webserv
     const std::map<int, std::set<Server *> > &getFdToServersMap(void) const;
     void setEpollFd(const int epoll);
     int getEpollFd(void);
-    std::set<EventData*> getSetEventData(void) const;
-    void addSetEventData(EventData* eventData);
-    
+    std::set<EventData *> getSetEventData(void) const;
+    void addSetEventData(EventData *eventData);
+
     // SESSION
     int touchSession(const std::string &sessionId);
 

@@ -41,7 +41,7 @@ void StaticRequest::selectMethodHttp()
 {
     HttpRequest *httpRequest = getRequestContext()->getHttpRequest();
     HttpMethod httpMethod = httpRequest->getHeader()->getMethod();
-    
+
     AMethod *method = NULL;
 
     GetMethod get(httpRequest);
