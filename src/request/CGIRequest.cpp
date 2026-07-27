@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGIRequest.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/16 16:35:36 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/23 19:21:43 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/28 01:58:28 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,7 +198,10 @@ void CGIRequest::sendDataToChild()
     {
         BodyContent body = getRequestContext()->getHttpRequest()->getBody()->getBodyContent();
         if (!body.empty())
-            write(getPipeIn()[1], body.data(), body.size());
+        {
+            ssize_t nb_written = write(getPipeIn()[1], body.data(), body.size());
+            (void)nb_written;
+        }
     }
     close(getPipeIn()[1]);
 }
@@ -341,7 +344,10 @@ void CGIRequest::manage_pipe(const std::string &interpreter)
     // Relative paths treatment
     std::string::size_type slash = path.rfind('/');
     if (slash != std::string::npos)
-        chdir(path.substr(0, slash).c_str());
+    {
+        int ret = chdir(path.substr(0, slash).c_str());
+        (void)ret;
+    }
 
     std::string localScript = "./" + scriptFile;
 
