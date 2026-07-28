@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Body.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/14 19:53:56 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/06 02:16:25 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/28 02:08:51 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -222,14 +222,14 @@ void Body::appendBodyBytes(const std::string &data)
 
 size_t Body::initMaxBodySize()
 {
-    size_t maxBodySize = 0;
     Location *location = getHttpRequest()->getRequestContext()->getLocation();
 
-    if (location != NULL)
+    if (location != NULL && location->getClientMaxBodySize() != 0)
         return location->getClientMaxBodySize();
 
-    if (maxBodySize == 0)
-        return getHttpRequest()->getRequestContext()->getClient()->getServerPtr()->getClientMaxBodySize();
+    size_t serverMaxBodySize = getHttpRequest()->getRequestContext()->getClient()->getServerPtr()->getClientMaxBodySize();
+    if (serverMaxBodySize != 0)
+        return serverMaxBodySize;
 
     return DEFAULT_CLIENT_MAX_BODY_SIZE;
 }
