@@ -32,7 +32,8 @@
 // == Canonical Form  ==
 // =====================
 
-HttpResponse::HttpResponse(ARequest *arequest) : _responseContent(""), _arequest(NULL)
+HttpResponse::HttpResponse(ARequest *arequest)
+    : _responseContent(""), _arequest(NULL), _shouldCloseConnection(false)
 {
     setARequest(arequest);
 }
@@ -70,6 +71,16 @@ void HttpResponse::setARequest(ARequest *arequest)
         throw ExecptionErrorUninitializedVariable("*arequest", "HttpResponse");
 
     _arequest = arequest;
+}
+
+bool HttpResponse::getShouldCloseConnection(void) const
+{
+    return _shouldCloseConnection;
+}
+
+void HttpResponse::setShouldCloseConnection(bool shouldCloseConnection)
+{
+    _shouldCloseConnection = shouldCloseConnection;
 }
 
 // =====================
