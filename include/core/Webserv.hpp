@@ -98,7 +98,7 @@ class Webserv
     void processClient(EventData *eventData);
     void processClientResponse(Client *client);
     void applyErrorToResponse(Client *client, const std::exception &e);
-    void sendResponseToClient(Client *client);
+    bool sendResponseToClient(Client *client);
 
     void writeToChild(EventData *eventData);
     void readToChild(EventData *eventData);

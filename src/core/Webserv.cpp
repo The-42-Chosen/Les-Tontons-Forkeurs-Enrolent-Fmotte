@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/23 19:56:17 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/07/28 02:23:46 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -302,15 +302,29 @@ void Webserv::applyErrorToResponse(Client *client, const std::exception &e)
         client->getARequest()->getResponseContext()->setStatusCode(statusCode);
 }
 
-void Webserv::sendResponseToClient(Client *client)
+// Return TRUE if client has been deleted
+bool Webserv::sendResponseToClient(Client *client)
 {
+    if (client->isPendingDelete())
+    {
+        deleteClient(client);
+        return true;
+    }
+
     if (client->getARequest() == NULL || client->getARequest()->getResponseContext() == NULL)
-        return;
+        return false;
 
     HttpResponse response(client->getARequest());
     response.initialisationHttpResponse();
     response.sendToClient();
     client->clearContentRequest();
+
+    if (!response.getShouldCloseConnection())
+        return false;
+
+    bool isCGIProcessing = client->isCGIProcessing();
+    handleDisconnect(client);
+    return !isCGIProcessing;
 }
 
 void Webserv::processClient(EventData *eventData)
@@ -370,9 +384,11 @@ void Webserv::readToChild(EventData *eventData)
     }
 
     client->setCGIProcessing(false);
+
+    _setEventData.erase(cgiRequest->geteventData1());
+    _setEventData.erase(cgiRequest->geteventData2());
+
     sendResponseToClient(client);
-    if (client->isPendingDelete())
-        deleteClient(client);
 }
 
 static std::string selectCgiInterpreter(const std::string &scriptName)
@@ -412,6 +428,9 @@ void Webserv::processClientResponse(Client *client)
 void Webserv::handleConnection(struct epoll_event &events)
 {
     EventData *eventData = static_cast<EventData *>(events.data.ptr);
+
+    if (_setEventData.find(eventData) == _setEventData.end())
+        return;
 
     switch (eventData->type)
     {
@@ -513,14 +532,14 @@ void Webserv::checkTimeOut()
 
             applyErrorToResponse(cgiRequest->getRequestContext()->getClient(), std::runtime_error("504"));
 
-            cgiRequest->getRequestContext()->getClient()->setCGIProcessing(false);
-            sendResponseToClient(cgiRequest->getRequestContext()->getClient());
+            Client *client = cgiRequest->getRequestContext()->getClient();
+            client->setCGIProcessing(false);
 
             _setEventData.erase(cgiRequest->geteventData1());
             _setEventData.erase(cgiRequest->geteventData2());
 
-            _setEventData.erase(cgiRequest->getRequestContext()->getClient()->getEventData());
-            deleteClient(cgiRequest->getRequestContext()->getClient());
+            if (!sendResponseToClient(client))
+                handleDisconnect(client);
             break;
         }
     }
