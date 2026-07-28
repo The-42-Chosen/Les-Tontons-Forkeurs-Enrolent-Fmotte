@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/14 19:53:56 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/28 02:08:51 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/07/28 02:27:17 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 // ==       OCF       ==
 // =====================
 Body::Body(const HttpRequest &httpRequest)
-    : _bodyContent(0), _keepAlive(false), _contentLength(0), _totalChunked(0), _httpRequest(NULL)
+    : _bodyContent(0), _keepAlive(true), _contentLength(0), _totalChunked(0), _httpRequest(NULL)
 {
     setHttpRequest(const_cast<HttpRequest *>(&httpRequest));
 }
@@ -139,8 +139,8 @@ void Body::configureKeepAlive(const HeaderContent &header)
     HeaderContent::const_iterator connectionIt = header.find("connection");
     HeaderContent::const_iterator itEnd = header.end();
 
-    if (connectionIt != itEnd && connectionIt->second == "keep-alive")
-        setKeepAlive(true);
+    if (connectionIt != itEnd && connectionIt->second == "close")
+        setKeepAlive(false);
 }
 
 bool Body::handleTransferEncoding(const HeaderContent &header, const std::string &headerContent)
