@@ -227,7 +227,8 @@ size_t Body::initMaxBodySize()
     if (location != NULL && location->getClientMaxBodySize() != 0)
         return location->getClientMaxBodySize();
 
-    size_t serverMaxBodySize = getHttpRequest()->getRequestContext()->getClient()->getServerPtr()->getClientMaxBodySize();
+    size_t serverMaxBodySize =
+        getHttpRequest()->getRequestContext()->getClient()->getServerPtr()->getClientMaxBodySize();
     if (serverMaxBodySize != 0)
         return serverMaxBodySize;
 
