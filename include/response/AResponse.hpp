@@ -56,6 +56,7 @@ class AResponse
     std::string makeStatusLine();
     void makeHeader();
     void handleSession();
+    void handleConnection();
     std::string makeHttpDate();
     std::string headerToString();
     bool containsHtmlTags(const std::string &body);

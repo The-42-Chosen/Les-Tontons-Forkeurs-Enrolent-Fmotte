@@ -6,13 +6,14 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 17:25:00 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/21 19:55:23 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/07/28 02:31:56 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "AResponse.hpp"
 
 #include "ARequest.hpp"
+#include "Body.hpp"
 #include "Client.hpp"
 #include "Cookie.hpp"
 #include "HttpRequest.hpp"
@@ -124,6 +125,23 @@ void AResponse::makeHeader()
 {
     addHeaderContent("date", makeHttpDate());
     handleSession();
+    handleConnection();
+}
+
+void AResponse::handleConnection()
+{
+    bool closeConnection = true;
+
+    if (getStatusCode() < 400)
+    {
+        HttpRequest *httpRequest = getHttpResponse()->getARequest()->getRequestContext()->getHttpRequest();
+        Body *body = (httpRequest != NULL) ? httpRequest->getBody() : NULL;
+
+        closeConnection = (body != NULL) ? !body->getKeepAlive() : false;
+    }
+
+    addHeaderContent("Connection", closeConnection ? " close" : " keep-alive");
+    getHttpResponse()->setShouldCloseConnection(closeConnection);
 }
 
 void AResponse::handleSession()
