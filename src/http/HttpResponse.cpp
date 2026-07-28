@@ -32,8 +32,7 @@
 // == Canonical Form  ==
 // =====================
 
-HttpResponse::HttpResponse(ARequest *arequest)
-    : _responseContent(""), _arequest(NULL), _shouldCloseConnection(false)
+HttpResponse::HttpResponse(ARequest *arequest) : _responseContent(""), _arequest(NULL), _shouldCloseConnection(false)
 {
     setARequest(arequest);
 }
