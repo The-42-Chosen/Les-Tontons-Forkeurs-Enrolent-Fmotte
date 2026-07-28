@@ -116,7 +116,7 @@ std::string AResponse::makeStatusLine()
 
     firstLine += " ";
     firstLine += getStatusMessage();
-    firstLine += "\n";
+    firstLine += "\r\n";
 
     return firstLine;
 }
@@ -140,7 +140,7 @@ void AResponse::handleConnection()
         closeConnection = (body != NULL) ? !body->getKeepAlive() : false;
     }
 
-    addHeaderContent("Connection", closeConnection ? " close" : " keep-alive");
+    addHeaderContent("Connection", closeConnection ? "close" : "keep-alive");
     getHttpResponse()->setShouldCloseConnection(closeConnection);
 }
 
@@ -204,17 +204,17 @@ std::string AResponse::headerToString()
     for (HeaderContent::iterator it = headerContent.begin(); it != headerContent.end(); ++it)
     {
         header += it->first;
-        header += ":";
+        header += ": ";
         header += it->second;
-        header += "\n";
+        header += "\r\n";
     }
 
     // Cookies <-> CGI
     for (size_t i = 0; i < _setCookies.size(); ++i)
     {
-        header += "Set-Cookie:";
+        header += "Set-Cookie: ";
         header += _setCookies[i];
-        header += "\n";
+        header += "\r\n";
     }
     return header;
 }
