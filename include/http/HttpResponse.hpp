@@ -29,6 +29,7 @@ class HttpResponse
     // =====================
     std::string _responseContent;
     ARequest *_arequest;
+    bool _shouldCloseConnection;
 
     HttpResponse();
 
@@ -47,6 +48,8 @@ class HttpResponse
     void addResponseContent(std::string responseContent);
     ARequest *getARequest(void) const;
     void setARequest(ARequest *arequest);
+    bool getShouldCloseConnection(void) const;
+    void setShouldCloseConnection(bool shouldCloseConnection);
 
     // =====================
     // == 	  Methods	  ==
