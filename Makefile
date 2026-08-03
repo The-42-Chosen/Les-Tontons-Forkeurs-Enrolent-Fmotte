@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+         #
+#    By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/11 16:36:16 by fmotte            #+#    #+#              #
-#    Updated: 2026/07/06 06:03:40 by fmotte           ###   ########.fr        #
+#    Updated: 2026/07/23 16:32:38 by erpascua         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -206,6 +206,16 @@ serv: re
 
 nc:
 	nc -C 0.0.0.0 8080
+
+test: all
+	/usr/bin/python3 _bsugerTests/tests/unittest_python/run_tests_python.py
+	/usr/bin/rm -rf _bsugerTests/www/upload/test_cgi_post.txt
+	/usr/bin/rm -rf _bsugerTests/www/upload/invalid_chunk.txt
+	/usr/bin/rm -rf _bsugerTests/www/upload/invalid_chunk_received.txt
+	#/usr/bin/rm -rf valgrind.log
+
+stress: all
+	/usr/bin/bash _bsugerTests/tests/siege/stress.sh
 
 c:
 	curl localhost:8080 -H @doc/request
