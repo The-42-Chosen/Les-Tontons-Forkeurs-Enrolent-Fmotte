@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utilsRequest.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 13:53:46 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/08 21:56:43 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/08/03 20:31:11 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,6 +160,42 @@ bool isCompleteRequest(const std::string &request)
         return ((request.size() - bodyStart) >= contentLength);
     }
     return (true);
+}
+
+bool isDeclaredBodySizeExceeding(const std::string &request, size_t maxBodySize)
+{
+    if (maxBodySize == 0)
+        return (false);
+
+    std::string::size_type headerEnd = request.find("\r\n\r\n");
+    if (headerEnd == std::string::npos)
+        return (false);
+
+    std::string transferEncoding = toLowerString(trimSpaces(getHeaderValue(request, "transfer-encoding")));
+    if (transferEncoding == "chunked")
+    {
+        std::string::size_type bodyStart = headerEnd + 4;
+        std::string::size_type lineEnd = request.find("\r\n", bodyStart);
+        if (lineEnd == std::string::npos)
+            return (false);
+
+        std::string sizeToken = initSizeToken(request, bodyStart, lineEnd);
+        std::stringstream ss(sizeToken);
+        size_t chunkSize = 0;
+        if (sizeToken.empty() || !(ss >> std::hex >> chunkSize) || !ss.eof())
+            return (false);
+        return (chunkSize > maxBodySize);
+    }
+
+    std::string contentLengthValue = getHeaderValue(request, "content-length");
+    if (!contentLengthValue.empty())
+    {
+        size_t contentLength = 0;
+        if (!parseDecimalLength(contentLengthValue, contentLength))
+            return (false);
+        return (contentLength > maxBodySize);
+    }
+    return (false);
 }
 
 bool isCompleteChunkedBody(const std::string &request, std::string::size_type bodyStart)

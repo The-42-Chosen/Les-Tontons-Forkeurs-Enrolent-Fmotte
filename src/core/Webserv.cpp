@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/28 02:23:46 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/08/03 20:23:35 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -259,6 +259,28 @@ void Webserv::handleDisconnect(Client *client)
         deleteClient(client);
 }
 
+size_t Webserv::largestConfiguredMaxBodySize()
+{
+    size_t largest = 0;
+
+    for (size_t i = 0; i < _vectorServer.size(); ++i)
+    {
+        Server *server = _vectorServer[i];
+        if (server == NULL)
+            continue;
+
+        if (server->getClientMaxBodySize() > largest)
+            largest = server->getClientMaxBodySize();
+
+        for (size_t j = 0; server->getLocation(j) != NULL; ++j)
+        {
+            if (server->getLocation(j)->getClientMaxBodySize() > largest)
+                largest = server->getLocation(j)->getClientMaxBodySize();
+        }
+    }
+    return largest;
+}
+
 RequestState Webserv::readAndCheckRequestCompletion(Client *client)
 {
     int bytes;
@@ -273,7 +295,11 @@ RequestState Webserv::readAndCheckRequestCompletion(Client *client)
     client->appendContentRequest(s);
 
     if (!isCompleteRequest(client->getContentRequest()))
+    {
+        if (isDeclaredBodySizeExceeding(client->getContentRequest(), largestConfiguredMaxBodySize()))
+            return REQUEST_COMPLETE;
         return REQUEST_INCOMPLETE;
+    }
 
     return REQUEST_COMPLETE;
 }

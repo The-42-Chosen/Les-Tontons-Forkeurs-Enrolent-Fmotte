@@ -104,6 +104,7 @@ class Webserv
     void readToChild(EventData *eventData);
 
     RequestState readAndCheckRequestCompletion(Client *client);
+    size_t largestConfiguredMaxBodySize();
     void handleDisconnect(Client *client);
     void deleteClient(Client *client);
     void closeConnection();
