@@ -51,6 +51,7 @@ class HandlePath
     // =====================
     std::string selectRoot(Location *location);
     std::string resolveRequestedFilePath(std::string initPath);
+    bool isRequestForLocationRoot(const std::string &locationName);
 
     std::string createPath(Location *location);
     std::string createPathWithLocation(Location *location);

@@ -62,5 +62,6 @@ class CGIRequest : public ARequest
     bool receivedDataFromChild();
     void processDataFromChild();
     void forwardCgiHeaders(const std::string &headerBlock);
+    void applyDefaultCgiStatus();
     void manage_pipe(const std::string &interpreter);
 };

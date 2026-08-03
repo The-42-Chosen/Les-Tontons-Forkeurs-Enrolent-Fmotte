@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/16 16:35:36 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/28 01:58:28 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/08/03 20:33:27 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -249,6 +249,7 @@ void CGIRequest::forwardCgiHeaders(const std::string &headerBlock)
 {
     std::stringstream stream(headerBlock);
     std::string line;
+    bool statusSet = false;
 
     while (std::getline(stream, line))
     {
@@ -262,7 +263,30 @@ void CGIRequest::forwardCgiHeaders(const std::string &headerBlock)
         std::string key = toLowerString(trimSpaces(line.substr(0, colon)));
         if (key == "set-cookie")
             getResponseContext()->addCgiSetCookie(trimSpaces(line.substr(colon + 1)));
+        else if (key == "status")
+        {
+            std::stringstream ss(trimSpaces(line.substr(colon + 1)));
+            int code = 0;
+            if (ss >> code && code >= 100 && code <= 599)
+            {
+                getResponseContext()->setStatusCode(code);
+                statusSet = true;
+            }
+        }
     }
+
+    if (!statusSet)
+        applyDefaultCgiStatus();
+}
+
+void CGIRequest::applyDefaultCgiStatus()
+{
+    HttpMethod method = getRequestContext()->getHttpRequest()->getHeader()->getMethod();
+
+    if (method == POST)
+        getResponseContext()->setStatusCode(201);
+    else if (method == DELETE)
+        getResponseContext()->setStatusCode(204);
 }
 
 void CGIRequest::manage_pipe(const std::string &interpreter)

@@ -62,7 +62,7 @@ std::string GetMethod::applyMethod(Location *location)
     checkPermisionReadFile(path);
     std::string extention = path.substr(path.find_last_of("."));
 
-    parseConfigFile(path.c_str(), contentFile);
+    readRawFile(path.c_str(), contentFile);
     // std::cout << "\ncontentFile: " << contentFile << "\n";
 
     return contentFile;

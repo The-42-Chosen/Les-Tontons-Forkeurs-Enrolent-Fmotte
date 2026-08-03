@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utilsParsing.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:21:25 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/27 13:31:02 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/08/03 20:39:17 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,23 @@ int parseConfigFile(const char *filename, std::string &content_file)
         line.append("\n");
         content_file.append(line);
     }
+
+    f.close();
+    return (0);
+}
+
+int readRawFile(const char *filename, std::string &content_file)
+{
+    std::ifstream f(filename, std::ios::binary);
+    if (!f.is_open())
+    {
+        std::cout << "Error: can't open " << filename << std::endl;
+        return (1);
+    }
+
+    std::ostringstream ss;
+    ss << f.rdbuf();
+    content_file = ss.str();
 
     f.close();
     return (0);

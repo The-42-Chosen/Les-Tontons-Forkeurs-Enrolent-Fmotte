@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/06 05:37:38 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/21 02:53:58 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/08/03 20:39:43 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,24 @@ std::string HandlePath::resolveRequestedFilePath(std::string initPath)
     return "";
 }
 
+bool HandlePath::isRequestForLocationRoot(const std::string &locationName)
+{
+    std::string uri = getHttpRequest()->getHeader()->getScriptName();
+
+    std::string::size_type qpos = uri.find('?');
+    if (qpos != std::string::npos)
+        uri = uri.substr(0, qpos);
+
+    while (uri.size() > 1 && uri[uri.size() - 1] == '/')
+        uri.erase(uri.size() - 1);
+
+    std::string loc = locationName;
+    while (loc.size() > 1 && loc[loc.size() - 1] == '/')
+        loc.erase(loc.size() - 1);
+
+    return uri == loc;
+}
+
 std::string HandlePath::createPathWithLocation(Location *location)
 {
     std::string pathFile;
@@ -117,10 +135,17 @@ std::string HandlePath::createPathWithLocation(Location *location)
 
     HttpMethod method = getHttpRequest()->getHeader()->getMethod();
     if (method == POST)
+    {
+        if (!isRequestForLocationRoot(location->getName()))
+            throw std::runtime_error("404");
         return pathLoc;
+    }
 
     if ((pathFile = resolveRequestedFilePath(pathLoc)) != "")
         return pathFile;
+
+    if (!isRequestForLocationRoot(location->getName()))
+        throw std::runtime_error("404");
 
     if (method == GET)
     {

@@ -16,5 +16,6 @@
 
 unsigned int countOccurrences(const std::string &string, const char occ);
 int parseConfigFile(const char *filename, std::string &content_file);
+int readRawFile(const char *filename, std::string &content_file);
 std::vector<std::string> tokenizeString(std::string &content_file);
 std::string joinPath(const std::string &string1, const std::string &string2);
