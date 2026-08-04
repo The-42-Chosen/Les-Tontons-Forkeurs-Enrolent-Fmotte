@@ -1,5 +1,5 @@
 # Executables
-Webserv
+webserv
 
 # Object files
 *.o
@@ -13,3 +13,12 @@ Webserv
 # nvim setup
 compile_commands.json
 autoimport.db
+
+# test files
+valgrind.log*
+# python cache
+__pycache__/
+*.pyc
+
+# internal test report
+_testerResults.md
