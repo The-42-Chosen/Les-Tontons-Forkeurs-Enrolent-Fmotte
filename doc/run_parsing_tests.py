@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-BIN_PATH = ROOT / "Webserv"
+BIN_PATH = ROOT / "webserv"
 
 TESTS = [
     ("valid_default_doc_config", "doc/config_file", True, "Config de reference du projet."),
@@ -108,7 +108,7 @@ def write_failed_report(results):
     with report_path.open("w", encoding="utf-8") as rep:
         rep.write("Webserv - Rapport des tests de parsing qui echouent\n")
         rep.write("Date: 2026-04-09\n")
-        rep.write("Binaire teste: ./Webserv\n\n")
+        rep.write("Binaire teste: ./webserv\n\n")
         rep.write(f"Total tests executes: {len(results)}\n")
         rep.write(f"Nombre de tests en echec: {len(failed)}\n\n")
 
