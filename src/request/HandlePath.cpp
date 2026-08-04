@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HandlePath.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/06 05:37:38 by fmotte            #+#    #+#             */
-/*   Updated: 2026/08/03 20:39:43 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/08/04 10:18:13 by fmotte           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,7 +158,7 @@ std::string HandlePath::createPathWithLocation(Location *location)
             return pathLoc;
         }
     }
-    return createPathWithServer();
+    throw std::runtime_error("404");
 }
 
 // In case of POST on CGI we need to have a ≠ path. We need to set to the CGI itself
