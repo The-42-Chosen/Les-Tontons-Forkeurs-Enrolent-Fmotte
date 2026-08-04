@@ -1,7 +1,7 @@
 #!/bin/bash
 
 stress() {
-	./Webserv _bsugerTests/configs/default.conf & SERVER_PID=$!
+	./webserv _bsugerTests/configs/default.conf & SERVER_PID=$!
 	sleep 1
 	echo -n "Start stress test on $1"
 	siege -c50 -b -t10S $1 > siege_output.txt 2>&1
