@@ -6,8 +6,10 @@ BASE_URL = "http://localhost:8002"
 class DeleteTestWebservFunctional(unittest.TestCase):
     def test_delete_index(self):
         """Test method DELETE on /"""
+        # DELETE on the root does not target an existing file: the server
+        # answers 404 instead of deleting the index page
         response = requests.delete(f"{BASE_URL}/")
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 404)
     def test_delete_not_allow(self):
         """Test method DELETE on location (/test2) where DELETE not allowed"""
         response = requests.delete(f"{BASE_URL}/test2")

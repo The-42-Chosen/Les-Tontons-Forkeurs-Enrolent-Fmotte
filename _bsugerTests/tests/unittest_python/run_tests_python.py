@@ -112,7 +112,7 @@ if __name__ == "__main__":
         "--show-leak-kinds=all",
         "--track-origins=yes",
         f"--log-file={VALGRIND_LOG}",
-        "./Webserv",
+        "./webserv",
         "_bsugerTests/configs/default.conf"
     ]
     proc = subprocess.Popen(
