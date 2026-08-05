@@ -59,6 +59,17 @@ class ExecptionFailConvertion : public std::exception
     const char *what() const throw();
 };
 
+class ExecptionDuplicateElement : public std::exception
+{
+  private:
+    std::string _message;
+
+  public:
+    ExecptionDuplicateElement(const std::string &argument);
+    ~ExecptionDuplicateElement() throw();
+    const char *what() const throw();
+};
+
 class ExecptionMissElement : public std::exception
 {
   private:

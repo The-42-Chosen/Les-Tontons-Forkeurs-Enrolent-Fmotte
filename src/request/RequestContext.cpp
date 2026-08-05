@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   RequestContext.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/05 21:33:57 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/22 15:11:06 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/08/05 19:27:51 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,11 @@ void RequestContext::initialisationRequestContext()
 
     getHttpRequest()->initHeader(getClient()->getContentRequest());
     linkToServer();
-    setLocation(findLocation());
+
+    Location *location = findLocation();
+    if (location != NULL)
+        setLocation(location);
+
     getHttpRequest()->initBody();
 }
 

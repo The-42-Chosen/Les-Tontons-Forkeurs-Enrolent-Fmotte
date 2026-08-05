@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/16 16:35:36 by fmotte            #+#    #+#             */
-/*   Updated: 2026/08/03 20:33:27 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/08/05 12:01:43 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,16 +29,22 @@
 // ==       OCF       ==
 // =====================
 
-CGIRequest::CGIRequest(ARequest arequest) : ARequest(arequest)
+CGIRequest::CGIRequest(ARequest arequest)
+    : ARequest(arequest), _pid(-1), _cgiBuffer(""), _bodyBytesSent(0), _eventDataWriteChild(NULL),
+      _eventDataReadChild(NULL)
 {
+    _pipeIn[0] = -1;
+    _pipeIn[1] = -1;
+    _pipeOut[0] = -1;
+    _pipeOut[1] = -1;
 }
 
 CGIRequest::~CGIRequest()
 {
-    int epoll_fd = getRequestContext()->getClient()->getWebserv()->getEpollFd();
-
-    epoll_ctl(epoll_fd, EPOLL_CTL_DEL, _eventDataWriteChild->fd, NULL);
-    epoll_ctl(epoll_fd, EPOLL_CTL_DEL, _eventDataReadChild->fd, NULL);
+    // closing the fds also removes them from epoll; never use a fd already
+    // closed elsewhere (it could have been reused by another client)
+    closeStdinPipe();
+    closeStdoutPipe();
 
     delete _eventDataWriteChild;
     delete _eventDataReadChild;
@@ -80,12 +86,12 @@ void CGIRequest::setPid(pid_t pid)
     _pid = pid;
 }
 
-EventData *CGIRequest::geteventData1() const
+EventData *CGIRequest::geteventDataWrite() const
 {
     return _eventDataWriteChild;
 }
 
-void CGIRequest::seteventData1(EventData *eventDataWriteChild)
+void CGIRequest::seteventDataWrite(EventData *eventDataWriteChild)
 {
     if (eventDataWriteChild == NULL)
         throw ExecptionErrorUninitializedVariable("*eventDataWriteChild", "CGIRequest");
@@ -93,12 +99,12 @@ void CGIRequest::seteventData1(EventData *eventDataWriteChild)
     _eventDataWriteChild = eventDataWriteChild;
 }
 
-EventData *CGIRequest::geteventData2() const
+EventData *CGIRequest::geteventDataRead() const
 {
     return _eventDataReadChild;
 }
 
-void CGIRequest::seteventData2(EventData *eventDataReadChild)
+void CGIRequest::seteventDataRead(EventData *eventDataReadChild)
 {
     if (eventDataReadChild == NULL)
         throw ExecptionErrorUninitializedVariable("*eventDataReadChild", "CGIRequest");
@@ -124,9 +130,8 @@ void CGIRequest::createPipe(int pipeIn[2], int pipeOut[2])
         std::cerr << "Error pipe\n";
         throw std::runtime_error("500");
     }
-
-    setNonblocking(pipeOut[1]);
-    setNonblocking(pipeIn[0]);
+    // The child ends (pipeIn[0]/pipeOut[1]) stay blocking: they become the
+    // CGI stdin/stdout. The parent ends are made non-blocking by addFdToEvent.
 }
 
 void CGIRequest::checkForkCreate(pid_t pid)
@@ -138,6 +143,10 @@ void CGIRequest::checkForkCreate(pid_t pid)
         close(getPipeOut()[1]);
         close(getPipeIn()[0]);
         close(getPipeIn()[1]);
+        _pipeOut[0] = -1;
+        _pipeOut[1] = -1;
+        _pipeIn[0] = -1;
+        _pipeIn[1] = -1;
         throw std::runtime_error("500");
     }
 }
@@ -172,7 +181,11 @@ void CGIRequest::initializationCGIRequest(const std::string &interpreter)
         exit(EXIT_FAILURE);
     }
 
+    // The parent does not use the child ends of the pipes
     close(getPipeOut()[1]);
+    _pipeOut[1] = -1;
+    close(getPipeIn()[0]);
+    _pipeIn[0] = -1;
 
     connectToEpoll();
 }
@@ -186,43 +199,76 @@ void CGIRequest::connectToEpoll()
 
     std::cout << "Add to Epoll\n";
 
-    seteventData1(eventData1);
-    seteventData2(eventData2);
+    seteventDataWrite(eventData1);
+    seteventDataRead(eventData2);
 }
 
-void CGIRequest::sendDataToChild()
+// One write per EPOLLOUT event on the pipe; the return value says if the
+// whole body has been fed to the child (stdin closed -> EOF for the CGI)
+bool CGIRequest::sendDataToChild()
 {
-    close(getPipeIn()[0]);
+    Body *body = getRequestContext()->getHttpRequest()->getBody();
 
-    if (getRequestContext()->getHttpRequest()->getBody() != NULL)
+    if (body != NULL && _bodyBytesSent < body->getBodyContent().size())
     {
-        BodyContent body = getRequestContext()->getHttpRequest()->getBody()->getBodyContent();
-        if (!body.empty())
+        const BodyContent &content = body->getBodyContent();
+        ssize_t nb_written = write(getPipeIn()[1], &content[_bodyBytesSent], content.size() - _bodyBytesSent);
+
+        if (nb_written > 0)
         {
-            ssize_t nb_written = write(getPipeIn()[1], body.data(), body.size());
-            (void)nb_written;
+            _bodyBytesSent += nb_written;
+            if (_bodyBytesSent < content.size())
+                return false; // pipe full: wait for the next EPOLLOUT event
         }
+        // nb_written <= 0: the child is gone, stop feeding it
     }
-    close(getPipeIn()[1]);
+
+    closeStdinPipe();
+    return true;
 }
 
 bool CGIRequest::receivedDataFromChild()
 {
     char buffer[4096];
-    ssize_t nb_read;
+    ssize_t nb_read = read(getPipeOut()[0], buffer, sizeof(buffer));
 
-    while ((nb_read = read(getPipeOut()[0], buffer, sizeof(buffer))) > 0)
+    if (nb_read > 0)
+    {
+        // One read per event: epoll (level-triggered) will notify again
+        // if more data is already waiting in the pipe
         _cgiBuffer.append(buffer, nb_read);
+        return false;
+    }
 
     if (nb_read == 0) // EOF : l'enfant a fermé stdout
     {
         getResponseContext()->setPayload(_cgiBuffer);
         return true; // -> on finalise
     }
-    // nb_read == -1 : sur un fd non-bloquant on suppose EAGAIN
-    // (au sujet 42 tu n'as pas le droit de tester errno après read ;
-    //  ici -1 => "rien de plus pour l'instant", on attend le prochain event)
+    // nb_read == -1 : rien de plus pour l'instant, on attend le prochain event
     return false;
+}
+
+// Explicit DEL before close: a CGI child forked in the same loop turn still
+// holds a copy of the fd, so close() alone would leave a stale epoll entry
+void CGIRequest::closeStdinPipe()
+{
+    if (_pipeIn[1] >= 0)
+    {
+        epoll_ctl(getRequestContext()->getClient()->getWebserv()->getEpollFd(), EPOLL_CTL_DEL, _pipeIn[1], NULL);
+        close(_pipeIn[1]);
+        _pipeIn[1] = -1;
+    }
+}
+
+void CGIRequest::closeStdoutPipe()
+{
+    if (_pipeOut[0] >= 0)
+    {
+        epoll_ctl(getRequestContext()->getClient()->getWebserv()->getEpollFd(), EPOLL_CTL_DEL, _pipeOut[0], NULL);
+        close(_pipeOut[0]);
+        _pipeOut[0] = -1;
+    }
 }
 
 void CGIRequest::processDataFromChild()

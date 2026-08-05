@@ -18,7 +18,7 @@
 #include <map>
 #include <set>
 
-#define MAX_CLIENT 10
+#define MAX_CLIENT 128
 #define MAX_EVENTS 10
 #define SIZE_BUFFER 1024
 #define SESSION_TTL 3600
@@ -99,6 +99,8 @@ class Webserv
     void processClientResponse(Client *client);
     void applyErrorToResponse(Client *client, const std::exception &e);
     bool sendResponseToClient(Client *client);
+    void sendPendingDataToClient(Client *client);
+    void updateClientEpollEvents(Client *client, uint32_t epollEvents);
 
     void writeToChild(EventData *eventData);
     void readToChild(EventData *eventData);

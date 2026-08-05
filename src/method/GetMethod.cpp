@@ -60,7 +60,6 @@ std::string GetMethod::applyMethod(Location *location)
     std::cout << "Path to read: " << path << "\n";
 
     checkPermisionReadFile(path);
-    std::string extention = path.substr(path.find_last_of("."));
 
     readRawFile(path.c_str(), contentFile);
     // std::cout << "\ncontentFile: " << contentFile << "\n";
