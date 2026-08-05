@@ -96,9 +96,26 @@ void HttpResponse::initialisationHttpResponse()
     AResponse *response = selectResponse(statusCode, error, redir, correct);
 
     response->applyResponse();
+    removeBodyForHeadMethod();
 
     // std::cout << "\n\nRESPONSE\n";
     // std::cout << getResponseContent() << "\n";
+}
+
+// HEAD is answered exactly like GET (same status code and Content-Length)
+// but the body itself must never be sent back
+void HttpResponse::removeBodyForHeadMethod()
+{
+    HttpRequest *httpRequest = getARequest()->getRequestContext()->getHttpRequest();
+
+    if (httpRequest == NULL || httpRequest->getHeader() == NULL)
+        return;
+    if (httpRequest->getHeader()->getMethod() != HEAD)
+        return;
+
+    std::string::size_type endOfHeader = _responseContent.find("\r\n\r\n");
+    if (endOfHeader != std::string::npos)
+        _responseContent.erase(endOfHeader + 4);
 }
 
 AResponse *HttpResponse::selectResponse(int statusCode, ErrorResponse &error, RedirResponse &redir,
@@ -112,8 +129,3 @@ AResponse *HttpResponse::selectResponse(int statusCode, ErrorResponse &error, Re
         return &correct;
 }
 
-void HttpResponse::sendToClient()
-{
-    int clientFd = getARequest()->getRequestContext()->getClient()->getClientFd();
-    send(clientFd, _responseContent.c_str(), _responseContent.size(), 0);
-}
