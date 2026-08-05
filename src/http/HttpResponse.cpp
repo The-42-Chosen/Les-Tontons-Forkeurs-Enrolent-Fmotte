@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 16:52:26 by erpascua          #+#    #+#             */
-/*   Updated: 2026/07/08 21:28:15 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/08/05 19:31:01 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,13 +97,8 @@ void HttpResponse::initialisationHttpResponse()
 
     response->applyResponse();
     removeBodyForHeadMethod();
-
-    // std::cout << "\n\nRESPONSE\n";
-    // std::cout << getResponseContent() << "\n";
 }
 
-// HEAD is answered exactly like GET (same status code and Content-Length)
-// but the body itself must never be sent back
 void HttpResponse::removeBodyForHeadMethod()
 {
     HttpRequest *httpRequest = getARequest()->getRequestContext()->getHttpRequest();

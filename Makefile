@@ -156,7 +156,7 @@ HEA_FILES = \
 OBJ_FILES = $(SRC_FILES:$(SRC_PATH)/%.cpp=$(OBJ_PATH)/%.o)
 DEP_FILES = $(OBJ_FILES:.o=.d)
 
-NAME =  Webserv
+NAME = webserv
 
 
 # =======================================

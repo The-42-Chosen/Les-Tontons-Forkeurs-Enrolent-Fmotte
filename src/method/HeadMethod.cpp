@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HeadMethod.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:46:04 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/06 06:01:47 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/08/05 19:29:53 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,6 @@ HeadMethod &HeadMethod::operator=(const HeadMethod &other)
 // =====================
 // == 	  Member	  ==
 // =====================
-// HEAD resolves the resource exactly like GET; the body is stripped later
-// by HttpResponse::removeBodyForHeadMethod so Content-Length stays correct
 std::string HeadMethod::applyMethod(Location *location)
 {
     GetMethod get(getHttpRequest());
