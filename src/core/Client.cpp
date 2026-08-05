@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 14:43:09 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/22 16:26:51 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/08/05 19:08:28 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,20 +25,21 @@
 
 Client::Client()
     : _client_fd(-1), _server_fd(-1), _server(0), _webserv(0), _ARequest(NULL), _typeResquest(STATIC),
-      _contentRequest(""), _sessionId(""), _CGIProcessing(false), _pendingDelete(false), _eventData(NULL)
+      _contentRequest(""), _sessionId(""), _sendBuffer(""), _sendOffset(0), _closeAfterSend(false),
+      _CGIProcessing(false), _pendingDelete(false), _eventData(NULL)
 {
 }
 
 Client::~Client()
 {
-    int epoll_fd = getWebserv()->getEpollFd();
-    epoll_ctl(epoll_fd, EPOLL_CTL_DEL, getEventData()->fd, NULL);
-
     delete getARequest();
     delete getEventData();
 }
 
 Client::Client(const Client &other)
+    : _client_fd(-1), _server_fd(-1), _server(0), _webserv(0), _ARequest(NULL), _typeResquest(STATIC),
+      _contentRequest(""), _sessionId(""), _sendBuffer(""), _sendOffset(0), _closeAfterSend(false),
+      _CGIProcessing(false), _pendingDelete(false), _eventData(NULL)
 {
     *this = other;
 }
@@ -48,8 +49,13 @@ Client &Client::operator=(const Client &other)
     this->_client_fd = other._client_fd;
     this->_server_fd = other._server_fd;
     this->_server = other._server;
+    this->_webserv = other._webserv;
+    this->_typeResquest = other._typeResquest;
     this->_contentRequest = other._contentRequest;
     this->_sessionId = other._sessionId;
+    this->_sendBuffer = other._sendBuffer;
+    this->_sendOffset = other._sendOffset;
+    this->_closeAfterSend = other._closeAfterSend;
     this->_CGIProcessing = other._CGIProcessing;
     this->_pendingDelete = other._pendingDelete;
 
@@ -107,6 +113,49 @@ void Client::clearContentRequest(void)
 void Client::appendContentRequest(std::string &request)
 {
     _contentRequest.append(request);
+}
+
+// RESPONSE SEND BUFFER
+void Client::setSendBuffer(const std::string &sendBuffer)
+{
+    _sendBuffer = sendBuffer;
+    _sendOffset = 0;
+}
+
+const std::string &Client::getSendBuffer(void) const
+{
+    return _sendBuffer;
+}
+
+size_t Client::getSendOffset(void) const
+{
+    return _sendOffset;
+}
+
+void Client::setSendOffset(size_t sendOffset)
+{
+    _sendOffset = sendOffset;
+}
+
+bool Client::hasPendingSend(void) const
+{
+    return _sendOffset < _sendBuffer.size();
+}
+
+void Client::clearSendState(void)
+{
+    _sendBuffer.clear();
+    _sendOffset = 0;
+}
+
+bool Client::getCloseAfterSend(void) const
+{
+    return _closeAfterSend;
+}
+
+void Client::setCloseAfterSend(bool closeAfterSend)
+{
+    _closeAfterSend = closeAfterSend;
 }
 
 Webserv *Client::getWebserv(void)

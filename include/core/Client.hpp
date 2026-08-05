@@ -33,6 +33,9 @@ class Client
     TypeRequest _typeResquest;
     std::string _contentRequest;
     std::string _sessionId;
+    std::string _sendBuffer;
+    size_t _sendOffset;
+    bool _closeAfterSend;
     bool _CGIProcessing;
     bool _pendingDelete;
     EventData *_eventData;
@@ -66,6 +69,16 @@ class Client
     std::string &getContentRequest(void);
     void clearContentRequest(void);
     void appendContentRequest(std::string &request);
+
+    // RESPONSE SEND BUFFER
+    void setSendBuffer(const std::string &sendBuffer);
+    const std::string &getSendBuffer(void) const;
+    size_t getSendOffset(void) const;
+    void setSendOffset(size_t sendOffset);
+    bool hasPendingSend(void) const;
+    void clearSendState(void);
+    bool getCloseAfterSend(void) const;
+    void setCloseAfterSend(bool closeAfterSend);
 
     // WEBSERV
     Webserv *getWebserv(void);
