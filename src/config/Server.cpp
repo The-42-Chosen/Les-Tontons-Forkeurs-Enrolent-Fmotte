@@ -18,31 +18,31 @@
 
 Server::Server()
     : _listens(0), _name_servers(0), _locations(0), _root(""), _index_files(0), _auto_index(false), _error_page(0),
-      _client_max_body_size(0), _ret(HttpReturn())
+      _client_max_body_size(0), _ret(HttpReturn()), _webserv(NULL)
 {
 }
 
-Server::Server(const Webserv *)
+Server::Server(Webserv *webserv)
     : _listens(0), _name_servers(0), _locations(0), _root(""), _index_files(0), _auto_index(false), _error_page(0),
-      _client_max_body_size(0), _ret(HttpReturn())
+      _client_max_body_size(0), _ret(HttpReturn()), _webserv(webserv)
 {
 }
 
 Server::~Server()
 {
     EventData *eventData;
-    int epoll_fd = getWebserv()->getEpollFd();
 
     std::set<EventData *>::iterator it;
     for (it = _setEventData.begin(); it != _setEventData.end(); it++)
     {
         eventData = *it;
-        epoll_ctl(epoll_fd, EPOLL_CTL_DEL, eventData->fd, NULL);
+        if (getWebserv() != NULL)
+            epoll_ctl(getWebserv()->getEpollFd(), EPOLL_CTL_DEL, eventData->fd, NULL);
         delete eventData;
     }
 }
 
-Server::Server(const Server &other)
+Server::Server(const Server &other) : _webserv(NULL)
 {
     *this = other;
 }
@@ -59,6 +59,7 @@ Server &Server::operator=(const Server &other)
     this->_error_page = other._error_page;
     this->_client_max_body_size = other._client_max_body_size;
     this->_ret = other._ret;
+    this->_webserv = other._webserv;
     _setEventData = other._setEventData;
 
     return (*this);
@@ -85,6 +86,11 @@ std::string Server::getNameServer(size_t i)
 // LISTEN
 void Server::addListen(Listen listen)
 {
+    for (size_t i = 0; i < _listens.size(); ++i)
+    {
+        if (!(_listens[i] < listen) && !(listen < _listens[i]))
+            throw ExecptionDuplicateElement("listen " + listen.ip + ":" + intToString(listen.port));
+    }
     _listens.push_back(listen);
 }
 
@@ -298,6 +304,9 @@ void Server::initializeListens(std::vector<std::string> &tokens)
             addListen(listenAddr);
             return;
         }
+        if (countOccurrences(tokens[0], sep) > 1)
+            throw ExecptionWrongArgument(tokens[0]);
+
         std::stringstream iss(tokens[0]);
         tokens.erase(tokens.begin());
 
@@ -310,7 +319,7 @@ void Server::initializeListens(std::vector<std::string> &tokens)
                 std::istringstream convert(sub_string);
                 convert >> listenAddr.port;
 
-                if (convert.fail())
+                if (convert.fail() || !convert.eof())
                     throw ExecptionFailConvertion(sub_string);
             }
         }

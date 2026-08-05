@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execption.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/08 13:08:22 by fmotte            #+#    #+#             */
-/*   Updated: 2026/04/17 17:33:45 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/08/05 19:10:59 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,20 @@ ExecptionFailConvertion::~ExecptionFailConvertion() throw()
 {
 }
 const char *ExecptionFailConvertion::what() const throw()
+{
+    return _message.c_str();
+}
+
+ExecptionDuplicateElement::ExecptionDuplicateElement(const std::string &argument)
+    : _message("Error: Duplicate element in the config file: " + argument)
+{
+}
+
+ExecptionDuplicateElement::~ExecptionDuplicateElement() throw()
+{
+}
+
+const char *ExecptionDuplicateElement::what() const throw()
 {
     return _message.c_str();
 }

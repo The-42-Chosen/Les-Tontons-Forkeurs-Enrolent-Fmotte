@@ -12,12 +12,8 @@
 
 #include "HeadMethod.hpp"
 
-#include "HandlePath.hpp"
+#include "GetMethod.hpp"
 #include "HttpRequest.hpp"
-
-#include "utilsRequest.hpp"
-
-#include <ctime>
 
 // =====================
 // ==       OCF       ==
@@ -44,24 +40,11 @@ HeadMethod &HeadMethod::operator=(const HeadMethod &other)
 // =====================
 // == 	  Member	  ==
 // =====================
+// HEAD resolves the resource exactly like GET; the body is stripped later
+// by HttpResponse::removeBodyForHeadMethod so Content-Length stays correct
 std::string HeadMethod::applyMethod(Location *location)
 {
-    struct stat st;
+    GetMethod get(getHttpRequest());
 
-    HandlePath handlePath(getHttpRequest());
-    std::string path = handlePath.createPath(location);
-    std::cout << "Path to contexte read: " << path << "\n";
-
-    checkPermisionReadFile(path);
-
-    if (stat(path.c_str(), &st) != 0)
-        throw std::runtime_error("500");
-
-    std::cout << "Taille : " << st.st_size << "\n";
-    char buffer[100];
-    std::tm *timeinfo = std::localtime(&st.st_mtime);
-    std::strftime(buffer, sizeof(buffer), "%d/%m/%Y %H:%M:%S", timeinfo);
-    std::cout << "Derniere modification : " << buffer << "\n";
-
-    return buffer;
+    return get.applyMethod(location);
 }

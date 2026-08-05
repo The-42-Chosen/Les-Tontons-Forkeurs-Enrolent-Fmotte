@@ -50,7 +50,7 @@ class Server
     // =====================
 
     Server();
-    Server(const Webserv *);
+    Server(Webserv *webserv);
     ~Server();
     Server(const Server &other);
     Server &operator=(const Server &other);

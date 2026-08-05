@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utilsConnection.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 14:55:37 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/22 12:51:41 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/08/05 19:23:30 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,9 @@ void initializeSignal(void)
 int setNonblocking(int fd)
 {
     if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1)
+        throw ExecptionErrorFunction("fcntl");
+
+    if (fcntl(fd, F_SETFD, FD_CLOEXEC) == -1)
         throw ExecptionErrorFunction("fcntl");
     return 0;
 }

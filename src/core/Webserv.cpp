@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/08/03 20:23:35 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/08/05 12:01:23 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@
 #include "utilsRequest.hpp"
 
 #include <cstring>
-#include <errno.h>
 #include <sstream>
 #include <sys/wait.h>
 
@@ -158,6 +157,12 @@ bool Webserv::splitIntoServers(std::vector<std::string> &tokens)
         std::cerr << e.what() << '\n';
         return (true);
     }
+
+    if (_vectorServer.empty())
+    {
+        std::cerr << "Error: No server defined in the config file\n";
+        return (true);
+    }
     return (false);
 }
 
@@ -179,6 +184,8 @@ void Webserv::registerNewSocket(std::map<Listen, int> &map_socket_fd, Listen *li
 void Webserv::registerExistingSocket(int serverSocket, Server *server)
 {
     std::set<Server *> &set_server = _mapFdToServer[serverSocket];
+
+    server->setWebserv(this);
 
     if (set_server.find(server) == set_server.end())
         set_server.insert(server);
@@ -227,13 +234,21 @@ void Webserv::handleNewClient(int server_fd)
 
     _vectorClient.push_back(client);
 
-    EventData *eventData = addFdToEvent(getEpollFd(), clientSocket, EPOLLIN, CLIENT, client);
-    client->setEventData(eventData);
-    addSetEventData(eventData);
-
     client->setClientFd(clientSocket);
     client->setServerFd(server_fd);
     client->setWebserv(this);
+
+    try
+    {
+        EventData *eventData = addFdToEvent(getEpollFd(), clientSocket, EPOLLIN, CLIENT, client);
+        client->setEventData(eventData);
+        addSetEventData(eventData);
+    }
+    catch (const std::exception &e)
+    {
+        deleteClient(client);
+        throw;
+    }
 
     std::cout << "Nouveau client connecté: fd=" << client->getClientFd() << "\n";
 }
@@ -250,8 +265,15 @@ void Webserv::deleteClient(Client *client)
 
 void Webserv::handleDisconnect(Client *client)
 {
-    if (epoll_ctl(getEpollFd(), EPOLL_CTL_DEL, client->getClientFd(), NULL) == -1)
-        std::cerr << "epoll_ctl EPOLL_CTL_DEL failed on fd " << client->getClientFd() << "\n";
+    // Already disconnected: no event may be handled for this client anymore
+    if (client->isPendingDelete())
+        return;
+
+    // Explicit DEL before close: a CGI child forked in the same loop turn
+    // still holds a copy of the fd, so close() alone would leave a stale
+    // registration in epoll
+    epoll_ctl(getEpollFd(), EPOLL_CTL_DEL, client->getClientFd(), NULL);
+    _setEventData.erase(client->getEventData());
 
     if (client->isCGIProcessing())
         client->setPendingDelete(true);
@@ -328,6 +350,8 @@ void Webserv::applyErrorToResponse(Client *client, const std::exception &e)
         client->getARequest()->getResponseContext()->setStatusCode(statusCode);
 }
 
+// Build the response and arm EPOLLOUT: the actual send happens when epoll
+// tells us the socket is writable (sendPendingDataToClient).
 // Return TRUE if client has been deleted
 bool Webserv::sendResponseToClient(Client *client)
 {
@@ -342,15 +366,58 @@ bool Webserv::sendResponseToClient(Client *client)
 
     HttpResponse response(client->getARequest());
     response.initialisationHttpResponse();
-    response.sendToClient();
+
+    client->setSendBuffer(response.getResponseContent());
+    client->setCloseAfterSend(response.getShouldCloseConnection());
     client->clearContentRequest();
 
-    if (!response.getShouldCloseConnection())
-        return false;
+    updateClientEpollEvents(client, EPOLLOUT);
+    return false;
+}
 
-    bool isCGIProcessing = client->isCGIProcessing();
-    handleDisconnect(client);
-    return !isCGIProcessing;
+// One send per EPOLLOUT event; -1 or 0 -> the client is removed,
+// partial send -> keep EPOLLOUT armed and wait for the next event
+void Webserv::sendPendingDataToClient(Client *client)
+{
+    if (!client->hasPendingSend())
+    {
+        updateClientEpollEvents(client, EPOLLIN);
+        return;
+    }
+
+    const std::string &buffer = client->getSendBuffer();
+    ssize_t bytes = send(client->getClientFd(), buffer.c_str() + client->getSendOffset(),
+                         buffer.size() - client->getSendOffset(), 0);
+
+    if (bytes <= 0)
+    {
+        handleDisconnect(client);
+        return;
+    }
+
+    client->setSendOffset(client->getSendOffset() + bytes);
+    if (client->hasPendingSend())
+        return;
+
+    client->clearSendState();
+
+    if (client->getCloseAfterSend())
+    {
+        handleDisconnect(client);
+        return;
+    }
+    updateClientEpollEvents(client, EPOLLIN);
+}
+
+void Webserv::updateClientEpollEvents(Client *client, uint32_t epollEvents)
+{
+    struct epoll_event ev;
+
+    ev.events = epollEvents;
+    ev.data.ptr = client->getEventData();
+
+    if (epoll_ctl(getEpollFd(), EPOLL_CTL_MOD, client->getClientFd(), &ev) == -1)
+        handleDisconnect(client);
 }
 
 void Webserv::processClient(EventData *eventData)
@@ -383,7 +450,11 @@ void Webserv::processClient(EventData *eventData)
 void Webserv::writeToChild(EventData *eventData)
 {
     CGIRequest *cgiRequest = static_cast<CGIRequest *>(eventData->ptr);
-    cgiRequest->sendDataToChild();
+
+    // One write per EPOLLOUT event; once the whole body has been fed to the
+    // child, its stdin pipe is closed and the event is not watched anymore
+    if (cgiRequest->sendDataToChild())
+        _setEventData.erase(cgiRequest->geteventDataWrite());
 }
 
 void Webserv::readToChild(EventData *eventData)
@@ -397,10 +468,8 @@ void Webserv::readToChild(EventData *eventData)
             return; // pas encore EOF -> on rendra la main à epoll
 
         // EOF atteint : l'enfant a fermé stdout, il se termine.
-        // On le récupère sans bloquer.
-        waitpid(cgiRequest->getPid(), NULL, WNOHANG);
-
-        close(cgiRequest->getPipeOut()[0]);
+        // Il sera récolté par le waitpid de la boucle principale.
+        cgiRequest->closeStdoutPipe();
 
         cgiRequest->processDataFromChild();
     }
@@ -411,8 +480,8 @@ void Webserv::readToChild(EventData *eventData)
 
     client->setCGIProcessing(false);
 
-    _setEventData.erase(cgiRequest->geteventData1());
-    _setEventData.erase(cgiRequest->geteventData2());
+    _setEventData.erase(cgiRequest->geteventDataWrite());
+    _setEventData.erase(cgiRequest->geteventDataRead());
 
     sendResponseToClient(client);
 }
@@ -446,8 +515,8 @@ void Webserv::processClientResponse(Client *client)
         cgiRequest->initializationCGIRequest(selectCgiInterpreter(scriptName));
         client->setCGIProcessing(true);
 
-        addSetEventData(cgiRequest->geteventData1());
-        addSetEventData(cgiRequest->geteventData2());
+        addSetEventData(cgiRequest->geteventDataWrite());
+        addSetEventData(cgiRequest->geteventDataRead());
     }
 }
 
@@ -465,7 +534,10 @@ void Webserv::handleConnection(struct epoll_event &events)
         handleNewClient(eventData->fd);
         break;
     case (CLIENT):
-        processClient(eventData);
+        if (events.events & EPOLLOUT)
+            sendPendingDataToClient(static_cast<Client *>(eventData->ptr));
+        else
+            processClient(eventData);
         break;
     case (WRITECHILD):
         writeToChild(eventData);
@@ -485,11 +557,18 @@ void Webserv::listenToWebserv()
 
     while (1)
     {
-        if ((nfds = epoll_wait(getEpollFd(), events, MAX_EVENTS, 1000)) == -1)
-            throw ExecptionErrorFunction("epoll_wait");
+        nfds = epoll_wait(getEpollFd(), events, MAX_EVENTS, 1000);
 
         if (stop_webserv)
             return;
+
+        // A signal (EINTR) must not kill the server: retry on the next loop turn
+        if (nfds == -1)
+            continue;
+
+        // Collect every finished CGI child so none is left as a zombie
+        while (waitpid(-1, NULL, WNOHANG) > 0)
+            ;
 
         if (nfds == 0)
         {
@@ -517,12 +596,14 @@ bool Webserv::initializeConnection()
     bool res = false;
 
     initializeSignal();
-    errno = 0;
 
     try
     {
         if ((epoll_fd = epoll_create(1)) == -1)
             throw ExecptionErrorFunction("epoll_create");
+
+        if (fcntl(epoll_fd, F_SETFD, FD_CLOEXEC) == -1)
+            throw ExecptionErrorFunction("fcntl");
 
         setEpollFd(epoll_fd);
         initializeSocket();
@@ -533,8 +614,6 @@ bool Webserv::initializeConnection()
         if (!stop_webserv)
         {
             std::cerr << e.what() << '\n';
-            if (errno != 0)
-                std::cout << "More info: " << strerror(errno) << "\n";
             res = true;
         }
     }
@@ -561,11 +640,11 @@ void Webserv::checkTimeOut()
             Client *client = cgiRequest->getRequestContext()->getClient();
             client->setCGIProcessing(false);
 
-            _setEventData.erase(cgiRequest->geteventData1());
-            _setEventData.erase(cgiRequest->geteventData2());
+            _setEventData.erase(cgiRequest->geteventDataWrite());
+            _setEventData.erase(cgiRequest->geteventDataRead());
 
-            if (!sendResponseToClient(client))
-                handleDisconnect(client);
+            // 504 is an error status: the connection closes once it is sent
+            sendResponseToClient(client);
             break;
         }
     }

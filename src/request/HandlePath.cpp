@@ -147,7 +147,7 @@ std::string HandlePath::createPathWithLocation(Location *location)
     if (!isRequestForLocationRoot(location->getName()))
         throw std::runtime_error("404");
 
-    if (method == GET)
+    if (method == GET || method == HEAD)
     {
         if (location->getIndex() != "")
             return joinPath(pathLoc, location->getIndex());
@@ -188,13 +188,23 @@ std::string HandlePath::createPathWithServer()
     pathRoot = selectRoot(NULL);
     HttpMethod method = getHttpRequest()->getHeader()->getMethod();
 
+    bool noLocation = (getHttpRequest()->getRequestContext()->getLocation() == NULL);
+
     if (method == POST)
+    {
+        if (noLocation && !isRequestForLocationRoot("/"))
+            throw std::runtime_error("404");
         return pathRoot;
+    }
 
     if ((pathFile = resolveRequestedFilePath(pathRoot)) != "")
         return pathFile;
 
-    if (method == GET)
+    // Without location, an URI that matches no file must not fall back on the index
+    if (noLocation && !isRequestForLocationRoot("/"))
+        throw std::runtime_error("404");
+
+    if (method == GET || method == HEAD)
     {
         for (size_t i = 0; (index = getHttpRequest()->getRequestContext()->getServer()->getIndex(i)) != ""; ++i)
         {
