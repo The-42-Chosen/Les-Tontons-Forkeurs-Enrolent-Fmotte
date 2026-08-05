@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGIRequest.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fmotte <fmotte@student.42.fr>              +#+  +:+       +#+        */
+/*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/16 16:35:38 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/22 16:20:36 by fmotte           ###   ########.fr       */
+/*   Updated: 2026/08/05 12:01:43 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ class CGIRequest : public ARequest
     int _pipeOut[2];
     pid_t _pid;
     std::string _cgiBuffer;
+    size_t _bodyBytesSent;
     EventData *_eventDataWriteChild;
     EventData *_eventDataReadChild;
 
@@ -45,10 +46,10 @@ class CGIRequest : public ARequest
     void setPipeOut(int pipeOut[2]);
     pid_t getPid() const;
     void setPid(pid_t pid);
-    EventData *geteventData1() const;
-    void seteventData1(EventData *_eventData);
-    EventData *geteventData2() const;
-    void seteventData2(EventData *_eventData);
+    EventData *geteventDataWrite() const;
+    void seteventDataWrite(EventData *_eventData);
+    EventData *geteventDataRead() const;
+    void seteventDataRead(EventData *_eventData);
 
     // =====================
     // == 	  Member	  ==
@@ -58,8 +59,10 @@ class CGIRequest : public ARequest
 
     void checkForkCreate(pid_t pid);
     void connectToEpoll();
-    void sendDataToChild();
+    bool sendDataToChild();
     bool receivedDataFromChild();
+    void closeStdinPipe();
+    void closeStdoutPipe();
     void processDataFromChild();
     void forwardCgiHeaders(const std::string &headerBlock);
     void applyDefaultCgiStatus();

@@ -56,5 +56,5 @@ class HttpResponse
     // =====================
     void initialisationHttpResponse();
     AResponse *selectResponse(int statusCode, ErrorResponse &error, RedirResponse &redir, CorrectResponse &correct);
-    void sendToClient();
+    void removeBodyForHeadMethod();
 };
