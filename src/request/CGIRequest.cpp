@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/16 16:35:36 by fmotte            #+#    #+#             */
-/*   Updated: 2026/08/06 18:44:40 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/08/06 19:35:17 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@
 
 #include "utilsConnection.hpp"
 #include "utilsRequest.hpp"
+
+#include <cctype>
 
 // =====================
 // ==       OCF       ==
@@ -158,10 +160,7 @@ void CGIRequest::initializationCGIRequest(const std::string &interpreter)
 
 
     HandlePath handlePath(getRequestContext()->getHttpRequest());
-    if (interpreter.empty())
-        checkPermisionReadFile(handlePath.createPathCgi(getRequestContext()->getLocation(), true));
-    else if (access(interpreter.c_str(), X_OK) == -1)
-        throw std::runtime_error("500");
+    checkPermisionReadFile(handlePath.createPathCgi(getRequestContext()->getLocation()));
 
     createPipe(pipeIn, pipeOut);
     setPipeIn(pipeIn);
@@ -216,7 +215,8 @@ bool CGIRequest::sendDataToChild()
     if (body != NULL && _bodyBytesSent < body->getBodyContent().size())
     {
         const BodyContent &content = body->getBodyContent();
-        ssize_t nb_written = write(getPipeIn()[1], &content[_bodyBytesSent], content.size() - _bodyBytesSent);
+        size_t remaining = content.size() - _bodyBytesSent;
+        ssize_t nb_written = write(getPipeIn()[1], &content[_bodyBytesSent], remaining);
 
         if (nb_written > 0)
         {
@@ -233,7 +233,7 @@ bool CGIRequest::sendDataToChild()
 
 bool CGIRequest::receivedDataFromChild()
 {
-    char buffer[4096];
+    char buffer[65536];
     ssize_t nb_read = read(getPipeOut()[0], buffer, sizeof(buffer));
 
     if (nb_read > 0)
@@ -376,7 +376,6 @@ void CGIRequest::manage_pipe(const std::string &interpreter)
     HeaderContent hc = getRequestContext()->getHttpRequest()->getHeader()->getHeaderContent();
     std::string contentType = hc.count("content-type") ? hc.at("content-type") : "";
     std::string contentLength = hc.count("content-length") ? hc.at("content-length") : "";
-    std::string cookie = hc.count("cookie") ? hc.at("cookie") : "";
 
     Listen *listen = getRequestContext()->getServer()->getListen(0);
     std::string serverName = (listen && !listen->ip.empty()) ? listen->ip : "localhost";
@@ -389,10 +388,9 @@ void CGIRequest::manage_pipe(const std::string &interpreter)
     }
 
     HandlePath handlePath(getRequestContext()->getHttpRequest());
-    std::string path = handlePath.createPathCgi(getRequestContext()->getLocation(), interpreter.empty());
+    std::string path = handlePath.createPathCgi(getRequestContext()->getLocation());
 
-    if (interpreter.empty())
-        checkPermisionReadFile(path);
+    checkPermisionReadFile(path);
 
     std::string::size_type pslash = path.rfind('/');
     std::string scriptFile = (pslash != std::string::npos) ? path.substr(pslash + 1) : path;
@@ -406,24 +404,26 @@ void CGIRequest::manage_pipe(const std::string &interpreter)
     envStrings.push_back("SCRIPT_NAME=" + scriptName);
     envStrings.push_back("SCRIPT_FILENAME=" + scriptFile);
     envStrings.push_back("REDIRECT_STATUS=200");
-    envStrings.push_back("PATH_INFO=" + scriptName);
-    envStrings.push_back("REQUEST_URI=" + scriptName + (query.empty() ? "" : "?" + query));
+    envStrings.push_back("PATH_INFO=");
     envStrings.push_back("SERVER_NAME=" + serverName);
     envStrings.push_back("SERVER_PORT=" + serverPort);
-    envStrings.push_back("HTTP_COOKIE=" + cookie);
+
+    for (HeaderContent::const_iterator it = hc.begin(); it != hc.end(); ++it)
+    {
+        if (it->first == "content-type" || it->first == "content-length")
+            continue;
+
+        std::string name = it->first;
+        for (std::string::size_type i = 0; i < name.size(); ++i)
+            name[i] = (name[i] == '-') ? '_' : std::toupper(name[i]);
+
+        envStrings.push_back("HTTP_" + name + "=" + it->second);
+    }
 
     std::vector<char *> envp;
     for (std::vector<std::string>::iterator it = envStrings.begin(); it != envStrings.end(); ++it)
         envp.push_back(const_cast<char *>(it->c_str()));
     envp.push_back(NULL);
-
-    std::string absInterpreter = interpreter;
-    if (!absInterpreter.empty() && absInterpreter[0] != '/')
-    {
-        char cwd[4096];
-        if (getcwd(cwd, sizeof(cwd)) != NULL)
-            absInterpreter = std::string(cwd) + "/" + absInterpreter;
-    }
 
     // Relative paths treatment
     std::string::size_type slash = path.rfind('/');
@@ -436,7 +436,7 @@ void CGIRequest::manage_pipe(const std::string &interpreter)
     std::string localScript = "./" + scriptFile;
 
     char *args[3];
-    if (absInterpreter.empty())
+    if (interpreter.empty())
     {
         args[0] = const_cast<char *>(localScript.c_str());
         args[1] = NULL;
@@ -444,7 +444,7 @@ void CGIRequest::manage_pipe(const std::string &interpreter)
     }
     else
     {
-        args[0] = const_cast<char *>(absInterpreter.c_str());
+        args[0] = const_cast<char *>(interpreter.c_str());
         args[1] = const_cast<char *>(localScript.c_str());
         args[2] = NULL;
     }
