@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 17:09:17 by fmotte            #+#    #+#             */
-/*   Updated: 2026/08/05 12:01:23 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/08/06 19:39:46 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -255,7 +255,6 @@ void Webserv::handleNewClient(int server_fd)
 
 void Webserv::deleteClient(Client *client)
 {
-    close(client->getClientFd());
     _vectorClient.erase(std::find(_vectorClient.begin(), _vectorClient.end(), client));
     _setEventData.erase(client->getEventData());
     delete client;
@@ -308,9 +307,16 @@ RequestState Webserv::readAndCheckRequestCompletion(Client *client)
     int bytes;
     char buffer[SIZE_BUFFER];
 
-    // recv <= 0 -> client closed (0) or the socket failed (-1)
-    if ((bytes = recv(client->getClientFd(), buffer, sizeof(buffer), 0)) <= 0)
+    if ((bytes = recv(client->getClientFd(), buffer, sizeof(buffer), 0)) < 0)
         return REQUEST_DISCONNECTED;
+
+    if (bytes == 0)
+    {
+        client->setPeerClosed(true);
+        if (isCompleteRequest(client->getContentRequest()))
+            return REQUEST_COMPLETE;
+        return REQUEST_DISCONNECTED;
+    }
 
     std::string s;
     s.assign(buffer, buffer + bytes);
@@ -369,7 +375,12 @@ bool Webserv::sendResponseToClient(Client *client)
 
     client->setSendBuffer(response.getResponseContent());
     client->setCloseAfterSend(response.getShouldCloseConnection());
-    client->clearContentRequest();
+
+    size_t requestLength = completeRequestLength(client->getContentRequest());
+    if (requestLength == 0)
+        client->clearContentRequest();
+    else
+        client->consumeContentRequest(requestLength);
 
     updateClientEpollEvents(client, EPOLLOUT);
     return false;
@@ -406,7 +417,13 @@ void Webserv::sendPendingDataToClient(Client *client)
         handleDisconnect(client);
         return;
     }
-    updateClientEpollEvents(client, EPOLLIN);
+
+    if (isCompleteRequest(client->getContentRequest()))
+        executeBufferedRequest(client);
+    else if (client->isPeerClosed())
+        handleDisconnect(client); // FIN received and nothing left to answer
+    else
+        updateClientEpollEvents(client, EPOLLIN);
 }
 
 void Webserv::updateClientEpollEvents(Client *client, uint32_t epollEvents)
@@ -434,6 +451,20 @@ void Webserv::processClient(EventData *eventData)
     if (state == REQUEST_INCOMPLETE)
         return;
 
+    if (client->isCGIProcessing())
+    {
+        if (client->isPeerClosed())
+            updateClientEpollEvents(client, 0);
+        return;
+    }
+
+    executeBufferedRequest(client);
+}
+
+// Parse and execute the first request buffered in the client: STATIC
+// requests are answered right away, CGI answers later through readToChild
+void Webserv::executeBufferedRequest(Client *client)
+{
     try
     {
         processClientResponse(client);
@@ -665,7 +696,7 @@ void Webserv::closeConnection()
         delete (*it_server);
     _vectorServer.clear();
 
-    // Free instance client
+    // Free instance client: the destructor closes the still connected sockets
     std::vector<Client *>::iterator it_client = _vectorClient.begin();
     for (; it_client != _vectorClient.end(); ++it_client)
         delete (*it_client);
