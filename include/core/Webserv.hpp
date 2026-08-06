@@ -20,7 +20,7 @@
 
 #define MAX_CLIENT 128
 #define MAX_EVENTS 10
-#define SIZE_BUFFER 1024
+#define SIZE_BUFFER 65536
 #define SESSION_TTL 3600
 #define DELAY 5000
 

@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/14 19:53:56 by fmotte            #+#    #+#             */
-/*   Updated: 2026/07/28 02:27:17 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/08/06 19:40:04 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ Body &Body::operator=(const Body &other)
 // =====================
 // ==     Getters     ==
 // =====================
-BodyContent Body::getBodyContent(void) const
+const BodyContent &Body::getBodyContent(void) const
 {
     return _bodyContent;
 }
@@ -190,7 +190,9 @@ bool Body::parseContentLengthBody(const HeaderContent &header, const std::string
 
         std::cout << GREEN << "Body treatment method : " << itContentLength->first << " | " << itContentLength->second
                   << RESET << std::endl;
-        appendBodyBytes(headerContent.substr(bodyStart, _contentLength));
+        _bodyContent.reserve(_contentLength);
+        _bodyContent.insert(_bodyContent.end(), headerContent.begin() + bodyStart,
+                            headerContent.begin() + bodyStart + _contentLength);
         return true;
     }
     return false;
@@ -216,8 +218,7 @@ void Body::parseBody(const std::string &headerContent)
 
 void Body::appendBodyBytes(const std::string &data)
 {
-    for (std::string::size_type i = 0; i < data.size(); ++i)
-        addBodyContent(static_cast<uint8_t>(data[i]));
+    _bodyContent.insert(_bodyContent.end(), data.begin(), data.end());
 }
 
 size_t Body::initMaxBodySize()

@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/14 19:53:54 by fmotte            #+#    #+#             */
-/*   Updated: 2026/06/15 14:53:39 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/08/06 19:31:57 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ class Body
     // =====================
     // ==     Getters     ==
     // =====================
-    BodyContent getBodyContent(void) const;
+    const BodyContent &getBodyContent(void) const;
     void setBodyContent(BodyContent body);
     void addBodyContent(uint8_t bytes);
     bool getKeepAlive(void) const;
