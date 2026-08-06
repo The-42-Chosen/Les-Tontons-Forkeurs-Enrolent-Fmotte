@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 14:43:09 by fmotte            #+#    #+#             */
-/*   Updated: 2026/08/05 19:08:28 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/08/06 18:59:48 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,13 @@
 Client::Client()
     : _client_fd(-1), _server_fd(-1), _server(0), _webserv(0), _ARequest(NULL), _typeResquest(STATIC),
       _contentRequest(""), _sessionId(""), _sendBuffer(""), _sendOffset(0), _closeAfterSend(false),
-      _CGIProcessing(false), _pendingDelete(false), _eventData(NULL)
+      _CGIProcessing(false), _pendingDelete(false), _peerClosed(false), _eventData(NULL)
 {
 }
 
 Client::~Client()
 {
+    closeClientFd();
     delete getARequest();
     delete getEventData();
 }
@@ -39,7 +40,7 @@ Client::~Client()
 Client::Client(const Client &other)
     : _client_fd(-1), _server_fd(-1), _server(0), _webserv(0), _ARequest(NULL), _typeResquest(STATIC),
       _contentRequest(""), _sessionId(""), _sendBuffer(""), _sendOffset(0), _closeAfterSend(false),
-      _CGIProcessing(false), _pendingDelete(false), _eventData(NULL)
+      _CGIProcessing(false), _pendingDelete(false), _peerClosed(false), _eventData(NULL)
 {
     *this = other;
 }
@@ -58,6 +59,7 @@ Client &Client::operator=(const Client &other)
     this->_closeAfterSend = other._closeAfterSend;
     this->_CGIProcessing = other._CGIProcessing;
     this->_pendingDelete = other._pendingDelete;
+    this->_peerClosed = other._peerClosed;
 
     return (*this);
 }
@@ -76,6 +78,14 @@ int Client::getClientFd(void)
 void Client::setClientFd(int client_fd)
 {
     _client_fd = client_fd;
+}
+void Client::closeClientFd(void)
+{
+    if (_client_fd >= 0)
+    {
+        close(_client_fd);
+        _client_fd = -1;
+    }
 }
 
 // SERVER-FD
@@ -109,6 +119,10 @@ std::string &Client::getContentRequest(void)
 void Client::clearContentRequest(void)
 {
     _contentRequest.clear();
+}
+void Client::consumeContentRequest(size_t length)
+{
+    _contentRequest.erase(0, length);
 }
 void Client::appendContentRequest(std::string &request)
 {
@@ -229,6 +243,16 @@ bool Client::isPendingDelete() const
 void Client::setPendingDelete(bool pendingDelete)
 {
     _pendingDelete = pendingDelete;
+}
+
+bool Client::isPeerClosed() const
+{
+    return _peerClosed;
+}
+
+void Client::setPeerClosed(bool peerClosed)
+{
+    _peerClosed = peerClosed;
 }
 
 void Client::setEventData(EventData *eventData)
