@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/06 05:37:38 by fmotte            #+#    #+#             */
-/*   Updated: 2026/08/03 20:39:43 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/08/06 19:33:12 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,15 +95,20 @@ std::string HandlePath::selectRoot(Location *location)
     return pathRoot;
 }
 
-std::string HandlePath::resolveRequestedFilePath(std::string initPath)
+std::string HandlePath::requestUriPath()
 {
-    std::string pathFile;
+    std::string uri = getHttpRequest()->getHeader()->getScriptName();
 
-    pathFile = joinPath(initPath, returnLastElementPath(getHttpRequest()->getHeader()->getScriptName()));
+    std::string::size_type qpos = uri.find('?');
+    if (qpos != std::string::npos)
+        uri = uri.substr(0, qpos);
 
-    if (isFinishByFile(pathFile))
-        return pathFile;
-    return "";
+    return uri;
+}
+
+std::string HandlePath::mapUriToLocation(Location *location)
+{
+    return joinPath(selectRoot(location), requestUriPath());
 }
 
 bool HandlePath::isRequestForLocationRoot(const std::string &locationName)
@@ -126,38 +131,39 @@ bool HandlePath::isRequestForLocationRoot(const std::string &locationName)
 
 std::string HandlePath::createPathWithLocation(Location *location)
 {
-    std::string pathFile;
-    std::string pathLoc;
-    std::string pathRoot;
-
-    pathRoot = selectRoot(location);
-    pathLoc = joinPath(pathRoot, location->getName());
-
+    std::string base = mapUriToLocation(location);
     HttpMethod method = getHttpRequest()->getHeader()->getMethod();
+
     if (method == POST)
     {
         if (!isRequestForLocationRoot(location->getName()))
             throw std::runtime_error("404");
-        return pathLoc;
+        return base;
     }
 
-    if ((pathFile = resolveRequestedFilePath(pathLoc)) != "")
-        return pathFile;
-
-    if (!isRequestForLocationRoot(location->getName()))
-        throw std::runtime_error("404");
+    // The URI points straight at an existing file
+    if (isFinishByFile(base))
+        return base;
 
     if (method == GET || method == HEAD)
     {
         if (location->getIndex() != "")
-            return joinPath(pathLoc, location->getIndex());
+        {
+            std::string indexPath = joinPath(base, location->getIndex());
+            if (isFinishByFile(indexPath))
+                return indexPath;
+        }
 
-        if (location->getAutoIndex())
+        if (location->getAutoIndex() && isFinishByFolder(base))
         {
             setIsAutoIndex(true);
-            return pathLoc;
+            return base;
         }
     }
+
+    if (!isRequestForLocationRoot(location->getName()))
+        throw std::runtime_error("404");
+
     return createPathWithServer();
 }
 
@@ -167,15 +173,14 @@ std::string HandlePath::createPathCgi(Location *location)
     std::string base;
 
     if (location != NULL)
-        base = joinPath(selectRoot(location), location->getName());
+        base = mapUriToLocation(location);
     else
-        base = selectRoot(NULL);
+        base = joinPath(selectRoot(NULL), requestUriPath());
 
-    std::string pathFile = resolveRequestedFilePath(base);
-    if (pathFile == "")
+    if (!isFinishByFile(base))
         throw std::runtime_error("404");
 
-    return pathFile;
+    return base;
 }
 
 std::string HandlePath::createPathWithServer()
@@ -197,7 +202,8 @@ std::string HandlePath::createPathWithServer()
         return pathRoot;
     }
 
-    if ((pathFile = resolveRequestedFilePath(pathRoot)) != "")
+    pathFile = joinPath(pathRoot, requestUriPath());
+    if (isFinishByFile(pathFile))
         return pathFile;
 
     // Without location, an URI that matches no file must not fall back on the index

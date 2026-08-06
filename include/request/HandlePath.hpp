@@ -50,7 +50,8 @@ class HandlePath
     // == 	  Member	  ==
     // =====================
     std::string selectRoot(Location *location);
-    std::string resolveRequestedFilePath(std::string initPath);
+    std::string requestUriPath();
+    std::string mapUriToLocation(Location *location);
     bool isRequestForLocationRoot(const std::string &locationName);
 
     std::string createPath(Location *location);
