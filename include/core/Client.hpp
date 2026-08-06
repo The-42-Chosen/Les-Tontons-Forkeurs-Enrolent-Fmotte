@@ -38,6 +38,7 @@ class Client
     bool _closeAfterSend;
     bool _CGIProcessing;
     bool _pendingDelete;
+    bool _peerClosed;
     EventData *_eventData;
 
   public:
@@ -56,6 +57,7 @@ class Client
     // CLIENT-FD
     int getClientFd(void);
     void setClientFd(int client_fd);
+    void closeClientFd(void);
 
     // SERVER-FD
     int getServerFd(void);
@@ -68,6 +70,7 @@ class Client
     // REQUEST
     std::string &getContentRequest(void);
     void clearContentRequest(void);
+    void consumeContentRequest(size_t length);
     void appendContentRequest(std::string &request);
 
     // RESPONSE SEND BUFFER
@@ -100,6 +103,8 @@ class Client
     void setCGIProcessing(bool CGIProcessing);
     bool isPendingDelete() const;
     void setPendingDelete(bool pendingDelete);
+    bool isPeerClosed() const;
+    void setPeerClosed(bool peerClosed);
 
     void setEventData(EventData *eventData);
     EventData *getEventData(void) const;
@@ -107,6 +112,7 @@ class Client
     // =====================
     // ==     Method      ==
     // =====================
+    bool isCGIExtension(const std::string &extension) const;
     void initialisationClient();
     void selectTypeRequest();
 };

@@ -22,8 +22,10 @@ std::string returnLastElementPath(std::string path);
 
 void checkPermisionReadFile(std::string path);
 bool isFinishByFile(std::string path);
+bool isFinishByFolder(std::string path);
 
 bool isCompleteRequest(const std::string &request);
+size_t completeRequestLength(const std::string &request);
 bool isDeclaredBodySizeExceeding(const std::string &request, size_t maxBodySize);
 bool isCompleteChunkedBody(const std::string &request, std::string::size_type bodyStart);
 bool isFinalChunkComplete(const std::string &request, std::string::size_type current);

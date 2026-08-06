@@ -96,6 +96,7 @@ class Webserv
     void handleNewClient(int server_fd);
 
     void processClient(EventData *eventData);
+    void executeBufferedRequest(Client *client);
     void processClientResponse(Client *client);
     void applyErrorToResponse(Client *client, const std::exception &e);
     bool sendResponseToClient(Client *client);

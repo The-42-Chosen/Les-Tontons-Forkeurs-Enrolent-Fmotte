@@ -6,7 +6,7 @@
 /*   By: erpascua <erpascua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 13:53:46 by fmotte            #+#    #+#             */
-/*   Updated: 2026/08/03 20:31:11 by erpascua         ###   ########.fr       */
+/*   Updated: 2026/08/06 18:32:16 by erpascua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,29 +137,95 @@ bool isFinishByFile(std::string path)
     return false;
 }
 
-// Code d'Eric
-// C'est pas le mien
-bool isCompleteRequest(const std::string &request)
+bool isFinishByFolder(std::string path)
+{
+    struct stat buff;
+
+    if (stat(path.c_str(), &buff) != 0)
+        return false;
+
+    return (S_ISDIR(buff.st_mode));
+}
+
+// std::hex find a real exadecimal to deal with method chunked that is expecting and send them 
+static std::string::size_type finalChunkEnd(const std::string &request, std::string::size_type current)
+{
+    if (request.size() < current + 2)
+        return (std::string::npos);
+
+    if (request.substr(current, 2) == "\r\n")
+        return (current + 2);
+
+    std::string::size_type trailersEnd = request.find("\r\n\r\n", current);
+    if (trailersEnd == std::string::npos)
+        return (std::string::npos);
+    return (trailersEnd + 4);
+}
+
+static std::string::size_type chunkedRequestEnd(const std::string &request, std::string::size_type bodyStart)
+{
+    std::string::size_type current = bodyStart;
+
+    while (current < request.size())
+    {
+        std::string::size_type lineEnd = request.find("\r\n", current);
+        if (lineEnd == std::string::npos)
+            return (std::string::npos);
+
+        std::string sizeToken = initSizeToken(request, current, lineEnd);
+
+        std::stringstream ss(sizeToken);
+        size_t chunkSize = 0;
+        ss >> std::hex >> chunkSize;
+        if (sizeToken.empty() || ss.fail() || !ss.eof())
+            return (request.size());
+
+        current = lineEnd + 2;
+        if (chunkSize == 0)
+            return (finalChunkEnd(request, current));
+
+        if (current + chunkSize + 2 > request.size())
+            return (std::string::npos);
+
+        if (request.substr(current + chunkSize, 2) != "\r\n")
+            return (request.size());
+
+        current += chunkSize + 2;
+    }
+    return (std::string::npos);
+}
+
+size_t completeRequestLength(const std::string &request)
 {
     std::string::size_type headerEnd = request.find("\r\n\r\n");
     if (headerEnd == std::string::npos)
-        return (false);
+        return (0);
 
     std::string::size_type bodyStart = headerEnd + 4;
     std::string transferEncoding = getHeaderValue(request, "transfer-encoding");
     transferEncoding = toLowerString(trimSpaces(transferEncoding));
     if (transferEncoding == "chunked")
-        return (isCompleteChunkedBody(request, bodyStart));
+    {
+        std::string::size_type end = chunkedRequestEnd(request, bodyStart);
+        return ((end == std::string::npos) ? 0 : end);
+    }
 
     std::string contentLengthValue = getHeaderValue(request, "content-length");
     if (!contentLengthValue.empty())
     {
         size_t contentLength = 0;
         if (!parseDecimalLength(contentLengthValue, contentLength))
-            return (true);
-        return ((request.size() - bodyStart) >= contentLength);
+            return (request.size());
+        if ((request.size() - bodyStart) < contentLength)
+            return (0);
+        return (bodyStart + contentLength);
     }
-    return (true);
+    return (bodyStart);
+}
+
+bool isCompleteRequest(const std::string &request)
+{
+    return (completeRequestLength(request) > 0);
 }
 
 bool isDeclaredBodySizeExceeding(const std::string &request, size_t maxBodySize)
@@ -200,47 +266,12 @@ bool isDeclaredBodySizeExceeding(const std::string &request, size_t maxBodySize)
 
 bool isCompleteChunkedBody(const std::string &request, std::string::size_type bodyStart)
 {
-    std::string::size_type current = bodyStart;
-
-    while (current < request.size())
-    {
-        std::string::size_type lineEnd = request.find("\r\n", current);
-        if (lineEnd == std::string::npos)
-            return (false);
-
-        std::string sizeToken = initSizeToken(request, current, lineEnd);
-
-        std::stringstream ss(sizeToken);
-        size_t chunkSize = 0;
-        ss >> std::hex >> chunkSize;
-        if (sizeToken.empty() || ss.fail() || !ss.eof())
-            return (true);
-
-        current = lineEnd + 2;
-        if (chunkSize == 0)
-            return (isFinalChunkComplete(request, current));
-
-        if (current + chunkSize + 2 > request.size())
-            return (false);
-
-        if (request.substr(current + chunkSize, 2) != "\r\n")
-            return (true);
-
-        current += chunkSize + 2;
-    }
-    return (false);
+    return (chunkedRequestEnd(request, bodyStart) != std::string::npos);
 }
 
 bool isFinalChunkComplete(const std::string &request, std::string::size_type current)
 {
-    if (request.size() < current + 2)
-        return (false);
-
-    if (request.substr(current, 2) == "\r\n")
-        return (true);
-
-    std::string::size_type trailersEnd = request.find("\r\n\r\n", current);
-    return (trailersEnd != std::string::npos);
+    return (finalChunkEnd(request, current) != std::string::npos);
 }
 
 std::string initSizeToken(const std::string &request, const std::string::size_type &current,
